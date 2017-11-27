@@ -277,7 +277,7 @@ Docker swarm est un orchestrateur. C'est un outil permettant de gérer vos image
 ## Gestion native du load balancing d'un service
 
  * Rendez-vous sur le site [play-with-docker](https://labs.play-with-docker.com)
- * Ajoutez 3 instances: ces 3 instances correspondent à 3 serveurs alpine dans lesquelles docker est installé.
+ * Ajoutez 3 instances: ces 3 instances correspondent à 3 serveurs alpine dans lesquels docker est installé.
  * Nous allons maintenant créer un cluster de serveur docker (swarm ou essaim)
 
 ```.bash
