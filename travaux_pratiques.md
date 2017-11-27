@@ -228,12 +228,19 @@ services:
  * Copiez le répertoire  7_wordpress_official_stack en 8_my_final_wordpress
  * Assurez-vous d'avoir la persistance de la base de donnée
  * Vérifiez que votre service fonctionne correctement
+   * Modifiez la localisation de la persistance de la base de donnée en plaçant celle-ci dans /home/$USER/data_wordpress
+   * Profitez en pour effectuer la persistance du code source de /var/www/html dans /home/$USER/source_code_wordpress
+   * Effectuez la mise à jour de wordpress via l'interface d'administration
+   * Supprimez le service
+   * Reconstruisez le même service
+   * Regardez la version de wordpress
 
 
 ### Quelques questions, remarques
  * Vous n'avez toujours pas eu à rédiger le moindre Dockerfile
  * Combien de temps cela vous a-t-il prit ?
  * Si vous aviez eu à rédiger un Dockerfile, celui ne comporterait que d'infimes modifications, car vous partiriez de l'image de base officiel
+ * La persistance de la base de donnée et du code source est très bien géré par l'image officielle alors même qu'il vous aurait été très compliqué de la réaliser vous-même de cette façon ! 
 
 #### Conclusions
 C'est fini ! Vous pouvez vous arrêter là. Toutefois:
@@ -246,6 +253,9 @@ Nous n'avons pas fait mention ici de la possibilité et de l'efficacité de dock
 Pour aller plus loin, je vous conseille de suivre les cours offciels de docker sur l'excellent site [training.playwithdocker.com](http://training.play-with-docker.com/). Que vous soyez administrateur système ou bien dévellopeur, vous y trouverezz votre compte et un excellent complément à ce que nous venons de faire ici.
 
 # DOCKER-SWARM, ou l'art d'orchestrer nos conteneurs sur un cluster de machine docker
+
+> Il vous faut un [compte docker](https://cloud.docker.com/) pour pouvoir réaliser cette partie.
+
 ## Introduction
 
 Docker swarm est un orchestrateur. C'est un outil permettant de gérer vos images, conteneurs, réseaux virtuels sur un ensemble de machine utilisant le docker (cluster ou grappe). Voici les principales fonctionnalités de docker swarm:
@@ -262,9 +272,43 @@ Docker swarm est un orchestrateur. C'est un outil permettant de gérer vos image
 
 > Dans swarm, nous allons introduire un nouveau terme, la pile (stack). La pile correspond à ce que nous appelons le service dans sa globalité (dans notre précédent exemple, on parlerai de pile wordpress), le service correspond à ce que nous appelions le micro-service, les conteneurs quant à eux sont appelés des tâches (task). Un microservice répliquer n fois correspond à l'instanciation de n conteneurs.
 
+> Il existe un concurent très sérieux à swarm: il s'agit de l'orchestrateur [kubernetes](https://kubernetes.io/). Celui-ci est plus mature, plus stable et offre plus de fonctionnalités que docker-swarm. En outre, il a été adopté massivement par le monde de l'industrie. Docker swarm présente l'avantage d'être plus facile à prendre en main, mais les fonctionnalités presenté ici sont également présentes dans kubernetes. 
+
+## Gestion native du load balancing d'un service
+
+ * Rendez-vous sur le site [play-with-docker](https://labs.play-with-docker.com)
+ * Ajoutez 3 instances: ces 3 instances correspondent à 3 serveurs alpine dans lesquelles docker est installé.
+ * Nous allons maintenant créer un cluster de serveur docker (swarm ou essaim)
+
+```.bash
+docker swarm init --advertise-addr $(hostname -i)
+```
+
+ * Avec la sortie de la commande ci-dessus, copiez la commande join (* attention aux retours à la ligne *) et collez-la dans les terminaux des 2 autres instances.
+ * Voila notre cluster de serveur docker réalisé ! Vous doutez ? Placez-vous dans votre première instance (manager) et faites la commande suivante:
+
+```.bash
+docker node ls
+```
+ * node 2 et 3 sont considéré comme des travailleurs (worker). La commande ci-dessus ne fonctionne pas sur des workers.
+ * Placez-vous dans la première instance
+ * Effectuez la commande suivante
+
+```bash
+for ((i=1;i<10;i++)); do docker service create --name service_${i} --replicas 1 alpine ping localhost; done
+```
+
+ * Observons maintenant où sont exécutés ces différents services:
+
+```bash
+for ((i=1;i<10;i++)); do docker service ps service_${i}; done
+```
+
+ * Voilà !
+
 ## Une introduction à docker-swarm
 
-La partie ci-dessous est une introduction à docker swarm présente sous forme de cours sur le dépot github [play-with-docker](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/_posts/2017-01-28-swarm-stack-intro.markdown). Ce cours étant sous licence [apache2](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/LICENSE) et afin de ne pas réinventer la roue, je présente ici une traduction du cours original. Pour mettre en application ce cours, le plus simple est soit d'utiliser la version officel et en anglais en [ligne](http://training.play-with-docker.com/swarm-stack-intro/), soit de suivre cette version en utilisant le site [play-with-docker](https://labs.play-with-docker.com). Dans les 2 cas, il vous faudra un [compte docker](https://cloud.docker.com/).
+La partie ci-dessous est une introduction à docker swarm présente sous forme de cours sur le dépot github [play-with-docker](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/_posts/2017-01-28-swarm-stack-intro.markdown). Ce cours étant sous licence [apache2](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/LICENSE) et afin de ne pas réinventer la roue, je présente ici une traduction du cours original. Pour mettre en application ce cours, le plus simple est soit d'utiliser la version officel et en anglais en [ligne](http://training.play-with-docker.com/swarm-stack-intro/), soit de suivre cette version en utilisant le site [play-with-docker](https://labs.play-with-docker.com). 
 
 
 ## Objectif
