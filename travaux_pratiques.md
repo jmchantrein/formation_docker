@@ -62,9 +62,65 @@ mysql --user=username --password=userpassword --execute="CREATE DATABASE userbas
 ### Quelques questions, remarques 
 
  * Ici, vous exécutez plusieurs processus dans un conteneur. La philosophie de docker veut que l'on ne conteneurise que 1 processus. C'est un choix discutable, mais, si l'on souhaite vraiment utiliser plus d'un processus dans un conteneur en production, il faut alors se servir de [supervisord](http://supervisord.org/). Nous ne nous en servirons pas dans le cadre de ce cours.
- * Comment fait on pour lancer le conteneur en mode démon (-d à la place de -it) ? 
-[comment]: <> ( --> obliger d'avoir un processus actif en foreground (parfois on peut tricher en exécutant sleep infinity par exemple) )
+ * Comment fait on pour lancer le conteneur en mode démon (-d à la place de -it) ? Essayez les différentes commandes suivantes pour comprendre: 
+
+> * On instancie un conteneur ubuntu en mode interactif et on execute la commande /bin/bash
+>
+>```.bash
+>jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash
+>root@test:/# exit
+>jmc@laptop ~ $ 
+>```
+> * On a le résultat attendu
+> * On instancie un conteneur ubuntu en mode interactif et on execute la commande /bin/bash -c "sleep infinity"
+>
+>```.bash
+>jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash -c "sleep infinity"
+>```
+>  * On a le comportement attendu, le conteneur ne rend pas la main puisque la commande sleep infinity est en mode foreground
+>  * Depuis un autre terminal, faire
+>
+>```.bash
+>docker container rm -f test 
+>```
+> * On instancie un conteneur ubuntu en mode interactif et on execute la commande /bin/bash -c "sleep infinity & ps -eflH"
+>
+>```.bash
+>jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash -c "ps -eflH"
+>F S UID        PID  PPID  C PRI  NI ADDR SZ WCHAN  STIME TTY          TIME CMD
+>4 S root         1     0  0  80   0 -  4507 wait   15:51 pts/0    00:00:00 /bin/
+>0 S root         7     1  0  80   0 -  1096 hrtime 15:51 pts/0    00:00:00   sle
+>0 R root         8     1  0  80   0 -  8607 -      15:51 pts/0    00:00:00   ps 
+>jmc@laptop ~ $
+>```
+> * Le conteneur s'arrete alors même que l'on souhaiterait qu'il exécute la commande sleep infinity
+> * Cela s'explique par le fait que la commande sleep infinity est exécuté en tâche de fond (utilisation de &)
+> * Puis la commande ps -eflH s'exécute ...
+> * Et il n'y a plus de tâche en mode foreground
+> * Or les conteneurs sont conçus pour qu'il y ait une [tâche en mode foreground qui soit exécutées](https://docs.docker.com/engine/reference/run/#detached-vs-foreground)
+> * Lorsque vous exécutez un conteneur en mode détaché (--detach -d), il n'y a pas d'interraction avec le conteneur: /bin/bash ne peut donc pas rester en mode foreground
+>```.bash
+>jmc@laptop ~ $ docker run -d --rm --hostname test --name test ubuntu /bin/bash
+>6e15d2da91b77de6dea905f00b14877352d50e0fdd3e747e99147a923037e63d
+>jmc@laptop ~ $ docker container ls -a
+>CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+>```
+> * /bin/bash n'ayant pas d'interraction, est passé en mode background, le conteneur test est devenu inactif et il a été supprimé puisque l'option --rm a été activé
+> * Pour conserver le conteneur actif, il faut absolument une tâche en mode foreground dans le conteneur
+> * Or c'est rarement le cas des démons de serveurs (apache2, mysql, nginx, ...) a qui on demande d'habitude de justement fonctionner en mode background !
+> * De fait, il faut trouver les options nécéssaires à l'utilisation de nos serveurs en mode foreground (par exemple: nginx -g 'daemon off;'
+> * Quid lors de l'exécution de plusieurs serveurs dans un conteneur: il faut alors des serveurs en mode background et un serveur en mode foreground, ce qui n'est pas très homogène comme pratique. De plus, la commande docker logs, ne nous fournira que les logs du serveur en mode foreground et pas les logs des serveurs en mode background.
+> * Dernier point: On peut obtenir de l'interraction avec un conteneur en mode détaché de la manière suivante
+>```.bash
+>jmc@laptop ~ $ docker run -d --rm --hostname test --name test ubuntu /bin/bash -c "sleep infinity"
+>c08701adde66f6316399989fd37d83e71acec35e7564444f1afbdf675a76c08b
+>jmc@laptop ~ $ docker container exec -it test /bin/bash
+>root@test:/# exit
+>jmc@laptop ~ $ docker container stop test
+>```
+
  * Est que l'on peut avoir une rédaction plus propre ? Quelles sont les bonnes pratiques de rédaction d'un Dockerfile ? C'est justement ce que nous allons voir dans la prochaine étape.
+
 
 ## Etape 2: Mise en place des bonnes pratiques
 
