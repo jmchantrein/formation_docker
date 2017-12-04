@@ -127,7 +127,7 @@ mysql --user=username --password=userpassword --execute="CREATE DATABASE userbas
 ### Quelques contraintes
 
  * Copiez votre répertoire 1_worpress_muliservice_dirty en 2_wordpress_multiservice_better
- * Modifiez votre Dockerfile de manière à ce que celui-ci respecte les [bonnes pratiques](ihttps://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
+ * Modifiez votre Dockerfile de manière à ce que celui-ci respecte les [bonnes pratiques](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
  * Effectuez une construction sans cache du Dockerfile que vous avez mofidié.
  * Vérifiez que votre service wordpress fonctionne correctement 
 
