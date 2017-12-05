@@ -25,7 +25,7 @@ Pensez à tester votre conteneur à l'adresse [http://localhost:80/wordpress](ht
 ### Quelques contraintes:
 
  * L'image de base est l'image officiel ubuntu:16.04
- * Il faut installer mysql, apache et php
+ * Il faut installer mariadb-server, apache et php
  * Il est interdit d'installer le paquet wordpress
  * Il faut installer les paquets nécéssaires à l'utilisation de wordpress
  * Il faut télécharger les [sources](https://wordpress.org/latest.zip) au format zip
@@ -58,6 +58,12 @@ mysql --user=username --password=userpassword --execute="CREATE DATABASE userbas
 
  * Par défaut, n'oubliez pas que les instructions sont éffectué par l'utilisateur root. Cela pourrait poser des problèmes de droits par la suite. :-D
  * Vous allez exécuter un conteneur contenenant plusieurs services: allez lire cet <span style=color:blue> [article](https://docs.docker.com/engine/admin/multi-service_container/)</span>.
+ * Lorsque vous allez exécuter votre conteneur, il va falloir que celui ci communique depuis son réseau (par défaut, le réseau bridge qui est NAT le traffic des conteneurs vers l'extérieur) vers le réseau de l'hôte. Vous allez donc devoir mapper/associer un port de l'hôte avec un port du conteneur. Cela se fait via l'option -p de docker run. Par exemple, la commande suivante permet de mapper le port 8000 de l'hôte au port 80 du conteneur de l'image nginx:
+ 
+```bash
+docker run -p 8000:80 nginx
+# Vous pourrez observer les logs ici lorsque vous vous connecterez à l'adresse http://localhost:8000
+```
 
 ### Quelques questions, remarques 
 
