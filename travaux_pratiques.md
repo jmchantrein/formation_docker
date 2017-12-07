@@ -4,19 +4,19 @@
 
 # Introduction
 
-> Aux lecteurs avertis: la manière dont est traité notre première section ne correspond pas à une bonne méthode de travail. Cette section présente néanmoins l'avantage de bien comprendre certains mécanismes de docker et les différents usages/problématiques possibles. Cette section nous permettra également de comprendre pourquoi, lorsque l'on utilise docker, il vaut mieux réaliser une architecture de microservice plutôt qu'une architecture monolithique.
+> Aux lecteurs avertis: la manière dont est traité notre première section ne correspond pas à une bonne méthode de travail. Cette section présente néanmoins l'avantage de bien comprendre certains mécanismes de docker et les différents usages possibles et problématiques rencontrées. Cette section nous permettra également de comprendre pourquoi, lorsque l'on utilise docker, il vaut mieux réaliser une architecture de microservice plutôt qu'une architecture monolithique.
 
-> Tout d'abord, la section DOCKERFILE vise à nous emmener étape par étape vers l'utilisation de docker-compose. Nous installerons tout un service wordpress dans une seule image. Cela nous permettra de prendre en main la rédaction d'un Dockerfile. Nous nous interrogerons au fur et à mesure sur la mise en place de bonnes pratique à la rédaction de Dockerfile. Nous pointerons du doigt les problèmes qui sont engendrés lorsque plusieurs processus sont éxécutés dans un seul conteneur et nous proposerons une architecture de micro service permettant de palier à ces problèmes. Cet aboutissement se fera étape par étape. **Il est tout à fait inutile de vouloir griller une étape, chaque étape supérieure repose sur la compréhension et la réalisation des étapes inférieurs.**
+> Tout d'abord, la section DOCKERFILE vise à nous emmener étape par étape vers l'utilisation de docker-compose. Nous installerons tout un service wordpress dans une seule image. Cela nous permettra de prendre en main la rédaction d'un Dockerfile. Nous nous interrogerons au fur et à mesure sur la mise en place de bonnes pratique à la rédaction de Dockerfile. Nous pointerons du doigt les problèmes qui sont engendrés lorsque plusieurs processus sont éxécutés dans un seul conteneur et nous proposerons une architecture de micro service permettant de palier à ces problèmes. Cet aboutissement se fera étape par étape. **Il est tout à fait inutile de vouloir griller une étape, chaque étape supérieure repose sur la compréhension et la réalisation des étapes inférieures.**
 
 > Ensuite, dans la section DOCKER-COMPOSE, nous verrons les méthodes de travail plus adapté et plus simple pour mettre en place un service docker en production sur un serveur. En l'occurence, il s'agira toujours d'un service wordpress.
 
-> Enfin, dans la section DOCKER-SWARM, nous verrons comment orchestrer notre architecture de micro-service dans un cluster de machine docker.
+> Enfin, dans la section DOCKER-SWARM, nous verrons comment fonctionne docker-swarm de manière général, nous présenterons brièvement les fonctionnalités de répartitions de charges et de mise à l'échelle et enfin nous orchestrerons notre architecture de micro-service wordpress dans un cluster de machine docker.
 
 # DOCKERFILE: de dockerfile à dockercomposefile par l'exemple
 
 ## Etape 1: Création basique d'un Dockerfile
 
-> Lors de la réalisation de cette étape, n'hésitez pas à user et à abuser de la notion de contexte que nous fournit docker build (notion de cache). Pour cela, pensez bien à rédiger les instructions les plus couteuses en début de dockerfile (i.e.: les couches les plus basses), et les instructions les plus souvent amenés à être changé en fin de Dockerfile (i.e: les couches les plus hautes). De cette manière, tout changement dans les couches hautes n'affectera pas les couches basses qui seront réutilisés par le cache de docker build.
+> Lors de la réalisation de cette étape, n'hésitez pas à user et à abuser de la notion de contexte que nous fournit docker build (notion de cache). Pour cela, pensez bien à rédiger les instructions les plus couteuses en début de dockerfile (i.e.: les couches les plus basses), et les instructions les plus souvent amenés à être changé en fin de Dockerfile (i.e: les couches les plus hautes). De cette manière, tout changement dans les couches hautes n'affectera pas les couches basses qui seront réutilisés par le cache de docker build. De plus, vous ne chercherez pas à minimiser le nombre d'image intermédiaire pour l'instant, nous le ferons lors de la prochaine étape.
 
 Vous travaillerez dans un répertoire nommé 1_worpress_muliservice_dirty
 
@@ -25,9 +25,8 @@ Pensez à tester votre conteneur à l'adresse [http://localhost:80/wordpress](ht
 ### Quelques contraintes:
 
  * L'image de base est l'image officiel ubuntu:16.04
- * Il faut installer mariadb-server, apache et php
  * Il est interdit d'installer le paquet wordpress
- * Il faut installer les paquets nécéssaires à l'utilisation de wordpress
+ * Il faut installer les paquets nécéssaires à l'utilisation de wordpress (on remplacera mysql-server par mariadb-server)
  * Il faut télécharger les [sources](https://wordpress.org/latest.zip) au format zip
  * Les sources seront placées dans le répertoire /var/www/html
  * Le mot de passe, le nom de l'administrateur mysql et le nom de la base de donnée doivent être définis dans des variables d'environnement (mot clef ENV en une seul instruction)
@@ -232,6 +231,12 @@ La méthode 1 est la plus facile à mettre en oeuvre, mais elle nous otes la lib
 
 # DOCKER-COMPOSE, ou l'art d'orchestrer nos conteneurs sur une seule machine
 
+> Installation de docker-compose:
+> ```bash
+> sudo curl -L https://github.com/docker/compose/releases/download/1.17.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+> sudo chmod +x /usr/local/bin/docker-compose
+> ```
+
 ## Etape 6: Une architecture de micro-services décrite dans un docker-compose file
 
 ### Quelques contraintes
@@ -301,7 +306,7 @@ services:
 ### Quelques questions, remarques
  * Vous n'avez toujours pas eu à rédiger le moindre Dockerfile
  * Combien de temps cela vous a-t-il prit ?
- * Si vous aviez eu à rédiger un Dockerfile, celui ne comporterait que d'infimes modifications, car vous partiriez de l'image de base officiel
+ * Si vous aviez eu à rédiger un Dockerfile, celui ne comporterait que d'infimes modifications, car vous partiriez de l'image de base officielle
  * La persistance de la base de donnée et du code source est très bien géré par l'image officielle alors même qu'il vous aurait été très compliqué de la réaliser vous-même de cette façon ! 
 
 #### Conclusions
@@ -312,7 +317,7 @@ C'est fini ! Vous pouvez vous arrêter là. Toutefois:
 
 Nous n'avons pas fait mention ici de la possibilité et de l'efficacité de docker en ce qui concerne les techniques d'intégration continue et d'usine logicielle. Docker n'est pas en mesure de fournir à lui tout seul cette fonctionnalité. Pour des tests simples, sachez simplement que l'on peut déjà faire des merveilles avec un gitlab et un repository github. Cerise sur le gateaux, vous pouvez vous servir des images officielles de ces services pour mettre en oeuvre vos tests.
 
-Pour aller plus loin, je vous conseille de suivre les cours offciels de docker sur l'excellent site [training.playwithdocker.com](http://training.play-with-docker.com/). Que vous soyez administrateur système ou bien dévellopeur, vous y trouverezz votre compte et un excellent complément à ce que nous venons de faire ici.
+Pour aller plus loin, je vous conseille de suivre les cours officiels de docker sur l'excellent site [training.playwithdocker.com](http://training.play-with-docker.com/). Que vous soyez administrateur système ou bien dévellopeur, vous y trouverez votre compte et un excellent complément à ce que nous venons de faire ici.
 
 # DOCKER-SWARM, ou l'art d'orchestrer nos conteneurs sur un cluster de machine docker
 
@@ -544,3 +549,15 @@ e7l8luq3zfoc         \_ voting_stack_vote.8   dockersamples/examplevotingapp_vot
 On remarque qu'il y a eu une interruption de ce micro-service pendant 2 secondes et qu'il y a des reliquats. Ces reliquats peuvent permettre de revenir en arrière en cas de problème.
 L'interruption de service peut-être évité en utilisant le mot clé delay dans le fichier docker-compose qui spécifie un délay entre les mises à jour de chaque conteneur: cela signifie que l'espace d'un instant, il y a aura 2 versions différentes du même microservice en ligne. Vous trouverez plus d'informations [ici](https://docs.docker.com/engine/swarm/swarm-tutorial/rolling-update/)
 
+
+## Etape 9: Une architecture de micro-services wordpress déployé dans un cluster swarm
+
+### Quelques contraintes
+ * Copiez le répertoire  8_my_final_wordpress dans une instance [play-with-docker](http://playwithdocker.com)
+ * Déployez  votre architecture de micro-service avec docker stack
+ * Effectuez une mise à l'échelle de votre micro-service apache (2 replicas)
+ * Vérifiez que votre service fonctionne correctement
+
+### Quelques questions, remarques
+ * Observez bien votre instance play-with-docker. Avez vous remarquez que c'était un conteneur docker ? ;-)
+ * [dind](https://sreeninet.wordpress.com/2016/12/23/docker-in-docker-and-play-with-docker/)
