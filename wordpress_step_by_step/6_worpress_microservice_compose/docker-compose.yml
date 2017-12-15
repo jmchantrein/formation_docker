@@ -1,0 +1,21 @@
+version: '3'
+services:
+        apache_wordpress:
+                build: apache_wordpress
+                container_name: apache_wordpress_container
+                hostname: my_apache_wordpress_container
+                ports:
+                        - "80:80"
+                volumes:
+                        - "my_src_wordpress:/var/www/html"
+                links:
+                        - mysql_wordpress
+        mysql_wordpress:
+                build: mysql_wordpress
+                container_name: mysql_wordpress_container
+                hostname: my_mysql_wordpress_container
+                volumes:
+                        - "mysql_wordpress:/var/lib/mysql"
+volumes:
+                mysql_wordpress:
+                my_src_wordpress:
