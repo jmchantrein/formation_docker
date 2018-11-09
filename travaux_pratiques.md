@@ -16,7 +16,7 @@
 
 ## Etape 1: Création basique d'un Dockerfile
 
-> Lors de la réalisation de cette étape, n'hésitez pas à user et à abuser de la notion de contexte que nous fournit docker build (notion de cache). Pour cela, pensez bien à rédiger les instructions les plus couteuses en début de dockerfile (i.e.: les couches les plus basses), et les instructions les plus souvent amenés à être changé en fin de Dockerfile (i.e: les couches les plus hautes). De cette manière, tout changement dans les couches hautes n'affectera pas les couches basses qui seront réutilisés par le cache de docker build. De plus, vous ne chercherez pas à minimiser le nombre d'image intermédiaire pour l'instant, nous le ferons lors de la prochaine étape.
+> Lors de la réalisation de cette étape, n’hésitez pas à user et à abuser de la notion de contexte que nous fournit docker build (notion de cache). Pour cela, pensez bien à rédiger les instructions les plus couteuses en début de dockerfile (i.e.: les couches les plus basses), et les instructions les plus souvent amenés à être changé en fin de Dockerfile (i.e: les couches les plus hautes). De cette manière, tout changement dans les couches hautes n’affectera pas les couches basses qui seront réutilisés par le cache de docker build. De plus, vous ne chercherez pas à minimiser le nombre d’image intermédiaire pour l’instant, nous le ferons lors de la prochaine étape.
 
 Vous travaillerez dans un répertoire nommé 1_worpress_muliservice_dirty
 
@@ -29,10 +29,10 @@ Pensez à tester votre conteneur à l'adresse [http://localhost:80/wordpress](ht
  * Il faut installer les paquets nécéssaires à l'utilisation de wordpress (on remplacera mysql-server par mariadb-server)
  * Il faut télécharger les [sources](https://wordpress.org/latest.zip) au format zip
  * Les sources seront placées dans le répertoire /var/www/html
- * Le mot de passe, le nom de l'administrateur mysql et le nom de la base de donnée doivent être définis dans des variables d'environnement (mot clef ENV en une seul instruction)
+ * Le mot de passe, le nom de l'administrateur mysql et le nom de la base de donnée doivent être définis dans des variables d'environnement (mot clef ENV en une seule instruction)
  * L'utilisateur mysql aura l'identifiant "admin", le mot de passe "tempo" et tous les droits sur une base "wordpress"
- * La commande par défaut doit executer apache et mysql
- * L'image sera taggé mon_image_wordpress et le conteneur exécuté sera nommé mon_conteneur_wordpress
+ * La commande par défaut doit exécuter apache et mysql
+ * L'image sera taguée mon_image_wordpress et le conteneur exécuté sera nommé mon_conteneur_wordpress
  * La fin du fichier Dockerfile contiendra en commentaires les instructions de constructions et d'instanciation de l'image
 
 ### Quelques astuces, pistes de réflexions:
@@ -55,9 +55,9 @@ mysql -u root --execute="FLUSH PRIVILEGES"
 mysql --user=username --password=userpassword --execute="CREATE DATABASE userbase" 
 ```
 
- * Par défaut, n'oubliez pas que les instructions sont éffectué par l'utilisateur root. Cela pourrait poser des problèmes de droits par la suite. :-D
+ * Par défaut, n'oubliez pas que les instructions sont effectués par l'utilisateur root. Cela pourrait poser des problèmes de droits par la suite. :-D
  * Vous allez exécuter un conteneur contenenant plusieurs services: allez lire cet <span style=color:blue> [article](https://docs.docker.com/engine/admin/multi-service_container/)</span>.
- * Lorsque vous allez exécuter votre conteneur, il va falloir que celui ci communique depuis son réseau (par défaut, le réseau bridge qui est NAT le traffic des conteneurs vers l'extérieur) vers le réseau de l'hôte. Vous allez donc devoir mapper/associer un port de l'hôte avec un port du conteneur. Cela se fait via l'option -p de docker run. Par exemple, la commande suivante permet de mapper le port 8000 de l'hôte au port 80 du conteneur de l'image nginx:
+ * Lorsque vous allez exécuter votre conteneur, il va falloir que celui ci communique depuis son réseau (par défaut, le réseau bridge qui est NAT le trafic des conteneurs vers l'extérieur) vers le réseau de l'hôte. Vous allez donc devoir mapper/associer un port de l'hôte avec un port du conteneur. Cela se fait via l'option -p de docker run. Par exemple, la commande suivante permet de mapper le port 8000 de l'hôte au port 80 du conteneur de l'image nginx:
  
 ```bash
 docker run -p 8000:80 nginx
@@ -69,7 +69,7 @@ docker run -p 8000:80 nginx
  * Ici, vous exécutez plusieurs processus dans un conteneur. La philosophie de docker veut que l'on ne conteneurise que 1 processus. C'est un choix discutable, mais, si l'on souhaite vraiment utiliser plus d'un processus dans un conteneur en production, il faut alors se servir de [supervisord](http://supervisord.org/). Nous ne nous en servirons pas dans le cadre de ce cours.
  * Comment fait on pour lancer le conteneur en mode démon (-d à la place de -it) ? Essayez les différentes commandes suivantes pour comprendre: 
 
-> * On instancie un conteneur ubuntu en mode interactif et on execute la commande /bin/bash
+> * On instancie un conteneur ubuntu en mode interactif et on exécute la commande /bin/bash
 >
 >```.bash
 >jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash
@@ -77,7 +77,7 @@ docker run -p 8000:80 nginx
 >jmc@laptop ~ $ 
 >```
 > * On a le résultat attendu
-> * On instancie un conteneur ubuntu en mode interactif et on execute la commande /bin/bash -c "sleep infinity"
+> * On instancie un conteneur ubuntu en mode interactif et on exécute la commande /bin/bash -c "sleep infinity"
 >
 >```.bash
 >jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash -c "sleep infinity"
@@ -88,7 +88,7 @@ docker run -p 8000:80 nginx
 >```.bash
 >docker container rm -f test 
 >```
-> * On instancie un conteneur ubuntu en mode interactif et on execute la commande /bin/bash -c "sleep infinity & ps -eflH"
+> * On instancie un conteneur ubuntu en mode interactif et on exécute la commande /bin/bash -c "sleep infinity & ps -eflH"
 >
 >```.bash
 >jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash -c "ps -eflH"
@@ -98,24 +98,24 @@ docker run -p 8000:80 nginx
 >0 R root         8     1  0  80   0 -  8607 -      15:51 pts/0    00:00:00   ps 
 >jmc@laptop ~ $
 >```
-> * Le conteneur s'arrete alors même que l'on souhaiterait qu'il exécute la commande sleep infinity
+> * Le conteneur s'arrête alors même que l'on souhaiterait qu'il exécute la commande sleep infinity
 > * Cela s'explique par le fait que la commande sleep infinity est exécuté en tâche de fond (utilisation de &)
 > * Puis la commande ps -eflH s'exécute ...
 > * Et il n'y a plus de tâche en mode foreground
 > * Or les conteneurs sont conçus pour qu'il y ait une [tâche en mode foreground qui soit exécutées](https://docs.docker.com/engine/reference/run/#detached-vs-foreground)
-> * Lorsque vous exécutez un conteneur en mode détaché (--detach -d), il n'y a pas d'interraction avec le conteneur: /bin/bash ne peut donc pas rester en mode foreground
+> * Lorsque vous exécutez un conteneur en mode détaché (--detach -d), il n'y a pas d'interaction avec le conteneur: /bin/bash ne peut donc pas rester en mode foreground
 >```.bash
 >jmc@laptop ~ $ docker run -d --rm --hostname test --name test ubuntu /bin/bash
 >6e15d2da91b77de6dea905f00b14877352d50e0fdd3e747e99147a923037e63d
 >jmc@laptop ~ $ docker container ls -a
 >CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 >```
-> * /bin/bash n'ayant pas d'interraction, est passé en mode background, le conteneur test est devenu inactif et il a été supprimé puisque l'option --rm a été activé
+> * /bin/bash n'ayant pas d'interaction, est passé en mode background, le conteneur test est devenu inactif et il a été supprimé puisque l'option --rm a été activé
 > * Pour conserver le conteneur actif, il faut absolument une tâche en mode foreground dans le conteneur
 > * Or c'est rarement le cas des démons de serveurs (apache2, mysql, nginx, ...) a qui on demande d'habitude de justement fonctionner en mode background !
-> * De fait, il faut trouver les options nécéssaires à l'utilisation de nos serveurs en mode foreground (par exemple: nginx -g 'daemon off;'
+> * De fait, il faut trouver les options nécessaires à l'utilisation de nos serveurs en mode foreground (par exemple: nginx -g 'daemon off;'
 > * Quid lors de l'exécution de plusieurs serveurs dans un conteneur: il faut alors des serveurs en mode background et un serveur en mode foreground, ce qui n'est pas très homogène comme pratique. De plus, la commande docker logs, ne nous fournira que les logs du serveur en mode foreground et pas les logs des serveurs en mode background.
-> * Dernier point: On peut obtenir de l'interraction avec un conteneur en mode détaché de la manière suivante
+> * Dernier point: On peut obtenir de l'interaction avec un conteneur en mode détaché de la manière suivante
 >```.bash
 >jmc@laptop ~ $ docker run -d --rm --hostname test --name test ubuntu /bin/bash -c "sleep infinity"
 >c08701adde66f6316399989fd37d83e71acec35e7564444f1afbdf675a76c08b
@@ -133,13 +133,13 @@ docker run -p 8000:80 nginx
 
  * Copiez votre répertoire 1_worpress_muliservice_dirty en 2_wordpress_multiservice_better
  * Modifiez votre Dockerfile de manière à ce que celui-ci respecte les [bonnes pratiques](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
- * Effectuez une construction sans cache du Dockerfile que vous avez mofidié.
+ * Effectuez une construction sans cache du Dockerfile que vous avez modidié.
  * Vérifiez que votre service wordpress fonctionne correctement 
 
-### Quelques astuces, pistes de reflexions
+### Quelques astuces, pistes de réflexions
 
- * Dans l'instruction FROM : l'utilisation du tag latest peut-être utile si vous projetez un mécanisme de mise à jour automatique de votre image et des conteneurs qui en découlent. Cette option n'est raissonnable que si c'est vous qui êtes maître de la mise à jour de l'image en question.
-         * Dans les autres cas, pour une image de production, on spécifiera toujours un tag explicite permettant de versionner l'image, ou mieux encore, la signature sha256 du despcriptif de l'image. 
+ * Dans l'instruction FROM : l'utilisation du tag latest peut-être utile si vous projetez un mécanisme de mise à jour automatique de votre image et des conteneurs qui en découlent. Cette option n'est raisonnable que si c'est vous qui êtes maître de la mise à jour de l'image en question.
+         * Dans les autres cas, pour une image de production, on spécifiera toujours un tag explicite permettant de versionner l'image, ou mieux encore, la signature sha256 du descriptif de l'image. 
 
 ### Quelques questions, remarques
  * Quel utilisateur est à l'origine de l'exécution d' apache2, mysql et de la commande qui sera éxécuté au lancement du conteneur ?
@@ -147,12 +147,12 @@ docker run -p 8000:80 nginx
     * Est-ce que c'est un problème pour mysql ?
     * Est-ce que c'est un problème pour la commande qui sera exécuté au lancement du conteneur ?
         * De quelle commande s'agit-il ? 
-        * En êtes vous sûr ?
-    * Si c'est un problème pour au moins l'un des trois processus, que proposez vous ?
+        * En êtes-vous sûr ?
+    * Si c'est un problème pour au moins l'un des trois processus, que proposez-vous ?
 
 ## Etape 3: Le problème de l'utilisateur root
 
-Tout d'abord, un peu de [lecture](https://docs.docker.com/engine/security/security) sur la sécurité lorsque on utilise un environnement docker ou bien directememt la [conclusion](https://docs.docker.com/engine/security/security/#conclusions)
+Tout d'abord, un peu de [lecture](https://docs.docker.com/engine/security/security) sur la sécurité lorsque on utilise un environnement docker ou bien directement la [conclusion](https://docs.docker.com/engine/security/security/#conclusions)
 
 ### Quelques contraintes
 
@@ -166,33 +166,33 @@ Tout d'abord, un peu de [lecture](https://docs.docker.com/engine/security/securi
 
 ### Quelques questions, remarques
 
- * Sachant que lorsque l'on execute apache2 nativement sur un serveur, il est aussi exécuté en premier lieu par root. Doit-on strictement interdire un processus lancé par l'utilisateur root dans un conteneur ?
+ * Sachant que lorsque l'on exécute apache2 nativement sur un serveur, il est aussi exécuté en premier lieu par root. Doit-on strictement interdire un processus lancé par l'utilisateur root dans un conteneur ?
  * Dans notre cas, après modification du setuid, qui est l'utilisateur qui exécute apache ?
 
 
  * Ne pourrait-on pas plutôt faire une image lamp (Linux Apache Mysql Php) et monter le code source web (php,html,css,...) par un volume présent sur l'hôte ? Ne serait ce pas plus générique ?
 En effet, notre image ne peut convenir que pour un site wordpress, alors que l'on devrait pouvoir faire une image capable de gérer n'importe quel site web php/html/css classique. On pourrait, mais ce ne serait pas forcément une meilleure méthode: ce serait juste une autre méthode. En fait, tout dépend des besoins que l'on a. Par exemple, est-ce que l'on doit fournir N instances de wordpress ou N instances de serveur LAMP ? En fonction de la réponse, on doit choisir l'architecture la plus adaptée à notre besoin.
 
- * Toutes vos données importantes sont dans le conteneur, quid de leur pérénnités ? Quelles solutions proposez-vous pour palier à cette problématique ?
+ * Toutes vos données importantes sont dans le conteneur, quid de leurs pérennités ? Quelles solutions proposez-vous pour palier à cette problématique ?
 
-## Etape 4: Pérénisation des données
+## Etape 4: Pérennisation des données
 
 ### Quelques contraintes
  * Copiez votre répertoire 3_wordpress_multiservice_noroot en 4_wordpress_multiservice_persistant
  * Modifiez votre Dockerfile et/ou votre commande de lancement de conteneur, de manière à pouvoir faire persister les données présentent dans /var/lib/mysql et /var/wwww/html
  * Modifiez explicitement votre Dockerfile pour exposer le port 80 des futurs conteneurs
 
-### Quelques astuces, pistes de reflexions
+### Quelques astuces, pistes de réflexions
 
 
 
 ### Quelques questions, remarques
 
-#### Méthode pour la pérenisation des données #
+#### Méthode pour la pérennisation des données #
 
-1. Nous avons trouvé une méthode pour péréniser nos donnés dans un volume. Lorsque ce volume est dans l'arborescence de docker (docker a son propre backend de storage (device-mapper, aufs, ou autres), les données initialement contenues dans l'image sont copiés lors du premier lancement dans le volume. Ensuite les données sont ajoutés dans le volume.
+1. Nous avons trouvé une méthode pour pérenniser nos donnés dans un volume. Lorsque ce volume est dans l'arborescence de docker (docker a son propre backend de storage (device-mapper, aufs, ou autres), les données initialement contenues dans l'image sont copiées lors du premier lancement dans le volume. Ensuite les données sont ajoutées dans le volume.
 
-2. Nous pourrions faire un point de montage de /var/lib/mysql dans notre propre système de fichier (par exemple: /data). Cependant, lors du premier montage, toutes les données contenu dans /var/lib/mysql de l'image sont innacessible, car le dossier /data monté est initialement vide. => Le conteneur serait inutilisable car mysql n'aurait même plus les informations concernant ses propres utilisateurs. On peut contourner ce problème en lançant un script au démarrage du conteneur, qui regarde si le point de montage /data est vide ou non. S' il est vide, on initialise mysql sinon on ne fait rien. L'initialisation se fait donc 1 seul fois lors du premier démarrage du conteneur et elle ne se fait pas dans l'image. Vous pouvez voir cette [exemple](http://txt.fliglio.com/2013/11/creating-a-mysql-docker-container/). Peut-être que vous trouvez vous cela bien compliqué et contraignant. Cependant, un énorme avantage de cette méthode, en plus de localiser ses données ou on le souhaite, c'est la possibilité de passer ses propres variables d'environnement à l'instanciation du conteneur: par exemple, on choisit quel est le mot de passe utilisateur au lancement du conteneur et non de manière figée dans l'image. Cette méthode nous apporte donc beaucoup plus de souplesse dans la gestion de nos conteneurs. On ne mettra pas en oeuvre cette méthode dans cette partie. Mais garder à l'esprit que ce type de mécanisme peut-être inclus dans des images dont vous pourriez vous servir. Ce sera d'ailleurs le cas du micro-service officiel mysql dont nous nous servirons dans la prochaine partie.
+2. Nous pourrions faire un point de montage de /var/lib/mysql dans notre propre système de fichier (par exemple: /data). Cependant, lors du premier montage, toutes les données contenues dans /var/lib/mysql de l'image sont inaccessibles, car le dossier /data monté est initialement vide. => Le conteneur serait inutilisable car mysql n'aurait même plus les informations concernant ses propres utilisateurs. On peut contourner ce problème en lançant un script au démarrage du conteneur, qui regarde si le point de montage /data est vide ou non. S' il est vide, on initialise mysql sinon on ne fait rien. L'initialisation se fait donc 1 seul fois lors du premier démarrage du conteneur et elle ne se fait pas dans l'image. Vous pouvez voir cet [exemple](http://txt.fliglio.com/2013/11/creating-a-mysql-docker-container/). Peut-être que vous trouvez vous cela bien compliqué et contraignant. Cependant, un énorme avantage de cette méthode, en plus de localiser ses données ou on le souhaite, c'est la possibilité de passer ses propres variables d'environnement à l'instanciation du conteneur: par exemple, on choisit quel est le mot de passe utilisateur au lancement du conteneur et non de manière figée dans l'image. Cette méthode nous apporte donc beaucoup plus de souplesse dans la gestion de nos conteneurs. On ne mettra pas en œuvre cette méthode dans cette partie. Mais garder à l'esprit que ce type de mécanisme peut-être inclus dans des images dont vous pourriez vous servir. Ce sera d'ailleurs le cas du micro-service officiel mysql dont nous nous servirons dans la prochaine partie.
 
 3. Une autre alternative consiste à faire un point de montage adhoc. On monte un répertoire /backup dans l'hôte sur le repertoire /backup dans le conteneur. Un cron sur l'hôte réalise régulièrement des dump de la base de donnée via une commande du style:
 
@@ -202,24 +202,24 @@ docker exec -it my_wordpress_container mysqldump --all-databases > /backup/$(dat
 
 Notez que le cron se ferait sur l'hôte, et pas dans le conteneur: minimisation du nombre de processus dans le conteneur.
 
-4. Nous pourrions aussi péréniser les sources (/var/www/html) dans un montage sur l'hôte. Dans le cas d'un montage hors du système de fichiers de docker, cela nécéssiterait l'écriture d'un bootstrap sur lequel on mettrait un bit setuid, le bootstrap modifierai le propriétaire du répertoire par monté par www-data:www-data avec chown, il faut dont être root pour cette exécution (d'où l'usage du setuid). 
+4. Nous pourrions aussi pérenniser les sources (/var/www/html) dans un montage sur l'hôte. Dans le cas d'un montage hors du système de fichiers de docker, cela nécessiterait l'écriture d'un bootstrap sur lequel on mettrait un bit setuid, le bootstrap modifierai le propriétaire du répertoire monté par www-data:www-data avec chown, il faut dont être root pour cette exécution (d'où l'usage du setuid). 
 
 ##### Conclusion
-La méthode 1 est la plus facile à mettre en oeuvre, mais elle nous otes la liberté de choisir ou nous stockons nos données. La méthode 2 est la plus difficile à mettre en oeuvre mais offre plus de souplesse dans la gestion de nos services. Vous trouverez plus d'informations [ici](https://docs.docker.com/engine/admin/volumes/volumes/)
+La méthode 1 est la plus facile à mettre en œuvre, mais elle nous ôtes la liberté de choisir ou nous stockons nos données. La méthode 2 est la plus difficile à mettre en œuvre mais offre plus de souplesse dans la gestion de nos services. Vous trouverez plus d'informations [ici](https://docs.docker.com/engine/admin/volumes/volumes/)
 
 ## Etape 5: Vers une architecture de micro-services
 
 ### Quelques contraintes
  * Copiez votre répertoire 4_wordpress_multiservice_persistant en 5_wordpress_microservice_persistant
- * Creez 2 sous répertoires apache_wordpress et mysql_wordpress
- * À partir de votre Dockerfile initiale, creez 2 nouveaux Dockerfile dans chacun des nouveaux sous répertoires
+ * Créez 2 sous répertoires apache_wordpress et mysql_wordpress
+ * À partir de votre Dockerfile initiale, créez 2 nouveaux Dockerfile dans chacun des nouveaux sous répertoires
  * Rédigez vos 2 nouveaux Dockerfile de manière à obtenir 2 microservices: un microservice apache, qui contiendra les sources wordpress et un microservice mysql qui gérera la base de donnée qui doit toujours être persistante
- * Rédigez un script bashi "build_and_launch.sh" qui exécute les commandes nécéssaires à la création et à l'exécution des 2 microservices
+ * Rédigez un script bash "build_and_launch.sh" qui exécute les commandes nécessaires à la création et à l'exécution des 2 microservices
  * Vérifiez que votre service wordpress (composé de 2 microservices) fonctionne bien.
  
-### Quelques astuces, pistes de reflexions
+### Quelques astuces, pistes de réflexions
  * Bien que déprécié, vous utiliserez ici l'options historique --link pour lier vos 2 conteneurs
- * Avec les nouvelles fonctionnalités du réseau docker, il nous  faudrait plutôt creer notre propre réseau pour notre service. Et cela nous montre qu'il est tout à fait possible d'avoir un réseau dédié pour chaque service ! Plus d'informations [ici (link)](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) et [ici (network](https://docs.docker.com/engine/tutorials/networkingcontainers/)
+ * Avec les nouvelles fonctionnalités du réseau docker, il nous  faudrait plutôt créer notre propre réseau pour notre service. Et cela nous montre qu'il est tout à fait possible d'avoir un réseau dédié pour chaque service ! Plus d'informations [ici (link)](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) et [ici (network](https://docs.docker.com/engine/tutorials/networkingcontainers/)
 
 ### Quelques questions, remarques
  * En production, on évitera l'usage de l'option --link qui est certainement voué à disparaitre
@@ -247,13 +247,13 @@ La méthode 1 est la plus facile à mettre en oeuvre, mais elle nous otes la lib
  * Vérifiez que votre service fonctionne correctement
  
 ### Quelques questions, remarques
- * Listez les réseaux avec docker network ls. Que constatezr-vous ?
+ * Listez les réseaux avec docker network ls. Que constatez-vous ?
  * Essayons d'enlever l'option link.  Pourquoi cela fonctionne-t-il ?
  * Avez-vous remarqué que lors de l'installation de wordpress, vous pouviez adresser le nom du service de la base de donnée à la place du hostname ? Comment est ce possible ? Allez regarder du côté de la commande docker container inspect nom_du_conteneur_mysql
  * Observez bien tout les [paramètres](https://docs.docker.com/compose/compose-file/) que vous pouvez fixer pour vos conteneurs dans le fichier docker-compose, parmit les plus intéressant:
 restart_policy, update_config, depends_on, restart, dns, ... Parmi ces options, deux retiennent mon attention, il s'agit de deploy et d' overlay qui ne fonctionne que avec l'usage de docker swarm, nous verrons ces deux commande plus tard dans la partie docker swarm.
 
-Vous êtes arrivé au bout de votre chemin d'apprentissage des fondamentaux de docker. Ce fût peut-être long et difficile. Il est maintenant temps pour vous de savoir que tout ce que nous avons fait là à la main, d'autres personnes l'ont déjà fait, en beaucoup mieux, et pour notre usage. Nous allons donc maintenant nous servir de leurs travails, mais, nous savons maintenant quels sont les mécanismes qui seront employés par les images officielles dont nous allons nous servir (variables d'environnement, fichier de bootstrap, setuid, volume). Il n'y a plus aucune ombre de magie dans docker, nous savons désormais globalement comment tout cela s'articule.
+Vous êtes arrivé au bout de votre chemin d'apprentissage des fondamentaux de docker. Ce fût peut-être long et difficile. Il est maintenant temps pour vous de savoir que tout ce que nous avons fait là à la main, d'autres personnes l'ont déjà fait, en beaucoup mieux, et pour notre usage. Nous allons donc maintenant nous servir de leurs travaux, mais, nous savons maintenant quels sont les mécanismes qui seront employés par les images officielles dont nous allons nous servir (variables d'environnement, fichier de bootstrap, setuid, volume). Il n'y a plus aucune ombre de magie dans docker, nous savons désormais globalement comment tout cela s'articule.
 
 
 ## Etape 7: Une architecture de micro-services décrite dans un docker-compose file fournit par la communauté
@@ -312,12 +312,12 @@ services:
 #### Conclusions
 C'est fini ! Vous pouvez vous arrêter là. Toutefois:
  * Si vous êtes administrateur systèmes et/ou réseaux alors la prochaine et dernière partie devrait aussi vous intéresser. 
- * Si vous êtes dévellopeur, vous avez tout ce dont vous avez besoin pour fournir une application et ses dépendances à n'importe qui sachant écrire "docker-compose up" dans un terminal.
+ * Si vous êtes développeur, vous avez tout ce dont vous avez besoin pour fournir une application et ses dépendances à n'importe qui sachant écrire "docker-compose up" dans un terminal.
  * Si vous êtes chercheur, vous avez ici un mécanisme qui permet d'inscrire vos travaux dans une démarche de recherche reproductible: vous voulez tester mon algorithme révolutionnaire ? Bien sûr, faites "docker run super-chercheur/super-algo". Et voilà ! 
 
-Nous n'avons pas fait mention ici de la possibilité et de l'efficacité de docker en ce qui concerne les techniques d'intégration continue et d'usine logicielle. Docker n'est pas en mesure de fournir à lui tout seul cette fonctionnalité. Pour des tests simples, sachez simplement que l'on peut déjà faire des merveilles avec un gitlab et un repository github. Cerise sur le gateaux, vous pouvez vous servir des images officielles de ces services pour mettre en oeuvre vos tests.
+Nous n'avons pas fait mention ici de la possibilité et de l'efficacité de docker en ce qui concerne les techniques d'intégration continue et d'usine logicielle. Docker n'est pas en mesure de fournir à lui tout seul cette fonctionnalité. Pour des tests simples, sachez simplement que l'on peut déjà faire des merveilles avec un gitlab et un repository github. Cerise sur le gâteaux, vous pouvez vous servir des images officielles de ces services pour mettre en œuvre vos tests.
 
-Pour aller plus loin, je vous conseille de suivre les cours officiels de docker sur l'excellent site [training.playwithdocker.com](http://training.play-with-docker.com/). Que vous soyez administrateur système ou bien dévellopeur, vous y trouverez votre compte et un excellent complément à ce que nous venons de faire ici.
+Pour aller plus loin, je vous conseille de suivre les cours officiels de docker sur l'excellent site [training.playwithdocker.com](http://training.play-with-docker.com/). Que vous soyez administrateur système ou bien développeur, vous y trouverez votre compte et un excellent complément à ce que nous venons de faire ici.
 
 # DOCKER-SWARM, ou l'art d'orchestrer nos conteneurs sur un cluster de machine docker
 
@@ -331,15 +331,15 @@ Docker swarm est un orchestrateur. C'est un outil permettant de gérer vos image
  * Décentralisation d'exécution (un conteneur a sur une machine A peut communiquer avec un conteneur b sur une machine B)
  * Utilisation d'un fichier au format dockercompose pour le déploiement (modèle déclaratif)
  * Passage à l'échelle: pour chaque service, vous pouvez déclarer le nombre de conteneurs que vous souhaitez exécuter. Lorsque vous augmentez ou réduisez ce nombre de conteneurs, docker swarm s'adapte automatiquement en ajoutant ou en supprimant des conteneurs pour maintenir l'état souhaité. Cela nécéssite toutefois d'avoir pensé une architecture de micro-service pour son service.
- * Adaptation de l'état général du cluster: si un des noeuds du cluster tombe, swarm re-deploie automatiquement les conteneurs perdus sur les noeuds restants et actifs.
+ * Adaptation de l'état général du cluster: si un des nœuds du cluster tombe, swarm redéploie automatiquement les conteneurs perdus sur les nœuds restants et actifs.
  * Réseaux virtuels partagés entre plusieurs machines (overlay network)
- * Equilibrage de charge: chaque service de l'essaim a un nom DNS unique et docker swarm répartit la charge entre les conteneurs en cours d'exécution. Vous pouvez interroger chaque conteneur qui s'exécute dans le cluster via un serveur DNS intégré. Vous pouvez aussi exposer les ports pour les services à un équilibreur de charge externe. Mais en interne, docker-swarm permet de spécifier comment distribuer les conteneurs d'un service entre les noeuds du cluster
- * Communication entre les noeuds sécurisé par défault via TLS.
- * Mise à jour en cours d'exécution et retour arrière: lorsque vous devez faire une mise à jour d'un service, vous pouvez appliquer ces mises à jour de service aux noeuds de manière incrémentielle. Si quelque chose ne va pas, vous pouvez restaurer un service vers une version précédente.
+ * Équilibrage de charge: chaque service de l'essaim a un nom DNS unique et docker swarm répartit la charge entre les conteneurs en cours d'exécution. Vous pouvez interroger chaque conteneur qui s'exécute dans le cluster via un serveur DNS intégré. Vous pouvez aussi exposer les ports pour les services à un équilibreur de charge externe. Mais en interne, docker-swarm permet de spécifier comment distribuer les conteneurs d'un service entre les noeuds du cluster
+ * Communication entre les nœuds sécurisé par défaut via TLS.
+ * Mise à jour en cours d'exécution et retour arrière: lorsque vous devez faire une mise à jour d'un service, vous pouvez appliquer ces mises à jour de service aux nœuds de manière incrémentielle. Si quelque chose ne va pas, vous pouvez restaurer un service vers une version précédente.
 
 > Dans swarm, nous allons introduire un nouveau terme, la pile (stack). La pile correspond à ce que nous appelons le service dans sa globalité (dans notre précédent exemple, on parlerai de pile wordpress), le service correspond à ce que nous appelions le micro-service, les conteneurs quant à eux sont appelés des tâches (task). Un microservice répliquer n fois correspond à l'instanciation de n conteneurs.
 
-> Il existe un concurent très sérieux à swarm: il s'agit de l'orchestrateur [kubernetes](https://kubernetes.io/). Celui-ci est plus mature, plus stable et offre plus de fonctionnalités que docker-swarm. En outre, il a été adopté massivement par le monde de l'industrie. Docker swarm présente l'avantage d'être plus facile à prendre en main, mais les fonctionnalités presenté ici sont également présentes dans kubernetes. 
+> Il existe un concurrent très sérieux à swarm: il s'agit de l'orchestrateur [kubernetes](https://kubernetes.io/). Celui-ci est plus mature, plus stable et offre plus de fonctionnalités que docker-swarm. En outre, il a été adopté massivement par le monde de l'industrie. Docker swarm présente l'avantage d'être plus facile à prendre en main, mais les fonctionnalités présenté ici sont également présentes dans kubernetes. 
 
 ## Gestion native du load balancing d'un service
 
@@ -375,7 +375,7 @@ for ((i=1;i<10;i++)); do docker service ps service_${i}; done
 
 ## Une introduction à docker-swarm
 
-La partie ci-dessous est une introduction à docker swarm présente sous forme de cours sur le dépot github [play-with-docker](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/_posts/2017-01-28-swarm-stack-intro.markdown). Ce cours étant sous licence [apache2](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/LICENSE) et afin de ne pas réinventer la roue, je présente ici une traduction du cours original. Pour mettre en application ce cours, le plus simple est soit d'utiliser la version officel et en anglais en [ligne](http://training.play-with-docker.com/swarm-stack-intro/), soit de suivre cette version en utilisant le site [play-with-docker](https://labs.play-with-docker.com). 
+La partie ci-dessous est une introduction à docker swarm présente sous forme de cours sur le dépot github [play-with-docker](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/_posts/2017-01-28-swarm-stack-intro.markdown). Ce cours étant sous licence [apache2](https://github.com/play-with-docker/play-with-docker.github.io/blob/master/LICENSE) et afin de ne pas réinventer la roue, je présente ici une traduction du cours original. Pour mettre en application ce cours, le plus simple est soit d'utiliser la version officiel et en anglais en [ligne](http://training.play-with-docker.com/swarm-stack-intro/), soit de suivre cette version en utilisant le site [play-with-docker](https://labs.play-with-docker.com). 
 
 
 ## Objectif
@@ -436,7 +436,7 @@ docker stack deploy --compose-file=docker-stack.yml voting_stack
 
 Note: être capable de déployer une pile à partir d'un fichier docker-compose est une fonctionnalité intéressante ajoutée dans Docker 1.13.
 
-Vérifier la pile déployée depuis le premier terminal
+Vérifiez la pile déployée depuis le premier terminal
 
 ```.bash
 docker stack ls
@@ -491,7 +491,7 @@ L'utilisation de seulement quelques commandes permet de déployer une pile de se
 
 ## Bonus du traducteur: mise à l'échelle et mise à jour
 
-Une fonctionnalité très interessante est le passage à l'échelle de notre application. Imaginons que tout d'un coup le flux de visiteur deviennent très important pour notre application de vote, alors nous pouvons faire:
+Une fonctionnalité très intéressante est le passage à l'échelle de notre application. Imaginons que tout d'un coup le flux de visiteur deviennent très important pour notre application de vote, alors nous pouvons faire:
 
 ```.bash
 docker service scale voting_stack_vote=6
@@ -507,7 +507,7 @@ gf2bb9vl60mv        voting_stack_vote.5   dockersamples/examplevotingapp_vote:be
 
 ```
 
-> Notez que s'il y avait eu plus de noeuds, la charge se sereait automatiquement répartit sur l'ensemble des noeuds.
+> Notez que s'il y avait eu plus de nœuds, la charge se serait automatiquement répartie sur l'ensemble des nœuds.
 
 Imaginons maintenant que le flux de visiteur baisse:
 
