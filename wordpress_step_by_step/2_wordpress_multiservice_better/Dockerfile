@@ -4,7 +4,7 @@
 
 # De manière générale: 
 # Sur le fond, on minimise le nombre d'instruction dans le Dockerfile (car 1 instruction => 1 image supplémentaire => 1 couche supplémentaire) mais on différencie les usages des instructions (i.e.: on ne mélange pas installation et configuration de paquet dans la même instruction RUN par exemple)
-# Sur la forme, on passe la ligne dès que possible pour améliorer la visibilité
+# Sur la forme, on passe à la ligne dès que possible pour améliorer la visibilité
 
 # Il faut quasiment toujours utiliser un tag définit et non pas le tag par défaut latest
 FROM ubuntu:16.04
@@ -22,7 +22,7 @@ LABEL maintainer="Prénom Nom" \
 # Par exemple: mariadb-server-10.0 plutôt que mariadb-server
 # Suppresion du cache apt après l'installation des paquets (gain d'espace)
 # Notez que l'on ne fait pas d'upgrade (voir bonnes pratiques Dockerfile)
-RUN apt -yq update && \
+RUN apt-get -yq update && \
 	DEBIAN_FRONTEND=noninteractive apt install -yq \
 	apache2 \
 	libapache2-mod-php7.0 \
@@ -52,9 +52,8 @@ RUN cd /tmp && \
 	chown -R www-data:www-data /var/www/html && \
 	rm latest.zip
 
-# Les variables d'environnement sont instantcié juste avant leur usage afin d'utiliser le mécanisme de cache de docker build
-# En effet, si ces variables était en début de fichier:
-# Vous reconstruiriez toutes les couches à chaque fois que vous changeriez le contenu des variables
+# Les variables d'environnement sont instanciées juste avant leurs usages afin d'utiliser le mécanisme de cache de docker build
+# En effet, si ces variables étaient en début de fichier, vous reconstruiriez toutes les couches à chaque fois que vous changeriez le contenu des variables
 ENV MYSQL_PASSWORD=tempo \
 	MYSQL_USER=admin \
 	MYSQL_DB=wordpress
@@ -85,68 +84,3 @@ CMD ["/bin/bash","-c","/run.sh"]
 # INSTRUCTIONS DE CONSTRUCTIONS
 # docker build . -t mon_image_wordpress:v2
 # docker run -it --name mon_conteneur_wordpress --rm -p 80:80 mon_image_wordpress:v2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
