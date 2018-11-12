@@ -189,13 +189,13 @@ En effet, notre image ne peut convenir que pour un site wordpress, alors que l'o
 
 ### Quelques astuces, pistes de réflexions
 
-
+ * Nous utiliserons ici l'instruction VOLUME dans notre Dockerfile 
 
 ### Quelques questions, remarques
 
 #### Méthode pour la pérennisation des données #
 
-1. Nous avons trouvé une méthode pour pérenniser nos donnés dans un volume. Lorsque ce volume est dans l'arborescence de docker (docker a son propre [backend de storage (device-mapper, aufs, ou autres)](https://docs.docker.com/storage/storagedriver/select-storage-driver/), les données initialement contenues dans l'image sont copiées lors du premier lancement dans le volume. Ensuite les données sont ajoutées dans le volume.
+1. Nous avons trouvé une méthode pour pérenniser nos donnés dans un volume. Lorsque ce volume est dans l'arborescence su système de fichier de docker (docker a son propre [backend de storage (device-mapper, aufs, ou autres)](https://docs.docker.com/storage/storagedriver/select-storage-driver/), les données initialement contenues dans l'image sont copiées lors du premier lancement dans le volume. Ensuite les données sont ajoutées dans le volume.
 
 2. Nous pourrions faire un point de montage de /var/lib/mysql dans notre propre système de fichier (par exemple: /data). Cependant, lors du premier montage, toutes les données contenues dans /var/lib/mysql de l'image sont inaccessibles, car le dossier /data monté est initialement vide. => Le conteneur serait inutilisable car mysql n'aurait même plus les informations concernant ses propres utilisateurs. On peut contourner ce problème en lançant un script au démarrage du conteneur, qui regarde si le point de montage /data est vide ou non. S' il est vide, on initialise mysql sinon on ne fait rien. L'initialisation se fait donc 1 seul fois lors du premier démarrage du conteneur et elle ne se fait pas dans l'image. Vous pouvez voir cet [exemple](http://txt.fliglio.com/2013/11/creating-a-mysql-docker-container/). Peut-être trouvez vous cela bien compliqué et contraignant ? Cependant, un énorme avantage de cette méthode, en plus de localiser ses données ou on le souhaite, c'est la possibilité de passer ses propres variables d'environnement à l'instanciation du conteneur: par exemple, on choisit quel est le mot de passe utilisateur au lancement du conteneur et non de manière figée dans l'image. Cette méthode nous apporte donc beaucoup plus de souplesse dans la gestion de nos conteneurs. On ne mettra pas en œuvre cette méthode dans cette partie. Mais garder à l'esprit que ce type de mécanisme peut-être inclus dans des images dont vous pourriez vous servir. Ce sera d'ailleurs le cas du micro-service officiel mysql dont nous nous servirons dans la prochaine partie.
 
@@ -212,7 +212,9 @@ Notez que le cron se ferait sur l'hôte, et pas dans le conteneur: minimisation 
 4. Nous pourrions aussi pérenniser les sources (/var/www/html) avec un montage sur l'hôte. Dans le cas d'un montage hors du système de fichiers de docker, confère notre solution numéro 2, cela nécessiterait l'écriture d'un bootstrap sur lequel on mettrait un bit setuid, le bootstrap modifierai le propriétaire du répertoire monté par www-data:www-data avec chown, il faut dont être root pour cette exécution (d'où l'usage du setuid). 
 
 ##### Conclusion
-La méthode 1 est la plus facile à mettre en œuvre. C'est la méthode officielle recommandé par docker, mais elle nous ôtes la liberté de choisir ou nous stockons nos données. La méthode 2 est la plus difficile à mettre en œuvre mais offre plus de souplesse dans la gestion de nos services, cependant, contrairement à la méthode 1, nous ne pouvons pas gérer les données par via le CLI de docker (docker volume cmd). Les méthodes 3 et 4 sont, à mon avis, à proscrire. Vous trouverez plus d'informations sur la méthode 1 [ici](https://docs.docker.com/engine/admin/volumes/volumes/) et sur la méthode 2 [ici](https://docs.docker.com/storage/bind-mounts/)
+La méthode 1 est la plus facile à mettre en œuvre. C'est la méthode officielle recommandé par docker, mais elle nous ôtes la liberté de choisir ou nous stockons nos données. La méthode 2 est la plus difficile à mettre en œuvre mais offre plus de souplesse dans la gestion de nos services, cependant, contrairement à la méthode 1, nous ne pouvons pas gérer les données via le CLI de docker (docker volume cmd). Les méthodes 3 et 4 sont, à mon avis, à proscrire. Vous trouverez plus d'informations sur la méthode 1 [ici](https://docs.docker.com/engine/admin/volumes/volumes/) et sur la méthode 2 [ici](https://docs.docker.com/storage/bind-mounts/)
+
+N.B.: Si vous devez gérer des données temporaires, il vaut mieux utiliser la directive [--tmpfs](https://docs.docker.com/storage/tmpfs/) plutôt que d'utiliser la couche en écriture de votre conteneur.
 
 ## Etape 5: Vers une architecture de micro-services
 
