@@ -5,13 +5,13 @@
 FROM ubuntu:16.04
 
 # Notez que l'on ne fait pas d'upgrade (voir bonnes pratiques Dockerfile)
-RUN apt -yq update
+RUN apt-get -yq update
 
 # Installation des paquets
-RUN DEBIAN_FRONTEND=noninteractive apt install -yq apache2 libapache2-mod-php7.0 libjs-cropper libjs-mediaelement libphp-phpmailer mariadb-server-10.0 mariadb-client-10.0 php-getid3 php7.0 php7.0-gd php7.0-mysql php7.0-opcache php7.0-readline
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -yq apache2 libapache2-mod-php7.0 libjs-cropper libjs-mediaelement libphp-phpmailer mariadb-server-10.0 mariadb-client-10.0 php-getid3 php7.0 php7.0-gd php7.0-mysql php7.0-opcache php7.0-readline
 
 # Installation de nouveau paquet en utilisant le mécanisme de cache (évite de retélécharger les paquets ci-dessus, à ne faire que lors de la phase de développement d'un dockerfile)
-RUN DEBIAN_FRONTEND=noninteractive apt -yq install vim wget unzip
+RUN DEBIAN_FRONTEND=noninteractive apt-get -yq install vim wget unzip
 
 # Téléchargement des sources
 RUN cd /var/www/html && wget https://wordpress.org/latest.zip
