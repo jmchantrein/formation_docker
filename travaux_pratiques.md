@@ -18,7 +18,7 @@
 
 > Lors de la réalisation de cette étape, n’hésitez pas à user et à abuser de la notion de contexte que nous fournit docker build (notion de cache). Pour cela, pensez bien à rédiger les instructions les plus couteuses en début de dockerfile (i.e.: les couches les plus basses), et les instructions les plus souvent amenés à être changé en fin de Dockerfile (i.e: les couches les plus hautes). De cette manière, tout changement dans les couches hautes n’affectera pas les couches basses qui seront réutilisés par le cache de docker build. De plus, vous ne chercherez pas à minimiser le nombre d’image intermédiaire pour l’instant, nous le ferons lors de la prochaine étape.
 
-Vous travaillerez dans un répertoire nommé 1_worpress_muliservice_dirty
+Vous travaillerez dans un répertoire nommé 1_worpress_multiservice_dirty
 
 Pensez à tester votre conteneur à l'adresse [http://localhost:80/wordpress](http://localhost:80/wordpress)
 
@@ -39,13 +39,18 @@ Pensez à tester votre conteneur à l'adresse [http://localhost:80/wordpress](ht
 
  * apt-get install -s ou apt install -s permet de simuler l'installation d'un paquet
  * apt depends permet de savoir quelles sont les dépendances d'un paquet
- * Contrairement à ce que l'on peut voir partout, y compris dans mon cours :-O , il ne faut pas déclarer une variable d'environnement DEBIAN_FRONTEND=noninterractive mais plutôt:
+ * Contrairement à ce que l'on peut voir partout, y compris dans mon cours :-O , il ne faut pas déclarer une variable d'environnement DEBIAN_FRONTEND=noninteractive mais plutôt:
 ```bash
-RUN DEBIAN_FRONTEND=noninterractive apt install package1 package2 ... 
+RUN DEBIAN_FRONTEND=noninteractive apt install package1 package2 ... 
 ```
 [voir ticket github](https://github.com/moby/moby/issues/4032)
 
- * Si vous ne changer de chemin que pour une instruction, n'utilisez pas le mot clef WORKDIR et cela afin de minimiser le nombre d'image intermédiaire
+ * Si vous avez besoin de changer de chemin que pour une/des commande(s), n'utilisez pas le mot clef WORKDIR (cela ajouterai une image intermédiare inutile). Préférez l'utilisation de :
+
+```bash
+RUN cd /mon/chemin && mes_commandes
+```
+
  * Création d'un utilisateur mysql "username" avec mot de passe "userpassword" ayant tous les droits et création d'une base "userbase":
 
 ```bash
@@ -55,9 +60,9 @@ mysql -u root --execute="FLUSH PRIVILEGES"
 mysql --user=username --password=userpassword --execute="CREATE DATABASE userbase" 
 ```
 
- * Par défaut, n'oubliez pas que les instructions sont effectués par l'utilisateur root. Cela pourrait poser des problèmes de droits par la suite. :-D
- * Vous allez exécuter un conteneur contenenant plusieurs services: allez lire cet <span style=color:blue> [article](https://docs.docker.com/engine/admin/multi-service_container/)</span>.
- * Lorsque vous allez exécuter votre conteneur, il va falloir que celui ci communique depuis son réseau (par défaut, le réseau bridge qui est NAT le trafic des conteneurs vers l'extérieur) vers le réseau de l'hôte. Vous allez donc devoir mapper/associer un port de l'hôte avec un port du conteneur. Cela se fait via l'option -p de docker run. Par exemple, la commande suivante permet de mapper le port 8000 de l'hôte au port 80 du conteneur de l'image nginx:
+ * N'oubliez pas que les instructions sont effectuées par l'utilisateur root par défaut. Cela pourrait poser des problèmes de droits par la suite. :-D
+ * Vous allez exécuter un conteneur contenenant plusieurs services: je vous propose de lire cet <span style=color:blue> [article](https://docs.docker.com/engine/admin/multi-service_container/)</span>.
+ * Lorsque vous allez exécuter votre conteneur, il va falloir que celui ci communique depuis son réseau (par défaut, le réseau bridge qui "NAT" le trafic des conteneurs vers l'extérieur) vers le réseau de l'hôte. Vous allez donc devoir mapper/associer un port de l'hôte avec un port du conteneur. Cela se fait via l'option -p de docker run. Par exemple, la commande suivante permet de mapper le port 8000 de l'hôte au port 80 du conteneur de l'image nginx:
  
 ```bash
 docker run -p 8000:80 nginx
@@ -66,10 +71,10 @@ docker run -p 8000:80 nginx
 
 ### Quelques questions, remarques 
 
- * Ici, vous exécutez plusieurs processus dans un conteneur. La philosophie de docker veut que l'on ne conteneurise que 1 processus. C'est un choix discutable, mais, si l'on souhaite vraiment utiliser plus d'un processus dans un conteneur en production, il faut alors se servir de [supervisord](http://supervisord.org/). Nous ne nous en servirons pas dans le cadre de ce cours.
- * Comment fait on pour lancer le conteneur en mode démon (-d à la place de -it) ? Essayez les différentes commandes suivantes pour comprendre: 
+ * Ici, vous exécutez plusieurs processus dans un conteneur. La philosophie de docker veut que l'on ne conteneurise que 1 processus. C'est un choix discutable, mais, si l'on souhaite vraiment utiliser plus d'un processus dans un conteneur en production, il faudrait alors se servir de [supervisord](http://supervisord.org/). Nous ne nous en servirons pas dans le cadre de ce cours.
+ * Comment fait on pour lancer le conteneur en mode détaché (-d à la place de -it) ? Essayez les différentes commandes suivantes pour comprendre: 
 
-> * On instancie un conteneur ubuntu en mode interactif et on exécute la commande /bin/bash
+> * On instancie maintenant un conteneur ubuntu en mode interactif et on exécute la commande /bin/bash
 >
 >```.bash
 >jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash
@@ -91,7 +96,7 @@ docker run -p 8000:80 nginx
 > * On instancie un conteneur ubuntu en mode interactif et on exécute la commande /bin/bash -c "sleep infinity & ps -eflH"
 >
 >```.bash
->jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash -c "ps -eflH"
+>jmc@laptop ~ $ docker run -it --rm --hostname test --name test ubuntu /bin/bash -c "sleep infinity & ps -eflH"
 >F S UID        PID  PPID  C PRI  NI ADDR SZ WCHAN  STIME TTY          TIME CMD
 >4 S root         1     0  0  80   0 -  4507 wait   15:51 pts/0    00:00:00 /bin/
 >0 S root         7     1  0  80   0 -  1096 hrtime 15:51 pts/0    00:00:00   sle
@@ -101,8 +106,8 @@ docker run -p 8000:80 nginx
 > * Le conteneur s'arrête alors même que l'on souhaiterait qu'il exécute la commande sleep infinity
 > * Cela s'explique par le fait que la commande sleep infinity est exécuté en tâche de fond (utilisation de &)
 > * Puis la commande ps -eflH s'exécute ...
-> * Et il n'y a plus de tâche en mode foreground
-> * Or les conteneurs sont conçus pour qu'il y ait une [tâche en mode foreground qui soit exécutées](https://docs.docker.com/engine/reference/run/#detached-vs-foreground)
+> * ... et il n'y a plus de tâche en mode foreground.
+> * Or les conteneurs sont conçus pour qu'il y ait une [tâche en mode foreground qui soit exécutée](https://docs.docker.com/engine/reference/run/#detached-vs-foreground)
 > * Lorsque vous exécutez un conteneur en mode détaché (--detach -d), il n'y a pas d'interaction avec le conteneur: /bin/bash ne peut donc pas rester en mode foreground
 >```.bash
 >jmc@laptop ~ $ docker run -d --rm --hostname test --name test ubuntu /bin/bash
@@ -114,7 +119,7 @@ docker run -p 8000:80 nginx
 > * Pour conserver le conteneur actif, il faut absolument une tâche en mode foreground dans le conteneur
 > * Or c'est rarement le cas des démons de serveurs (apache2, mysql, nginx, ...) a qui on demande d'habitude de justement fonctionner en mode background !
 > * De fait, il faut trouver les options nécessaires à l'utilisation de nos serveurs en mode foreground (par exemple: nginx -g 'daemon off;'
-> * Quid lors de l'exécution de plusieurs serveurs dans un conteneur: il faut alors des serveurs en mode background et un serveur en mode foreground, ce qui n'est pas très homogène comme pratique. De plus, la commande docker logs, ne nous fournira que les logs du serveur en mode foreground et pas les logs des serveurs en mode background.
+> * Quid lors de l'exécution de plusieurs serveurs dans un conteneur: il faut alors des serveurs en mode background et un serveur en mode foreground, ce qui n'est pas ni homogène, ni pratique. De plus, la commande docker logs, ne nous fournira que les logs du serveur en mode foreground et pas les logs des serveurs en mode background.
 > * Dernier point: On peut obtenir de l'interaction avec un conteneur en mode détaché de la manière suivante
 >```.bash
 >jmc@laptop ~ $ docker run -d --rm --hostname test --name test ubuntu /bin/bash -c "sleep infinity"
@@ -124,14 +129,14 @@ docker run -p 8000:80 nginx
 >jmc@laptop ~ $ docker container stop test
 >```
 
- * Est que l'on peut avoir une rédaction plus propre ? Quelles sont les bonnes pratiques de rédaction d'un Dockerfile ? C'est justement ce que nous allons voir dans la prochaine étape.
+ * Est-ce que l'on peut avoir une rédaction plus propre ? Quelles sont les bonnes pratiques de rédaction d'un Dockerfile ? C'est justement ce que nous allons voir dans la prochaine étape.
 
 
 ## Etape 2: Mise en place des bonnes pratiques
 
 ### Quelques contraintes
 
- * Copiez votre répertoire 1_worpress_muliservice_dirty en 2_wordpress_multiservice_better
+ * Copiez votre répertoire 1_worpress_multiservice_dirty en 2_wordpress_multiservice_better
  * Modifiez votre Dockerfile de manière à ce que celui-ci respecte les [bonnes pratiques](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
  * Effectuez une construction sans cache du Dockerfile que vous avez modidié.
  * Vérifiez que votre service wordpress fonctionne correctement 
@@ -139,7 +144,7 @@ docker run -p 8000:80 nginx
 ### Quelques astuces, pistes de réflexions
 
  * Dans l'instruction FROM : l'utilisation du tag latest peut-être utile si vous projetez un mécanisme de mise à jour automatique de votre image et des conteneurs qui en découlent. Cette option n'est raisonnable que si c'est vous qui êtes maître de la mise à jour de l'image en question.
-         * Dans les autres cas, pour une image de production, on spécifiera toujours un tag explicite permettant de versionner l'image, ou mieux encore, la signature sha256 du descriptif de l'image. 
+ * Dans les autres cas, pour une image de production, on spécifiera toujours un tag explicite permettant de versionner l'image, ou mieux encore, la signature sha256 du descriptif de l'image. 
 
 ### Quelques questions, remarques
  * Quel utilisateur est à l'origine de l'exécution d' apache2, mysql et de la commande qui sera éxécuté au lancement du conteneur ?
@@ -179,7 +184,7 @@ En effet, notre image ne peut convenir que pour un site wordpress, alors que l'o
 
 ### Quelques contraintes
  * Copiez votre répertoire 3_wordpress_multiservice_noroot en 4_wordpress_multiservice_persistant
- * Modifiez votre Dockerfile et/ou votre commande de lancement de conteneur, de manière à pouvoir faire persister les données présentent dans /var/lib/mysql et /var/wwww/html
+ * Modifiez votre Dockerfile et/ou votre commande de lancement de conteneur, de manière à pouvoir faire persister les données présentent dans /var/lib/mysql et /var/www/html
  * Modifiez explicitement votre Dockerfile pour exposer le port 80 des futurs conteneurs
 
 ### Quelques astuces, pistes de réflexions
@@ -190,11 +195,13 @@ En effet, notre image ne peut convenir que pour un site wordpress, alors que l'o
 
 #### Méthode pour la pérennisation des données #
 
-1. Nous avons trouvé une méthode pour pérenniser nos donnés dans un volume. Lorsque ce volume est dans l'arborescence de docker (docker a son propre backend de storage (device-mapper, aufs, ou autres), les données initialement contenues dans l'image sont copiées lors du premier lancement dans le volume. Ensuite les données sont ajoutées dans le volume.
+1. Nous avons trouvé une méthode pour pérenniser nos donnés dans un volume. Lorsque ce volume est dans l'arborescence de docker (docker a son propre [backend de storage (device-mapper, aufs, ou autres)](https://docs.docker.com/storage/storagedriver/select-storage-driver/), les données initialement contenues dans l'image sont copiées lors du premier lancement dans le volume. Ensuite les données sont ajoutées dans le volume.
 
-2. Nous pourrions faire un point de montage de /var/lib/mysql dans notre propre système de fichier (par exemple: /data). Cependant, lors du premier montage, toutes les données contenues dans /var/lib/mysql de l'image sont inaccessibles, car le dossier /data monté est initialement vide. => Le conteneur serait inutilisable car mysql n'aurait même plus les informations concernant ses propres utilisateurs. On peut contourner ce problème en lançant un script au démarrage du conteneur, qui regarde si le point de montage /data est vide ou non. S' il est vide, on initialise mysql sinon on ne fait rien. L'initialisation se fait donc 1 seul fois lors du premier démarrage du conteneur et elle ne se fait pas dans l'image. Vous pouvez voir cet [exemple](http://txt.fliglio.com/2013/11/creating-a-mysql-docker-container/). Peut-être que vous trouvez vous cela bien compliqué et contraignant. Cependant, un énorme avantage de cette méthode, en plus de localiser ses données ou on le souhaite, c'est la possibilité de passer ses propres variables d'environnement à l'instanciation du conteneur: par exemple, on choisit quel est le mot de passe utilisateur au lancement du conteneur et non de manière figée dans l'image. Cette méthode nous apporte donc beaucoup plus de souplesse dans la gestion de nos conteneurs. On ne mettra pas en œuvre cette méthode dans cette partie. Mais garder à l'esprit que ce type de mécanisme peut-être inclus dans des images dont vous pourriez vous servir. Ce sera d'ailleurs le cas du micro-service officiel mysql dont nous nous servirons dans la prochaine partie.
+2. Nous pourrions faire un point de montage de /var/lib/mysql dans notre propre système de fichier (par exemple: /data). Cependant, lors du premier montage, toutes les données contenues dans /var/lib/mysql de l'image sont inaccessibles, car le dossier /data monté est initialement vide. => Le conteneur serait inutilisable car mysql n'aurait même plus les informations concernant ses propres utilisateurs. On peut contourner ce problème en lançant un script au démarrage du conteneur, qui regarde si le point de montage /data est vide ou non. S' il est vide, on initialise mysql sinon on ne fait rien. L'initialisation se fait donc 1 seul fois lors du premier démarrage du conteneur et elle ne se fait pas dans l'image. Vous pouvez voir cet [exemple](http://txt.fliglio.com/2013/11/creating-a-mysql-docker-container/). Peut-être trouvez vous cela bien compliqué et contraignant ? Cependant, un énorme avantage de cette méthode, en plus de localiser ses données ou on le souhaite, c'est la possibilité de passer ses propres variables d'environnement à l'instanciation du conteneur: par exemple, on choisit quel est le mot de passe utilisateur au lancement du conteneur et non de manière figée dans l'image. Cette méthode nous apporte donc beaucoup plus de souplesse dans la gestion de nos conteneurs. On ne mettra pas en œuvre cette méthode dans cette partie. Mais garder à l'esprit que ce type de mécanisme peut-être inclus dans des images dont vous pourriez vous servir. Ce sera d'ailleurs le cas du micro-service officiel mysql dont nous nous servirons dans la prochaine partie.
 
-3. Une autre alternative consiste à faire un point de montage adhoc. On monte un répertoire /backup dans l'hôte sur le repertoire /backup dans le conteneur. Un cron sur l'hôte réalise régulièrement des dump de la base de donnée via une commande du style:
+On pourrait remarquer aussi que la mise en place d'une telle complexité ne peut-être envisageable que pour une instanciation massive de conteneur wordpress et non pas pour quelques instances. C'est vrai, mais gardez à l'esprit que nous sommes dans le cadre d'un tp de compréhension des mécanismes de docker: les images officielles implémentent elles mêmes ce type de mécanisme, et de manière bien plus efficace que ce que nous faisons ici. Ainsi, un micro-service devrait pouvoir être déployé tout aussi bien sporadiquement que massivement.
+
+3. Une autre alternative consisterait à faire un point de montage adhoc. On monte un répertoire /backup de l'hôte sur un repertoire /backup dans le conteneur. Un cron sur l'hôte réalise régulièrement des dump de la base de donnée via une commande du style:
 
 ```bash
 docker exec -it my_wordpress_container mysqldump --all-databases > /backup/$(date)_dump.sql
@@ -202,10 +209,10 @@ docker exec -it my_wordpress_container mysqldump --all-databases > /backup/$(dat
 
 Notez que le cron se ferait sur l'hôte, et pas dans le conteneur: minimisation du nombre de processus dans le conteneur.
 
-4. Nous pourrions aussi pérenniser les sources (/var/www/html) dans un montage sur l'hôte. Dans le cas d'un montage hors du système de fichiers de docker, cela nécessiterait l'écriture d'un bootstrap sur lequel on mettrait un bit setuid, le bootstrap modifierai le propriétaire du répertoire monté par www-data:www-data avec chown, il faut dont être root pour cette exécution (d'où l'usage du setuid). 
+4. Nous pourrions aussi pérenniser les sources (/var/www/html) avec un montage sur l'hôte. Dans le cas d'un montage hors du système de fichiers de docker, confère notre solution numéro 2, cela nécessiterait l'écriture d'un bootstrap sur lequel on mettrait un bit setuid, le bootstrap modifierai le propriétaire du répertoire monté par www-data:www-data avec chown, il faut dont être root pour cette exécution (d'où l'usage du setuid). 
 
 ##### Conclusion
-La méthode 1 est la plus facile à mettre en œuvre, mais elle nous ôtes la liberté de choisir ou nous stockons nos données. La méthode 2 est la plus difficile à mettre en œuvre mais offre plus de souplesse dans la gestion de nos services. Vous trouverez plus d'informations [ici](https://docs.docker.com/engine/admin/volumes/volumes/)
+La méthode 1 est la plus facile à mettre en œuvre. C'est la méthode officielle recommandé par docker, mais elle nous ôtes la liberté de choisir ou nous stockons nos données. La méthode 2 est la plus difficile à mettre en œuvre mais offre plus de souplesse dans la gestion de nos services, cependant, contrairement à la méthode 1, nous ne pouvons pas gérer les données par via le CLI de docker (docker volume cmd). Les méthodes 3 et 4 sont, à mon avis, à proscrire. Vous trouverez plus d'informations sur la méthode 1 [ici](https://docs.docker.com/engine/admin/volumes/volumes/) et sur la méthode 2 [ici](https://docs.docker.com/storage/bind-mounts/)
 
 ## Etape 5: Vers une architecture de micro-services
 
