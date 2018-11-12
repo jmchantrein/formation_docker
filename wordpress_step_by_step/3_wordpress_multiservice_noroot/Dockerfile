@@ -7,7 +7,7 @@ LABEL maintainer="Prénom Nom" \
 	version="${VERSION}"
 
 # Installation des paquets
-RUN apt -yq update && \
+RUN apt-get -yq update && \
 	DEBIAN_FRONTEND=noninteractive apt install -yq \
 	apache2 \
 	libapache2-mod-php7.0 \
