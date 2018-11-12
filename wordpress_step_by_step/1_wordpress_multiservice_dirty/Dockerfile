@@ -10,7 +10,7 @@ RUN apt -yq update
 # Installation des paquets
 RUN DEBIAN_FRONTEND=noninteractive apt install -yq apache2 libapache2-mod-php7.0 libjs-cropper libjs-mediaelement libphp-phpmailer mariadb-server-10.0 mariadb-client-10.0 php-getid3 php7.0 php7.0-gd php7.0-mysql php7.0-opcache php7.0-readline
 
-# Installation de nouveau paquet en utilisant le mécanisme de cache (évite de retélécharger les paquets ci-dessus, à ne faire que lors de la phase de dévellopement d'un dockerfile)
+# Installation de nouveau paquet en utilisant le mécanisme de cache (évite de retélécharger les paquets ci-dessus, à ne faire que lors de la phase de développement d'un dockerfile)
 RUN DEBIAN_FRONTEND=noninteractive apt -yq install vim wget unzip
 
 # Téléchargement des sources
@@ -31,7 +31,7 @@ RUN service mysql start && mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWOR
 # Droits sur les sources
 RUN chown -R www-data:www-data /var/www/html/wordpress
 
-# Un lancement en mode interractif
+# Un lancement en mode interactif
 #RUN echo "service apache2 start && service mysql start && /bin/bash" > /run.sh
 
 # Un lancement en mode détaché
