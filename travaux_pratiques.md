@@ -214,6 +214,8 @@ Notez que le cron se ferait sur l'hôte, et pas dans le conteneur: minimisation 
 ##### Conclusion
 La méthode 1 est la plus facile à mettre en œuvre. C'est la méthode officielle recommandé par docker, mais elle nous ôtes la liberté de choisir ou nous stockons nos données. La méthode 2 est la plus difficile à mettre en œuvre mais offre plus de souplesse dans la gestion de nos services, cependant, contrairement à la méthode 1, nous ne pouvons pas gérer les données via le CLI de docker (docker volume cmd). Les méthodes 3 et 4 sont, à mon avis, à proscrire. Vous trouverez plus d'informations sur la méthode 1 [ici](https://docs.docker.com/engine/admin/volumes/volumes/) et sur la méthode 2 [ici](https://docs.docker.com/storage/bind-mounts/)
 
+Attention: Lorsque vous utilisez la méthode 1, faîtes très attention à [nommé vos volumes](https://docs.docker.com/storage/volumes/#remove-volumes). En effet, les volumes anonymes sont supprimés à la suppression du conteneur ou lors de l'utilisation de la commande docker volume prune.
+
 N.B.: Si vous devez gérer des données temporaires, il vaut mieux utiliser la directive [--tmpfs](https://docs.docker.com/storage/tmpfs/) plutôt que d'utiliser la couche en écriture de votre conteneur.
 
 ## Etape 5: Vers une architecture de micro-services
