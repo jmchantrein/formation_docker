@@ -6,8 +6,8 @@ LABEL maintainer="Prénom Nom" \
 	maintainer_email="prenom.nom@example.com" \
 	version="${VERSION}"
 
-RUN apt update && \
-	DEBIAN_FRONTEND=noninteractive apt -yq install \
+RUN apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get -yq install \
 	apache2 \
 	libapache2-mod-php7.0 \
 	libjs-cropper \
