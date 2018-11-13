@@ -229,12 +229,18 @@ N.B.: Si vous devez gérer des données temporaires, il vaut mieux utiliser la d
  * Vérifiez que votre service wordpress (composé de 2 microservices) fonctionne bien.
  
 ### Quelques astuces, pistes de réflexions
+ * Puisque nous allons maintenant travailler avec 2 conteneurs qui doivent communiquer entre eux, il faut penser à préciser à mariadb qu'il peut être accéder depuis un réseau autre que le réseau local:
+
+```bash
+RUN sed -i "s/bind-address/#bind-address/g" /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+
  * Bien que déprécié, vous utiliserez ici l'options historique --link pour lier vos 2 conteneurs
- * Avec les nouvelles fonctionnalités du réseau docker, il nous  faudrait plutôt créer notre propre réseau pour notre service. Et cela nous montre qu'il est tout à fait possible d'avoir un réseau dédié pour chaque service ! Plus d'informations [ici (link)](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) et [ici (network](https://docs.docker.com/engine/tutorials/networkingcontainers/)
+ * Avec les nouvelles fonctionnalités du réseau docker, il nous  faudrait plutôt créer notre propre réseau pour notre service. Et cela nous montre qu'il est tout à fait possible d'avoir un réseau dédié pour chaque service ! Plus d'informations [ici (link)](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/) et [ici (network)](https://docs.docker.com/engine/tutorials/networkingcontainers/)
 
 ### Quelques questions, remarques
- * En production, on évitera l'usage de l'option --link qui est certainement voué à disparaitre
- * Notez que l'on a pas exposé le port du conteneur mysql à l'extérieur, seul le conteneur apache y a accès
+ * En production, on évitera l'usage de l'option --link qui est certainement voué à disparaitre. Idéalement, il faut créer un sous-réseaux dédié pour chacun des services que l'on met en place avec docker. Ceci peut se faire via la commande docker network, mais nous verrons plus tard comment automatiser ce processus.
+ * Notez que l'on n'a pas exposé le port du conteneur mysql à l'extérieur, seul le conteneur apache y a accès
  * Nous sommes en présence d'une architecture de 2 microservices, que pensez-vous du mécanisme de script build_and_launch ?
  * Et si nous étions en présence d'une architecture de 25 microservices, que penseriez-vous du mécanisme de script build_and_launch ?
  * Docker va plus loin que la simple rédaction de Dockerfile, Docker nous permet aussi de gérer la façon dont interagissent les conteneurs entre eux. Pour cela Docker met à notre disposition l'outil docker-compose. C'est l'objet de notre prochaine partie.
