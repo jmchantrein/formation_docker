@@ -7,8 +7,8 @@ LABEL maintainer="Prénom Nom" \
 	version="${VERSION}"
 
 # Installation des paquets
-RUN apt -yq update && \
-	DEBIAN_FRONTEND=noninteractive apt install -yq \
+RUN apt-get -yq update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -yq \
 	mariadb-server-10.0 && \
 	rm -rf /var/lib/apt/lists/*
 
