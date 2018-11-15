@@ -216,6 +216,8 @@ La méthode 1 est la plus facile à mettre en œuvre. C'est la méthode officiel
 
 Attention: Lorsque vous utilisez la méthode 1, vous devez [nommer vos volumes](https://docs.docker.com/storage/volumes/#remove-volumes). En effet, les volumes anonymes sont supprimés à la suppression du conteneur ou lors de l'utilisation de la commande docker volume prune.
 
+/!\ ATTENTION /!\ : Si un volume nommé n'est utilisé par aucun conteneur, alors la commande docker volume prune SUPPRIMERAIT ce conteneur, bien que celui-ci soit nommé.
+
 N.B.: Si vous devez gérer des données temporaires, il vaut mieux utiliser la directive [--tmpfs](https://docs.docker.com/storage/tmpfs/) plutôt que d'utiliser la couche en écriture de votre conteneur.
 
 ## Etape 5: Vers une architecture de micro-services
