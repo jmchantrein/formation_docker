@@ -60,6 +60,9 @@ mysql -u root --execute="FLUSH PRIVILEGES"
 mysql --user=username --password=userpassword --execute="CREATE DATABASE userbase" 
 ```
 
+N.B.: Pour que les commandes ci-dessus fonctionnent, ils ne faut pas oublier de démarrer le serveur mariadb.
+
+
  * N'oubliez pas que les instructions sont effectuées par l'utilisateur root par défaut. Cela pourrait poser des problèmes de droits par la suite. :-D
  * Vous allez exécuter un conteneur contenenant plusieurs services: je vous propose de lire cet <span style=color:blue> [article](https://docs.docker.com/engine/admin/multi-service_container/)</span>.
  * Lorsque vous allez exécuter votre conteneur, il va falloir que celui ci communique depuis son réseau (par défaut, le réseau bridge qui "NAT" le trafic des conteneurs vers l'extérieur) vers le réseau de l'hôte. Vous allez donc devoir mapper/associer un port de l'hôte avec un port du conteneur. Cela se fait via l'option -p de docker run. Par exemple, la commande suivante permet de mapper le port 8000 de l'hôte au port 80 du conteneur de l'image nginx:
