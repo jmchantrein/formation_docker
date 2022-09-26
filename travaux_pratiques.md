@@ -24,7 +24,7 @@ Pensez à tester votre conteneur à l'adresse [http://localhost:80/wordpress](ht
 
 ### Quelques contraintes:
 
- * L'image de base est l'image officiel ubuntu:16.04
+ * L'image de base est l'image officiel debian:latest
  * Il est interdit d'installer le paquet wordpress
  * Il faut installer les paquets nécéssaires à l'utilisation de wordpress (on remplacera mysql-server par mariadb-server)
  * Il faut télécharger les [sources](https://wordpress.org/latest.zip) au format zip
