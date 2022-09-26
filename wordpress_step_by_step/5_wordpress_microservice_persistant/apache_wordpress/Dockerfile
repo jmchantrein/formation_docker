@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM debian:11
 
 ENV VERSION=1 
 
@@ -9,16 +9,16 @@ LABEL maintainer="Prénom Nom" \
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get -yq install \
 	apache2 \
-	libapache2-mod-php7.0 \
+	libapache2-mod-php \
 	libjs-cropper \
 	libjs-mediaelement \
 	libphp-phpmailer \
 	php-getid3 \
-	php7.0 \
-	php7.0-gd \
-	php7.0-mysql \
-	php7.0-opcache \
-	php7.0-readline \
+	php \
+	php-gd \
+	php-mysql \
+	php-opcache \
+	php-readline \
 	unzip \
 	vim \
 	wget && \

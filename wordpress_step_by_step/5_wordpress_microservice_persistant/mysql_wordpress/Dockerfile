@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM debian:11
 
 ENV VERSION=1 
 
@@ -9,14 +9,14 @@ LABEL maintainer="Prénom Nom" \
 # Installation des paquets
 RUN apt-get -yq update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -yq \
-	mariadb-server-10.0 && \
+	mariadb-server && \
 	rm -rf /var/lib/apt/lists/*
 
 ENV MYSQL_PASSWORD="tempo" \
 	MYSQL_USER="admin" \
 	MYSQL_DATABASE_NAME="wordpress"
 
-RUN service mysql start && \
+RUN /etc/init.d/mariadb start && \
 	mysql -u root --execute="CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}'" && \
 	mysql -u root --execute="GRANT ALL PRIVILEGES ON *.* TO '${MYSQL_USER}'@'%' WITH GRANT OPTION" && \
 	mysql -u root --execute="FLUSH PRIVILEGES" && \
