@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM debian:11
 
 ENV VERSION=4
 
@@ -10,18 +10,18 @@ LABEL maintainer="Prénom Nom" \
 RUN apt-get -yq update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -yq \
 	apache2 \
-	libapache2-mod-php7.0 \
+	libapache2-mod-php \
 	libjs-cropper \
 	libjs-mediaelement \
 	libphp-phpmailer \
-	mariadb-server-10.0 \
-	mariadb-client-10.0 \
+	mariadb-server \
+	mariadb-client \
 	php-getid3 \
-	php7.0 \
-	php7.0-gd \
-	php7.0-mysql \
-	php7.0-opcache \
-	php7.0-readline \
+	php \
+	php-gd \
+	php-mysql \
+	php-opcache \
+	php-readline \
 	unzip \
 	vim \
 	wget && \
@@ -42,10 +42,11 @@ ENV MYSQL_PASSWORD=tempo \
 
 # Configuration de la base de donnée et de apache2 
 # Ajout d'un Setuid sur apache2 qui a besoin d'être lancé en root lorsque on utilise le port standard 80
-RUN service mysql start && mysql -u root --execute="CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'" && \
-	service mysql start && mysql -u root --execute="GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION" && \
+RUN /etc/init.d/mariadb start && \
+        mysql -u root --execute="CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'" && \
+	mysql -u root --execute="GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION" && \
 	mysql -u root --execute="FLUSH PRIVILEGES" && \
-	service mysql start && mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute="CREATE DATABASE ${MYSQL_DB}" && \
+	mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute="CREATE DATABASE ${MYSQL_DB}" && \
 	echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf && \
 	a2enconf servername && \
 	chmod u+s /usr/sbin/apache2
@@ -53,7 +54,7 @@ RUN service mysql start && mysql -u root --execute="CREATE USER '$MYSQL_USER'@'%
 
 # Changement des droits du script pour que l'utilisateur mysql puisse l'exécuter
 # Nota bene: mysqld_safe peut être éxécuté par l'utilisateur mysql et non root (port > 1024)
-RUN echo "#!/bin/bash \n service apache2 start && mysqld_safe" > /run.sh && \
+RUN echo "#!/bin/bash \n /etc/init.d/apache2 start && mysqld_safe" > /run.sh && \
 	chmod +x /run.sh
 
 # Après cette instruction, tout les commandes seront effectuées en tant que utilisateur mysql
