@@ -7,7 +7,7 @@
 # Sur la forme, on passe à la ligne dès que possible pour améliorer la visibilité
 
 # Il faut quasiment toujours utiliser un tag définit et non pas le tag par défaut latest
-FROM ubuntu:16.04
+FROM debian:11
 
 # Versionner son Dockerfile
 ENV VERSION=2 
@@ -18,25 +18,24 @@ LABEL maintainer="Prénom Nom" \
 	version="${VERSION}"
 
 # Un bloc d'installation en début de Dockerfile
-# Package par ordre alphabétique, on préfére l'utilisation du package-version plutôt que package seul
-# Par exemple: mariadb-server-10.0 plutôt que mariadb-server
+# Package par ordre alphabétique
 # Suppresion du cache apt après l'installation des paquets (gain d'espace)
 # Notez que l'on ne fait pas d'upgrade (voir bonnes pratiques Dockerfile)
 RUN apt-get -yq update && \
 	DEBIAN_FRONTEND=noninteractive apt install -yq \
 	apache2 \
-	libapache2-mod-php7.0 \
+	libapache2-mod-php \
 	libjs-cropper \
 	libjs-mediaelement \
 	libphp-phpmailer \
-	mariadb-server-10.0 \
-	mariadb-client-10.0 \
+	mariadb-server \
+	mariadb-client \
 	php-getid3 \
-	php7.0 \
-	php7.0-gd \
-	php7.0-mysql \
-	php7.0-opcache \
-	php7.0-readline \
+	php \
+	php-gd \
+	php-mysql \
+	php-opcache \
+	php-readline \
 	unzip \
 	vim \
 	wget && \
@@ -59,20 +58,21 @@ ENV MYSQL_PASSWORD=tempo \
 	MYSQL_DB=wordpress
 
 # Configuration de la base de donnée et de apache2 en 1 seule instruction
-RUN service mysql start && mysql -u root --execute="CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'" && \
-	service mysql start && mysql -u root --execute="GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION" && \
+RUN /etc/init.d/mariadb start && \
+        mysql -u root --execute="CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD'" && \
+	mysql -u root --execute="GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION" && \
 	mysql -u root --execute="FLUSH PRIVILEGES" && \
-	service mysql start && mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute="CREATE DATABASE ${MYSQL_DB}" && \
+	mysql --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} --execute="CREATE DATABASE ${MYSQL_DB}" && \
 	echo "ServerName localhost" >> /etc/apache2/conf-available/servername.conf && \
 	a2enconf servername
 
 # Pour que le conteneur reste actif après son démarrage, il faut impérativement une tâche en foreground
 
 # Pour une exécution en mode interractif
-#RUN echo "service apache2 start && service mysql start && /bin/bash" > /run.sh
+#RUN echo "/etc/init.d/apache2 start && /etc/init.d/mariadb start && /bin/bash" > /run.sh
 
 # Pour une exécution en mode détaché
-RUN echo "#!/bin/bash \n service apache2 start && mysqld_safe" > /run.sh && \
+RUN echo "#!/bin/bash \n /etc/init.d/apache2 start && mysqld_safe" > /run.sh && \
 	chmod u+x /run.sh
 
 # On privilégie cette syntaxe de CMD (Exec form, sous forme de tableau json)
