@@ -37,6 +37,7 @@ Pensez à tester votre conteneur à l'adresse [http://localhost:80/wordpress](ht
 
 ### Quelques astuces, pistes de réflexions:
 
+ * mariadb est un fork de mysql, les commandes historiques de mysql fonctionnent encore et les exécutables mysql sont en fait des liens symboliques vers des exécutables mariadb
  * apt-get install -s ou apt install -s permet de simuler l'installation d'un paquet
  * apt depends permet de savoir quelles sont les dépendances d'un paquet
  * Contrairement à ce que l'on peut voir partout, y compris dans mon cours :-O , il ne faut pas déclarer une variable d'environnement DEBIAN_FRONTEND=noninteractive mais plutôt:
@@ -60,8 +61,10 @@ mysql -u root --execute="FLUSH PRIVILEGES"
 mysql --user=username --password=userpassword --execute="CREATE DATABASE userbase" 
 ```
 
-N.B.: Pour que les commandes ci-dessus fonctionnent, ils ne faut pas oublier de démarrer le serveur mariadb.
-
+N.B.: Pour que les commandes ci-dessus fonctionnent, ils ne faut pas oublier de démarrer le serveur mariadb, pour cela:
+ * il faut s'assurer que le repertoire /run/mysqld 
+   * existe bien dans le conteneur
+   * que mysql est bien le propriétaire de /run/mysqld
 
  * N'oubliez pas que les instructions sont effectuées par l'utilisateur root par défaut. Cela pourrait poser des problèmes de droits par la suite. :-D
  * Vous allez exécuter un conteneur contenenant plusieurs services: je vous propose de lire cet <span style=color:blue> [article](https://docs.docker.com/engine/admin/multi-service_container/)</span>.
