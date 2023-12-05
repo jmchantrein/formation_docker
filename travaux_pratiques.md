@@ -584,7 +584,7 @@ L'interruption de service peut-être évité en utilisant le mot clé delay dans
 ## Etape 9: Une architecture de micro-services wordpress déployé dans un cluster swarm
 
 ### Quelques contraintes
- * Copiez le répertoire  8_my_final_wordpress dans une instance [play-with-docker](http://playwithdocker.com)
+ * Copiez le répertoire  8_my_final_wordpress dans une instance [play-with-docker](http://play-with-docker.com)
  * Déployez  votre architecture de micro-service avec docker stack
  * Effectuez une mise à l'échelle de votre micro-service apache (2 replicas)
  * Vérifiez que votre service fonctionne correctement
