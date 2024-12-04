@@ -140,6 +140,8 @@ docker run -p 8000:80 nginx
 
 ## Etape 2: Mise en place des bonnes pratiques
 
+> Nous n'utiliserons pas dans ce tp le concept de multi-stage build qui vous sera présenté dans les bonnes pratiques, mais prenez le temps d'aller voir et de comprendre ce concept.
+
 ### Quelques contraintes
 
  * Copiez votre répertoire 1_worpress_multiservice_dirty en 2_wordpress_multiservice_better
