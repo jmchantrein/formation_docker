@@ -1,5 +1,5 @@
 // Cours « Fondements de la virtualisation de machines » — Typst + Touying.
-// Compilation (depuis la racine du dépôt) : typst compile --root . --font-path commun/fonts virtualisation/virtualisation.typ
+// Compilation (depuis la racine du dépôt) : typst compile --root . --font-path commun/fonts virtualisation/virtualisation.typ build/virtualisation.pdf
 // Une diapo = un titre `==` ; une section (surtitre bleu) = un titre `=`.
 
 #import "../commun/theme-cours.typ": *

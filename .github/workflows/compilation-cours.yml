@@ -4,7 +4,7 @@ name: Compilation des cours (Typst)
 # le PDF est publié à côté : <cours>/<cours>.pdf.
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "*/*.typ"
       - "commun/**"

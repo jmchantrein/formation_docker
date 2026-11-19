@@ -15,13 +15,14 @@ Supports de cours de Jean-Mathieu Chantrein : un dossier par cours, une charte c
 ## Compiler
 Typst 0.15 ou plus récent, depuis la racine du dépôt (Touying se télécharge seul à la première compilation) :
 
-    typst compile --root . --font-path commun/fonts virtualisation/virtualisation.typ
-    typst watch   --root . --font-path commun/fonts virtualisation/virtualisation.typ
+    typst compile --root . --font-path commun/fonts virtualisation/virtualisation.typ build/virtualisation.pdf
+    typst watch   --root . --font-path commun/fonts virtualisation/virtualisation.typ build/virtualisation.pdf
 
-`--root .` autorise l’import de `../commun/theme-cours.typ` ; le PDF sort à côté de sa source (`virtualisation/virtualisation.pdf`).
+`--root .` autorise l’import de `../commun/theme-cours.typ`. On compile dans `build/` (ignoré par git) :
+le PDF versionné `<cours>/<cours>.pdf` est produit et commité par la CI, ce qui évite les conflits sur ce fichier binaire.
 
 Sur GitHub, l’action `.github/workflows/compilation-cours.yml` recompile chaque cours `<cours>/<cours>.typ`
-à chaque push sur `master` touchant les sources ou la charte, et commite `<cours>/<cours>.pdf`.
+à chaque push sur `main` touchant les sources ou la charte, et commite `<cours>/<cours>.pdf`.
 Ajouter un cours : créer `<cours>/<cours>.typ` qui importe `../commun/theme-cours.typ`, rien d’autre.
 
 ## Licences
