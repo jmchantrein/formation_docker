@@ -11,9 +11,12 @@ Les 30 diapos du cours Virtualisation, écrites en texte et compilées en PDF pa
 ## Compiler
 Typst 0.15 ou plus récent. Touying 0.8.0 se télécharge seul à la première compilation.
 
-    cd typst
+    cd typst_virtualisation
     typst compile --font-path fonts virtualisation.typ   # produit le PDF
     typst watch   --font-path fonts virtualisation.typ   # recompile à chaque enregistrement
+
+Sur GitHub, l’action `.github/workflows/typst-virtualisation.yml` recompile le cours à chaque push sur
+`master` touchant ce dossier, et dépose `virtualisation.pdf` à la racine du dépôt.
 
 Édition avec aperçu en direct : extension Tinymist (VS Code, VSCodium, Neovim…).
 

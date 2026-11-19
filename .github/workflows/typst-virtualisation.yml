@@ -1,0 +1,42 @@
+name: Compilation du cours Virtualisation (Typst)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "typst_virtualisation/**"
+      - ".github/workflows/typst-virtualisation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: typst-virtualisation
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15"
+
+      - name: Compilation
+        working-directory: typst_virtualisation
+        run: typst compile --font-path fonts virtualisation.typ ../virtualisation.pdf
+
+      - name: Publication du PDF à la racine
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add virtualisation.pdf
+          if git diff --cached --quiet; then
+            echo "PDF inchangé, rien à publier."
+          else
+            git commit -m "Compile virtualisation.pdf depuis typst_virtualisation/"
+            git push
+          fi
