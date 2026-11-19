@@ -1,0 +1,2 @@
+# Compilations locales : on compile dans build/ ; les PDF versionnés sont produits par la CI.
+/build/
