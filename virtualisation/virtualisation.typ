@@ -1,8 +1,8 @@
 // Cours « Fondements de la virtualisation de machines » — Typst + Touying.
-// Compilation : typst compile --font-path fonts virtualisation.typ
+// Compilation (depuis la racine du dépôt) : typst compile --root . --font-path commun/fonts virtualisation/virtualisation.typ
 // Une diapo = un titre `==` ; une section (surtitre bleu) = un titre `=`.
 
-#import "theme-cours.typ": *
+#import "../commun/theme-cours.typ": *
 
 #show: cours-theme.with(
   auteur: [Jean-Mathieu Chantrein],

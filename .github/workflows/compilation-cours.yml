@@ -1,0 +1,51 @@
+name: Compilation des cours (Typst)
+
+# Chaque cours est un dossier <cours>/ contenant <cours>/<cours>.typ ;
+# le PDF est publié à la racine sous le nom <cours>.pdf.
+on:
+  push:
+    branches: [master]
+    paths:
+      - "*/*.typ"
+      - "commun/**"
+      - ".github/workflows/compilation-cours.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compilation-cours
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15"
+
+      - name: Compilation
+        run: |
+          for src in */*.typ; do
+            cours=$(dirname "$src")
+            [ "$src" = "$cours/$cours.typ" ] || continue
+            echo "::group::$cours"
+            typst compile --root . --font-path commun/fonts "$src" "$cours.pdf"
+            echo "::endgroup::"
+          done
+
+      - name: Publication des PDF à la racine
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ./*.pdf
+          if git diff --cached --quiet; then
+            echo "PDF inchangés, rien à publier."
+          else
+            git commit -m "Compile les PDF des cours"
+            git push
+          fi

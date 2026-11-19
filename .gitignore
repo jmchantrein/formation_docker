@@ -1,0 +1,2 @@
+# On versionne les sources ; seuls les PDF publiés à la racine (compilés par la CI) sont suivis.
+*/**/*.pdf

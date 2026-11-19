@@ -1,4 +1,4 @@
-// theme-cours.typ — charte des cours (virtualisation, Docker) pour Touying.
+// theme-cours.typ — charte commune des cours (virtualisation, Docker…) pour Touying.
 // Reprend les couleurs, polices et proportions du deck HTML (maquette 1920 × 1080 px).
 
 #import "@preview/touying:0.8.0": *
