@@ -36,7 +36,16 @@ VM imbriquée (pointillés).
   clair du rôle `question`, la réponse une barre vert foncé qui apparaît avec elle.
 - Machine lancée par la commande au-dessus, dans un terminal : `#cadre([VM (niveau 1)], niveau: 1)[...]`.
 - Terminal : `#terminal[```...```]` ; une ligne `$ ` colore l’invite, une ligne `# ` grise le commentaire.
-- Bandeau sombre (origine, éditeur, version) : `#bandeau[...]`.
+- Bandeau sombre (origine, éditeur) : `#bandeau[...]`.
+- Source d’un fait, en bas de diapo : `#source[#link("https://…")[…]]`.
+
+## Animer une diapo
+Les apparitions suivent la skill `structurer-diapos-cours` : bloc par bloc, puis puce par puce.
+- Cas courant : `#anime(rang(bloc[…][…], bloc[…][…]), rang(bloc(role: "retenir")[…][…]), bandeau[…], note: […], source-de: […])`.
+  Un bloc apparaît avec sa première puce, chaque puce suivante au clic suivant ; un contenu quelconque compte pour un clic.
+- Mise en page libre : `#slide(repeat: n, self => { let (uncover,) = utils.methods(self); … })`, avec
+  `bloc-anime(b, debut, uncover)` pour un bloc, `lignes(uncover: uncover, …)` pour une ligne par clic.
+- Notes de l’orateur d’une diapo animée : paramètre `note:` de `anime`, ou `utils.speaker-note(self: self)[…]`.
 - Notes de l’orateur : `#speaker-note[...]`.
 - Apparitions au clic : voir, dans `virtualisation/virtualisation.typ`, les diapos « Architecture simplifiée et bilan »,
   « La migration à chaud » et le corrigé du TP (style callback : `#slide(repeat: n, self => ...)` avec `uncover("2-", ...)`).

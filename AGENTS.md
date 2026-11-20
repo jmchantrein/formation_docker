@@ -1,6 +1,7 @@
 # Consignes pour les agents
 
 La charte graphique est dans [`commun/README.md`](commun/README.md) (rôles, pictogrammes, schémas, variantes) ;
+la structure pédagogique des diapos dans [`.claude/skills/structurer-diapos-cours/SKILL.md`](.claude/skills/structurer-diapos-cours/SKILL.md) ;
 l’organisation et la compilation dans [`README.md`](README.md).
 
 - Dans un cours, déclare des rôles : `bloc(role: …)`, `note`, `encadre`, `corrige` + `reponse`, `cadre(niveau: …)`.
@@ -10,3 +11,4 @@ l’organisation et la compilation dans [`README.md`](README.md).
 - Après une modification, compile chaque variante dans `build/` et vérifie qu’elle a le nombre de pages
   de la projection, plus une (la légende).
 - Laisse la CI produire les PDF versionnés `<cours>/<cours>*.pdf`.
+- Pour créer ou réviser des diapos, applique les règles de structure de `structurer-diapos-cours`.

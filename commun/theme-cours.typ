@@ -280,12 +280,15 @@
 }
 
 // ---------- Listes à deux colonnes (chronologie, fiches) ----------
-#let lignes(largeur: px(260), taille-cle: px(36), taille: px(30), ..paires) = {
+// Avec uncover (diapo animée), la ligne i apparaît au clic debut + i.
+#let lignes(largeur: px(260), taille-cle: px(36), taille: px(30), uncover: none, debut: 1, ..paires) = {
   let ps = paires.pos()
+  let montre(i, x) = if uncover == none { x } else { uncover(str(debut + i) + "-", x) }
   grid(columns: (largeur, 1fr), align: horizon,
     inset: (x, y) => (y: px(12), left: if x == 1 { px(40) } else { 0pt }),
     stroke: (x, y) => if y < ps.len() - 1 { (bottom: px(1) + c.filet) },
-    ..ps.map(((k, v)) => (text(size: taille-cle, weight: 600, fill: c.bleu, k), text(size: taille, v))).flatten())
+    ..ps.enumerate().map(((i, (k, v))) => (montre(i, text(size: taille-cle, weight: 600, fill: c.bleu, k)),
+      montre(i, text(size: taille, v)))).flatten())
 }
 
 // Plan du cours : numéro, titre de partie, description.
@@ -410,4 +413,60 @@
 #let couverture(..args) = {
   couverture-seule(..args)
   if variante != "normal" { legende }
+}
+
+// ---------- Animation : bloc par bloc, puis puce par puce ----------
+// Les apparitions passent par uncover (le contenu caché garde sa place) : seules des apparitions,
+// exportables en PDF. Un bloc apparaît avec sa première puce, chaque puce suivante au clic suivant.
+#let _morceaux(corps) = if corps.func() == [].func() { corps.children } else { (corps,) }
+#let _puce(e) = e.func() in (list.item, enum.item)
+// Nombre de clics d’un bloc : un par puce, au moins un.
+#let etapes-bloc(b) = calc.max(1, _morceaux(b.corps).filter(_puce).len())
+
+#let _corps-anime(corps, debut, uncover) = {
+  show list: set block(spacing: 0.5em)
+  show enum: set block(spacing: 0.5em)
+  let k = 0
+  for e in _morceaux(corps) {
+    if e.func() == list.item { uncover(str(debut + k) + "-", list(e)); k += 1 }
+    else if e.func() == enum.item { uncover(str(debut + k) + "-", enum(start: k + 1, e.body)); k += 1 }
+    else { e }
+  }
+}
+
+// Un bloc animé à partir du clic `debut`.
+#let bloc-anime(b, debut, uncover, hauteur: auto) = uncover(str(debut) + "-",
+  rendre-bloc((..b, corps: _corps-anime(b.corps, debut, uncover)), hauteur: hauteur))
+
+// Une rangée de blocs côte à côte, à hauteur égale, pour anime().
+#let rang(gouttiere: px(32), ..blocs) = (rang: blocs.pos(), gouttiere: gouttiere)
+
+// Source d’un fait, en bas de diapo.
+#let source(corps) = place(bottom + left, dy: px(56),
+  text(size: px(18), fill: c.gris)[Source : #corps])
+
+// Diapo animée : les éléments (rangées de blocs, ou contenu quelconque) apparaissent dans l’ordre,
+// bloc par bloc puis puce par puce ; un contenu quelconque (bandeau, schéma) compte pour un clic.
+#let anime(espacement: px(24), note: none, source-de: none, ..elements) = {
+  let plan = ()
+  let s = 1
+  for e in elements.pos() {
+    if type(e) == dictionary and "rang" in e {
+      let debuts = ()
+      for b in e.rang { debuts.push(s); s += etapes-bloc(b) }
+      plan.push((e, debuts))
+    } else { plan.push((e, s)); s += 1 }
+  }
+  slide(repeat: s - 1, self => {
+    let (uncover,) = utils.methods(self)
+    for (i, (e, d)) in plan.enumerate() {
+      if i > 0 { v(espacement) }
+      if type(e) == dictionary and "rang" in e {
+        rangee(gouttiere: e.gouttiere, poids: e.rang.map(b => b.poids),
+          ..e.rang.zip(d).map(((b, db)) => h => bloc-anime(b, db, uncover, hauteur: h)))
+      } else { uncover(str(d) + "-", e) }
+    }
+    if source-de != none { source(source-de) }
+    if note != none { utils.speaker-note(self: self, note) }
+  })
 }
