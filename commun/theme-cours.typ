@@ -9,8 +9,9 @@
 #let roles-def = (
   notion: (nom: "Notion", projection: "bleu", sens: "définir, expliquer"),
   retenir: (nom: "À retenir", projection: "bleu nuit", sens: "synthèse, point clé"),
-  pratique: (nom: "Pratique", projection: "vert clair", sens: "exemple, démo, exercice (la question)"),
-  reponse: (nom: "Réponse", projection: "vert foncé", sens: "corrigé d’une question pratique"),
+  pratique: (nom: "Pratique", projection: "vert", sens: "exemple, démonstration, usage réel"),
+  question: (nom: "Question", projection: "vert clair", sens: "exercice : ce qu’on demande de faire"),
+  reponse: (nom: "Réponse", projection: "vert foncé", sens: "corrigé d’une question"),
   precaution: (nom: "Précaution", projection: "jaune", sens: "nuance, confusion fréquente, limite"),
   avertissement: (nom: "Avertissement", projection: "orange", sens: "erreur probable, mauvaise pratique"),
   danger: (nom: "Danger", projection: "rouge", sens: "risque réel : sécurité, perte de données"),
@@ -26,7 +27,7 @@
 // Contraste du texte d’en-tête (blanc ou encre, choisi selon la clarté) et du texte sur terminal : ≥ 4,5.
 // Clés : en-têtes des rôles ; invite / invite-clair (schémas) ; appli ; cadres de terminal hote-t, invite-t, imbrique-t.
 #let palette-projection = (
-  notion: rgb("#1F63C9"), pratique: rgb("#9BCCA9"), reponse: rgb("#1E7A46"), retenir: rgb("#14213D"),
+  notion: rgb("#1F63C9"), pratique: rgb("#1E7A46"), question: rgb("#9BCCA9"), reponse: rgb("#004D1D"), retenir: rgb("#14213D"),
   precaution: rgb("#F2C94C"), avertissement: rgb("#B4530F"), danger: rgb("#B3123C"),
   invite: rgb("#7B3FB0"), invite-clair: rgb("#DDC4F5"), appli: rgb("#D3E4FB"),
   hote-t: rgb("#7DB4FF"), invite-t: rgb("#C9A7F5"), imbrique-t: rgb("#FF9EC4"),
@@ -34,18 +35,18 @@
 // Dichromasies rouge-vert : seuls l’axe bleu/jaune et la clarté restent. Le vert passe au bleu-vert, le rouge
 // s’assombrit, l’invité (violet, vu comme du bleu) devient ocre. Écart minimal entre rôles : 28 (deutéranopie),
 // 23 (protanopie), contre 9 et 12 avec la palette de projection.
-#let rouge-vert = (pratique: rgb("#9CC9D0"), reponse: rgb("#006E7A"), danger: rgb("#7A0F2A"), invite: rgb("#7A5A00"),
+#let rouge-vert = (pratique: rgb("#006E7A"), question: rgb("#9CC9D0"), reponse: rgb("#004955"), danger: rgb("#7A0F2A"), invite: rgb("#7A5A00"),
   invite-clair: rgb("#EEDC9A"), invite-t: rgb("#E8C95A"), imbrique-t: rgb("#E8E8E8"))
 #let palettes = (
   deuteranopie: rouge-vert,
   protanopie: rouge-vert,
   // Confusion bleu/vert et jaune/violet : le vert tire vers l’olive. Écart minimal : 18 → 28.
-  tritanopie: (pratique: rgb("#C9C389"), reponse: rgb("#6B6B00"), danger: rgb("#C2002F"), invite: rgb("#8E2C8C"),
+  tritanopie: (pratique: rgb("#6B6B00"), question: rgb("#C9C389"), reponse: rgb("#414300"), danger: rgb("#C2002F"), invite: rgb("#8E2C8C"),
     invite-clair: rgb("#F4C6E6"), invite-t: rgb("#F29ACB"), imbrique-t: rgb("#E9E39A")),
-  // Sans couleur : une échelle de clarté L* (en-têtes retenir 8, danger 18, notion 28, réponse 38,
-  // avertissement 48 ; en-têtes clairs à texte foncé : pratique 74, précaution 90 ; cadres 58/76/91).
+  // Sans couleur : une échelle de clarté L* (en-têtes retenir 8, danger 18, notion 28, pratique 38,
+  // avertissement 48 ; en-têtes clairs à texte foncé : réponse 60, question 74, précaution 90 ; cadres 58/76/91).
   achromatopsie: (retenir: rgb("#10172A"), danger: rgb("#620019"), notion: rgb("#1A4082"),
-    avertissement: rgb("#A76034"), pratique: rgb("#90C19E"), reponse: rgb("#2D6441"), precaution: rgb("#FFDF8A"),
+    avertissement: rgb("#A76034"), pratique: rgb("#2D6441"), question: rgb("#90C19E"), reponse: rgb("#729A7D"), precaution: rgb("#FFDF8A"),
     invite: rgb("#714793"), invite-clair: rgb("#CCBADC"), appli: rgb("#E0ECFC"),
     hote-t: rgb("#6C8DBF"), invite-t: rgb("#CAB1E8"), imbrique-t: rgb("#FFDAF4")),
 )
@@ -83,7 +84,7 @@
 
 // Fonds clairs des rôles en projection (choisis à la main) ; dans les variantes, dérivés de l’en-tête.
 #let fonds-projection = (
-  notion: rgb("#E8EFFA"), pratique: rgb("#F0F8F2"), reponse: rgb("#E4F2E9"), retenir: rgb("#E6E9F0"),
+  notion: rgb("#E8EFFA"), pratique: rgb("#E4F2E9"), question: rgb("#F0F8F2"), reponse: rgb("#DDEBE1"), retenir: rgb("#E6E9F0"),
   precaution: rgb("#FFF6D9"), avertissement: rgb("#FBE9DA"), danger: rgb("#FBE3E8"),
 )
 #let roles = roles-def.keys().map(r => {
@@ -94,16 +95,16 @@
   (r, (entete: entete, fond: fond, texte: texte-sur(entete), accent: accent))
 }).to-dict()
 
-// Pictogramme d’un rôle : cerveau pour « à retenir », coureur en sueur pour « pratique » et « réponse »
-// (dessins Tabler Icons, MIT, dans pictos/), triangle « ! » pour les trois niveaux d’alerte, suivi d’un
-// feu tricolore (précaution : feu du bas, avertissement : milieu, danger : haut) qui porte le niveau
-// par la position, sans la couleur ; rien pour une notion.
+// Pictogramme d’un rôle : cerveau pour « à retenir », coureur en sueur pour pratique, question et réponse
+// (dessins Tabler Icons, MIT, dans pictos/), triangle « ! » pour les trois niveaux d’alerte ; rien pour une notion.
+// Dans les variantes seulement, le triangle est suivi d’un feu tricolore (précaution : feu du bas,
+// avertissement : milieu, danger : haut) qui porte le niveau par la position, sans la couleur.
 // Les dessins au trait paraissent plus petits qu’une forme pleine : on les agrandit d’un quart.
 #let icone(fichier, couleur, t) = box(width: t * 1.25, height: t * 1.25, baseline: 24%,
   image(bytes(read(fichier).replace("currentColor", couleur.to-hex())), format: "svg", width: t * 1.25, height: t * 1.25))
 #let picto(role, forme, glyphe, t: px(30)) = {
   if role == "retenir" { return icone("pictos/cerveau.svg", forme, t) }
-  if role in ("pratique", "reponse") { return icone("pictos/coureur.svg", forme, t) }
+  if role in ("pratique", "question", "reponse") { return icone("pictos/coureur.svg", forme, t) }
   let niveaux = ("danger", "avertissement", "precaution")  // de haut en bas
   if role not in niveaux { return none }
   let triangle = box(width: t, height: t, baseline: 18%, {
@@ -116,6 +117,7 @@
     inset: (x: t * 0.07, y: t * 0.04),
     stack(spacing: t * 0.04, ..niveaux.map(n => circle(radius: d / 2,
       fill: if n == role { forme } else { none }, stroke: t * 0.05 + forme))))
+  if variante == "normal" { return triangle }
   triangle; h(t * 0.15); feu
 }
 
@@ -299,10 +301,10 @@
 }
 
 // ---------- Corrigé de TP ----------
-// La question porte le vert clair de la pratique ; la réponse, une barre vert foncé.
+// La question porte le vert clair du rôle « question » ; la réponse, une barre vert foncé.
 #let question(n, corps) = grid(columns: (auto, 1fr), column-gutter: px(12),
-  box(fill: roles.pratique.entete, radius: px(6), inset: (x: px(10), y: px(2)),
-    text(size: px(22), weight: 600, fill: roles.pratique.texte, str(n))),
+  box(fill: roles.question.entete, radius: px(6), inset: (x: px(10), y: px(2)),
+    text(size: px(22), weight: 600, fill: roles.question.texte, str(n))),
   text(size: px(26), fill: c.ardoise, corps))
 #let reponse(corps) = block(width: 100%, stroke: (left: px(8) + roles.reponse.entete), inset: (left: px(16)), corps)
 

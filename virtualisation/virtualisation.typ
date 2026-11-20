@@ -429,7 +429,7 @@
 == KVM en pratique
 
 #colonnes(
-  bloc(role: "pratique", poids: 1.2)[À vous][
+  bloc(role: "question", poids: 1.2)[À vous][
     #terminal(taille: px(24))[
       ```
       $ grep -cE 'vmx|svm' /proc/cpuinfo
@@ -461,7 +461,7 @@
 
 == Mini TP : votre première VM
 
-#colonnes(bloc(role: "pratique")[À vous][
+#colonnes(bloc(role: "question")[À vous][
   + Votre processeur expose-t-il les extensions de virtualisation (VT-x ou AMD-V) ?
   + KVM est-il utilisable sur votre hôte ?
   + Installez Debian dans une VM (QEMU et KVM, ISO + disque), puis montrez que cette VM est un *processus de l’hôte*
