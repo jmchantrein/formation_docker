@@ -16,3 +16,9 @@
   Chaque étape devient une page du PDF.
 
 Édition avec aperçu en direct : extension Tinymist (VS Code, VSCodium, Neovim…), avec la racine du dépôt comme racine du projet.
+
+## Variantes de rendu
+La charte lit `--input variante=<nom>` (normal, daltonien, dyslexie, polycopie) et adapte palette, espacements
+et animations ; les cours n’ont rien à faire. Les réglages et leur justification sont en tête de `theme-cours.typ`.
+Après une modification de la charte, compiler la variante dyslexie et vérifier qu’aucune diapo ne déborde
+(même nombre de pages que le rendu normal).

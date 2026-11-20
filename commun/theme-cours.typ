@@ -4,6 +4,20 @@
 #import "@preview/touying:0.8.0": *
 #import themes.simple: *
 
+// ---------- Variantes de rendu ----------
+// Choisies à la compilation, sans toucher aux cours : typst compile --input variante=<nom> …
+// - normal (défaut) : rendu de projection ;
+// - daltonien : le vert devient bleu-vert, distinct de l’orange et du bleu en deutéranopie et protanopie ;
+// - dyslexie : lettres, mots et lignes plus espacés, ni capitales forcées ni italique ;
+// - polycopie : une page par diapo, dans son état final (sans les apparitions au clic).
+#let variantes = ("normal", "daltonien", "dyslexie", "polycopie")
+#let variante = sys.inputs.at("variante", default: "normal")
+#assert(variante in variantes,
+  message: "variante inconnue : " + variante + " (attendu : " + variantes.join(", ") + ")")
+#let dys = variante == "dyslexie"
+// Capitales décoratives (surtitres, étiquettes), gardées en casse normale pour la variante dyslexie.
+#let maj(x) = if dys { x } else { upper(x) }
+
 // Échelle : 1 px de la maquette = 0,4385 pt sur la page 16:9 de Touying.
 #let px(n) = n * 0.4385pt
 
@@ -16,7 +30,11 @@
   filet: rgb("#D5DAE0"), appli: rgb("#D6E6FB"), os: rgb("#FBDDC2"),
   prompt: rgb("#7DB4FF"), commentaire: rgb("#9FB0C8"), texte-term: rgb("#E6EDF7"),
   ambre: rgb("#F29A4B"), menthe: rgb("#8FD6A8"), encart: rgb("#2A3954"),
-)
+) + if variante == "daltonien" {
+  // Écarts simulés (ΔE, Machado 2009) : vert/orange 36 → 58 en deutéranopie, 22 → 45 en protanopie,
+  // en gardant vert/bleu ≥ 60 ; texte blanc sur l’en-tête : contraste 6,1.
+  (vert: rgb("#00695C"), vert-clair: rgb("#E0F2F1"), menthe: rgb("#A0E0D0"))
+} else { (:) }
 
 #let mono = "IBM Plex Mono"
 
@@ -38,17 +56,23 @@
     // Chaque diapo : surtitre = section (titre `=`), titre = diapo (titre `==`).
     subslide-preamble: block(below: px(36), {
       text(size: px(24), weight: 600, tracking: px(2), fill: c.bleu,
-        upper(utils.display-current-heading(level: 1)))
+        maj(utils.display-current-heading(level: 1)))
       v(px(16), weak: true)
       text(size: px(64), weight: 600, utils.display-current-heading(level: 2))
     }),
-    config-common(new-section-slide-fn: none, show-strong-with-alert: false),
+    config-common(new-section-slide-fn: none, show-strong-with-alert: false, handout: variante == "polycopie"),
     config-page(fill: c.fond, margin: (x: px(128), top: px(120), bottom: px(150)), footer-descent: px(62)),
   )
   // Boîtes de ligne comme en CSS (ascendante → descendante) : mêmes hauteurs de blocs que le deck HTML.
   set text(font: "IBM Plex Sans", size: px(28), fill: c.encre, lang: "fr",
     top-edge: "ascender", bottom-edge: "descender")
   set par(leading: 0.38em)
+  // Dyslexie : espacements augmentés (le code garde ses colonnes), pas d’italique.
+  set text(tracking: 0.04em, spacing: 130%) if dys
+  set par(leading: 0.6em) if dys
+  show raw: set text(tracking: 0pt, spacing: 100%) if dys
+  show raw.where(block: true): set par(leading: 0.38em) if dys
+  show emph: it => if dys { it.body } else { it }
   show strong: it => text(weight: 600, it.body)  // gras sans recoloration
   show raw: set text(font: mono)
   // Typst réduit déjà le code à 0,8 em : 1,15 em donne environ 0,92 de la taille du texte.
@@ -116,7 +140,7 @@
       else { t }
     }
     if titre != none {
-      block(below: px(8), text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, upper(titre)))
+      block(below: px(8), text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, maj(titre)))
     }
     corps
   },
@@ -125,7 +149,7 @@
 // Encart plus clair dans un terminal (moniteur QEMU, session dans l'invité…).
 #let encart(titre, corps) = block(width: 100%, fill: c.encart, radius: px(8),
   inset: (x: px(14), y: px(10)), above: px(10), below: px(4), {
-    block(below: px(6), text(font: mono, size: px(22), weight: 600, fill: c.ambre, upper(titre)))
+    block(below: px(6), text(font: mono, size: px(22), weight: 600, fill: c.ambre, maj(titre)))
     corps
   })
 
@@ -133,7 +157,7 @@
 #let cadre(etiquette, couleur, corps) = block(
   width: 100%, stroke: px(2) + couleur, radius: px(10), fill: couleur.transparentize(90%),
   inset: (x: px(12), top: px(6), bottom: px(8)), above: px(8), below: px(4), {
-    block(below: px(6), text(size: px(18), weight: 600, tracking: px(1), fill: couleur, upper(etiquette)))
+    block(below: px(6), text(size: px(18), weight: 600, tracking: px(1), fill: couleur, maj(etiquette)))
     corps
   },
 )
@@ -225,7 +249,7 @@
       box(width: px(560), height: px(56), fill: rgb("#4F8FE6"), radius: px(12)),
       box(width: px(560), height: px(56), fill: c.gris, radius: px(12)),
     ))
-    text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, upper(surtitre))
+    text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, maj(surtitre))
     v(1fr)
     block(width: px(1040), {
       text(size: px(144), weight: 600, fill: c.fond, titre)
