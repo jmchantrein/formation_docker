@@ -11,21 +11,8 @@
   titre-court: [Fondements de la technologie de conteneurisation Docker],
 )
 
-// Corrigés animés : les questions restent visibles, chaque réponse apparaît à son clic.
-#let corriges(note: none, ..items) = {
-  let qa = items.pos()
-  slide(repeat: qa.len() + 1, self => {
-    let (uncover,) = utils.methods(self)
-    for (i, it) in qa.enumerate() {
-      corrige(it.at(0), it.at(1), uncover(str(i + 2) + "-", it.at(2)))
-      if i < qa.len() - 1 { v(px(16)) }
-    }
-    if note != none { utils.speaker-note(self: self, note) }
-  })
-}
-
-#couverture[Docker][Fondements de la technologie de conteneurisation][Jean-Mathieu Chantrein][12 novembre 2026]
-#speaker-note[Les quatre barres à droite évoquent les couches d’une image : trois en lecture seule, une couche en lecture/écriture au sommet (orange).]
+#couverture(illustration: "couches")[Docker][Fondements de la technologie de conteneurisation][Jean-Mathieu Chantrein][12 novembre 2026]
+#speaker-note[Les quatre barres à droite évoquent les couches d’une image : trois en lecture seule (gris), une couche en lecture/écriture au sommet (bleu vif).]
 
 = Sommaire
 
@@ -125,7 +112,7 @@
 )
 
 == Chroot : les prémices de la conteneurisation
-#let _note = [Laisser chercher : la première tentative (chroot new\_root /bin/bash) échoue, faute de bibliothèques dans new\_root. La solution est sur la slide suivante. Pourquoi pas mount : un mount --bind de /dev ou /proc dans new\_root, oublié, puis un rm -rf new\_root efface les fichiers de l’hôte à travers le montage (rm traverse les points de montage).]
+#let _note = [Laisser chercher : la première tentative (chroot new\_root /bin/bash) échoue, faute de bibliothèques dans new\_root. La solution est sur la diapositive suivante. Pourquoi pas mount : un mount --bind de /dev ou /proc dans new\_root, oublié, puis un rm -rf new\_root efface les fichiers de l’hôte à travers le montage (rm traverse les points de montage).]
 #anime(
   rang(
     bloc(role: "question")[À vous][
@@ -141,7 +128,7 @@
 )
 
 == Chroot : une solution
-#let _note = [Testé sur Ubuntu 24.04 (/usr fusionné) : cp --parents recrée l’arborescence des bibliothèques sous new\_root.]
+#let _note = [Sur Ubuntu 24.04 (/usr fusionné) : cp --parents recrée l’arborescence des bibliothèques sous new\_root.]
 #anime(
   terminal[
   ```
@@ -181,7 +168,7 @@
 )
 
 == Chroot : à votre avis ?
-#let _note = [Questions du cours d’origine. Laisser chercher : les réponses sont sur la slide suivante.]
+#let _note = [Questions du cours d’origine. Laisser chercher : les réponses sont sur la diapositive suivante.]
 #anime(
   rang(
     bloc(role: "question")[À vous][
@@ -221,7 +208,7 @@
 )
 
 == Du chroot aux outils de conteneurisation
-#let _note = [Conclusion de l’exercice : c’est pénible, et ce n’est pas fait dans les règles de l’art. Lecture de gauche à droite : notre chroot n’utilise qu’une primitive du noyau ; on est donc tout en bas ; les outils de conteneurisation automatisent et combinent toutes ces primitives. Analogie : chroot seul est une instruction ; l’ensemble des primitives du noyau joue le rôle de l’assembleur ; Docker, Podman, LXC celui d’un langage de haut niveau. Ce qui compte, c’est la complexité et son abstraction : abstraite ne veut pas dire supprimée ; il reste à concevoir l’image, le réseau, la sécurité, comme il reste à concevoir le programme en C++ ou en Python. Docker ne fait pas de magie : il automatise ces mêmes mécanismes. Détail : runc n’utilise pas chroot mais pivot\_root, qui change réellement la racine du montage et ferme l’échappement classique de chroot par root. Transition : la slide suivante présente les familles d’outils (Docker, Podman, LXC…).]
+#let _note = [Conclusion de l’exercice : c’est pénible, et ce n’est pas fait dans les règles de l’art. Lecture de gauche à droite : notre chroot n’utilise qu’une primitive du noyau ; on est donc tout en bas ; les outils de conteneurisation automatisent et combinent toutes ces primitives. Analogie : chroot seul est une instruction ; l’ensemble des primitives du noyau joue le rôle de l’assembleur ; Docker, Podman, LXC celui d’un langage de haut niveau. Ce qui compte, c’est la complexité et son abstraction : abstraite ne veut pas dire supprimée ; il reste à concevoir l’image, le réseau, la sécurité, comme il reste à concevoir le programme en C++ ou en Python. Docker ne fait pas de magie : il automatise ces mêmes mécanismes. Détail : runc n’utilise pas chroot mais pivot\_root, qui change réellement la racine du montage et ferme l’échappement classique de chroot par root. Transition : la diapositive suivante présente les familles d’outils (Docker, Podman, LXC…).]
 #anime(
   rang(
     bloc(role: "precaution")[Notre exercice chroot, fait à la main][
@@ -537,7 +524,7 @@
 )
 
 == Digest : nommer un objet par son contenu
-#let _note = [Format OCI d’un digest : « algorithme:encodage », ici sha256 suivi de 64 caractères hexadécimaux. Exemple pratique (tag ou digest) après « Hello world ! : quatre empreintes », une fois le premier conteneur lancé. Les slides suivantes montrent qu’une image a plusieurs digests (index, manifeste, configuration, couches).]
+#let _note = [Format OCI d’un digest : « algorithme:encodage », ici sha256 suivi de 64 caractères hexadécimaux. Exemple pratique (tag ou digest) après « Hello world ! : quatre empreintes », une fois le premier conteneur lancé. Les diapositives suivantes montrent qu’une image a plusieurs digests (index, manifeste, configuration, couches).]
 #anime(
   rang(
     bloc[Un nom qui est l'empreinte du contenu][
@@ -581,7 +568,7 @@
 )
 
 == Choisir ce qu’affiche une commande : --format
-#let _note = [Les accolades déroutent la première fois : c’est la syntaxe des modèles (templates) du langage Go, dans lequel Docker est écrit. Le moteur remplit chaque {{.Champ}} avec la valeur correspondante, pour chaque objet (une ligne par conteneur avec docker container ls, l’objet entier avec inspect). Les noms de champs dépendent de la commande : docker container ls (.ID,.Names,.Image,.Status…), docker image ls (.Repository,.Tag,.Size…), docker container inspect (la structure JSON complète :.State.Status,.Config.Cmd,.RootFS.Layers…). Pour les découvrir : --format '{{json.}}' ou docker container inspect sans -f. Utilisé ensuite dans le cours : -f '{{.RootFS.Layers}}' (diapo suivante), --format '{{.Repository}}:{{.Tag}} {{.Digest}}', table {{.CreatedBy}}\\t{{.Size}}, docker container stats --format. Le piège -f / --filter d’après l’aide de docker.io 26.1.5. Sorties réelles (docker.io 26.1.5 de Debian 13), rejouées le 18 novembre 2026 ; le nom du conteneur est tiré au hasard à chaque docker container run. Référence : documentation Docker « Format command and log output ».]
+#let _note = [Les accolades déroutent la première fois : c’est la syntaxe des modèles (templates) du langage Go, dans lequel Docker est écrit. Le moteur remplit chaque {{.Champ}} avec la valeur correspondante, pour chaque objet (une ligne par conteneur avec docker container ls, l’objet entier avec inspect). Les noms de champs dépendent de la commande : docker container ls (.ID,.Names,.Image,.Status…), docker image ls (.Repository,.Tag,.Size…), docker container inspect (la structure JSON complète :.State.Status,.Config.Cmd,.RootFS.Layers…). Pour les découvrir : --format '{{json.}}' ou docker container inspect sans -f. Utilisé ensuite dans le cours : -f '{{.RootFS.Layers}}' (diapo suivante), --format '{{.Repository}}:{{.Tag}} {{.Digest}}', table {{.CreatedBy}}\\t{{.Size}}, docker container stats --format. Le piège -f / --filter d’après l’aide de docker.io 26.1.5. Sorties réelles (docker.io 26.1.5 de Debian 13), le 18 novembre 2026 ; le nom du conteneur est tiré au hasard à chaque docker container run. Référence : documentation Docker « Format command and log output ».]
 #anime(
   rang(
     bloc[Lire un modèle][
@@ -610,7 +597,7 @@
 )
 
 == Hello world ! : quatre empreintes
-#let _note = [Tout est sur cette slide : les deux lignes utiles du pull sont rappelées en haut du terminal, inutile de revenir en arrière. Chaque empreinte garde sa couleur sur la slide de réponses. À l’oral : faire remarquer que les quatre valeurs sont différentes alors qu’il n’y a qu’une image et qu’une couche, puis laisser chercher. Question du cours d’origine : « À quoi correspond 78445dd45222 lors du pull ? ». Sorties réelles (docker.io 26.1.5 de Debian 13), rejouées le 17 novembre 2026. Le « Digest » de hello-world change quand Docker Hub republie l’image (cf1b20a0c89a le 12 novembre, 1e4c05b897a7 le 17) : si la valeur affichée en séance diffère, c’est normal, et c’est une bonne illustration de la slide « Tag ou digest ».]
+#let _note = [Tout est sur cette diapositive : les deux lignes utiles du pull sont rappelées en haut du terminal, inutile de revenir en arrière. Chaque empreinte garde sa couleur sur la diapositive de réponses. À l’oral : faire remarquer que les quatre valeurs sont différentes alors qu’il n’y a qu’une image et qu’une couche, puis laisser chercher. Question du cours d’origine : « À quoi correspond 78445dd45222 lors du pull ? ». Sorties réelles (docker.io 26.1.5 de Debian 13), le 17 novembre 2026. Le « Digest » de hello-world change quand Docker Hub republie l’image (cf1b20a0c89a le 12 novembre, 1e4c05b897a7 le 17) : si la valeur affichée en séance diffère, c’est normal, et c’est une bonne illustration de la diapositive « Tag ou digest ».]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.25)[Terminal][
@@ -639,7 +626,7 @@
 )
 
 == Quatre empreintes : réponses
-#let _note = [Fil à suivre à l’oral, de haut en bas, sans changer de slide. 1) Le tag hello-world:latest pointe sur l’index (bleu) : un simple sommaire, qui donne pour chaque plateforme le digest d’un manifeste ; c’est le « Digest » affiché par le pull et par docker image ls --digests. 2) Docker choisit le manifeste de sa plateforme, linux/amd64 (vert) : la fiche de l’image, qui donne le digest de la config et ceux des couches compressées. Son empreinte d1a8… n’apparaît dans aucune sortie locale ; le terminal de droite montre où la lire. 3) La config (orange) : commande, variables, historique, et la liste des couches décompressées ; son empreinte est l’IMAGE ID. 4) La couche compressée (jaune) est téléchargée, puis décompressée (rose) : même contenu, octets différents, donc empreintes différentes. Extraits réels de docker manifest inspect (docker.io 26.1.5 de Debian 13, 17 novembre 2026), raccourcis ; la commande demande le digest complet : sha256:d1a8d0a4eeb63aff09f5f34d4d80505e0ba81905f36158cc3970d8e07179e59e. L’index de hello-world cite 20 manifestes (plateformes et attestations). Attention aux sources récentes : Docker 29 en amont, avec le magasin containerd par défaut, affiche l’index comme IMAGE ID.]
+#let _note = [Fil à suivre à l’oral, de haut en bas, sans changer de diapositive. 1) Le tag hello-world:latest pointe sur l’index (bleu) : un simple sommaire, qui donne pour chaque plateforme le digest d’un manifeste ; c’est le « Digest » affiché par le pull et par docker image ls --digests. 2) Docker choisit le manifeste de sa plateforme, linux/amd64 (vert) : la fiche de l’image, qui donne le digest de la config et ceux des couches compressées. Son empreinte d1a8… n’apparaît dans aucune sortie locale ; le terminal de droite montre où la lire. 3) La config (orange) : commande, variables, historique, et la liste des couches décompressées ; son empreinte est l’IMAGE ID. 4) La couche compressée (jaune) est téléchargée, puis décompressée (rose) : même contenu, octets différents, donc empreintes différentes. Extraits réels de docker manifest inspect (docker.io 26.1.5 de Debian 13, 17 novembre 2026), raccourcis ; la commande demande le digest complet : sha256:d1a8d0a4eeb63aff09f5f34d4d80505e0ba81905f36158cc3970d8e07179e59e. L’index de hello-world cite 20 manifestes (plateformes et attestations). Attention aux sources récentes : Docker 29 en amont, avec le magasin containerd par défaut, affiche l’index comme IMAGE ID.]
 #anime(
   note(role: "question")[Une image, une couche, quatre empreintes. Que désigne chacune ? Sur le registre : un *index* cite des *manifestes* (un par plateforme) ; un manifeste cite une *config* et des *couches*.],
   lignes(largeur: px(240), taille: px(26),
@@ -652,7 +639,7 @@
 )
 
 == Tag ou digest : figer une image
-#let _note = [Sorties réelles (docker.io 26.1.5 de Debian 13). Le digest affiché est celui de l’index, le même que le « Digest: » du pull (slide « quatre empreintes »).]
+#let _note = [Sorties réelles (docker.io 26.1.5 de Debian 13). Le digest affiché est celui de l’index, le même que le « Digest: » du pull (diapositive « quatre empreintes »).]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.3)[Terminal][
@@ -678,7 +665,7 @@
 )
 
 == Registres : où vivent les images
-#let _note = [Slide placée après « Tag ou digest » : image, tag, pull et push sont connus. docker.io/library/ est le préfixe implicite des images officielles de Docker Hub (visible dans la sortie du premier pull : « Pulling from library/hello-world »). GHCR : documentation GitHub « Working with the Container registry » ; pour relier l’image à son dépôt, LABEL org.opencontainers.image.source\=https://github.com/\<compte\>/\<dépôt\> dans le Dockerfile.]
+#let _note = [Diapositive placée après « Tag ou digest » : image, tag, pull et push sont connus. docker.io/library/ est le préfixe implicite des images officielles de Docker Hub (visible dans la sortie du premier pull : « Pulling from library/hello-world »). GHCR : documentation GitHub « Working with the Container registry » ; pour relier l’image à son dépôt, LABEL org.opencontainers.image.source\=https://github.com/\<compte\>/\<dépôt\> dans le Dockerfile.]
 #anime(
   rang(
     bloc[Registre][
@@ -861,7 +848,7 @@
 )
 
 == Premiers conteneurs : cas pénibles, corrigé (1/5)
-#let _note = [Question 2 : sortie réelle sur l’image ubuntu, rejouée le 17 novembre 2026 ; le conteneur ne voit que ses propres processus, et la commande lancée y porte le PID 1. L’image debian ne contient pas ps (paquet procps), d’où le choix d’ubuntu ici et pour c3. Sur debian:13 et alpine 3.24 (docker.io 26.1.5 de Debian 13). c1 : docker container logs affiche deux lignes « hello world ! ». c2 : code de sortie 0, journal vide. c3 : docker container start garde bash en vie (tty et stdin ouverts) ; c4 : docker container stop mesuré à 10 s, code 137 ; avec --init, immédiat, code 143 ; c3 (ubuntu) : docker container top donne les PID vus de l’hôte, docker container exec c3 ps -e ceux du conteneur. Avec -t seul, l’invite s’affiche mais rien n’atteint bash. Le cours d’origine utilisait centos, image abandonnée depuis la fin de vie de CentOS Linux (juin 2024).]
+#let _note = [Question 2 : sortie réelle sur l’image ubuntu, le 17 novembre 2026 ; le conteneur ne voit que ses propres processus, et la commande lancée y porte le PID 1. L’image debian ne contient pas ps (paquet procps), d’où le choix d’ubuntu ici et pour c3. Sur debian:13 et alpine 3.24 (docker.io 26.1.5 de Debian 13). c1 : docker container logs affiche deux lignes « hello world ! ». c2 : code de sortie 0, journal vide. c3 : docker container start garde bash en vie (tty et stdin ouverts) ; c4 : docker container stop mesuré à 10 s, code 137 ; avec --init, immédiat, code 143 ; c3 (ubuntu) : docker container top donne les PID vus de l’hôte, docker container exec c3 ps -e ceux du conteneur. Avec -t seul, l’invite s’affiche mais rien n’atteint bash. Le cours d’origine utilisait centos, image abandonnée depuis la fin de vie de CentOS Linux (juin 2024).]
 #anime(
   stack(spacing: px(18),
     corrige(1, [`/bin/bash` interactif dans `alpine`],
@@ -924,7 +911,7 @@
 )
 
 == Premiers conteneurs : cas pénibles, corrigé (4/5)
-#let _note = [Suite du corrigé. Sorties réelles (docker.io 26.1.5 de Debian 13, image ubuntu), rejouées le 17 novembre 2026. Clic 3 : l’explication. Au détachement, docker affiche « read escape sequence ». Deux bash tournent : le PID 1, relancé par docker container start, et le PID 8, lancé par docker container exec ; Ctrl+p Ctrl+q détache le terminal sans arrêter le processus. docker container top interroge l’hôte : il donne les PID de l’espace de noms de l’hôte (519, 560 ; ils varient). ps dans le conteneur donne ceux de l’espace de noms PID du conteneur (1, 8), plus ps lui-même. Numérotation : dans chaque espace de noms, le noyau attribue les PID dans l’ordre et ne réutilise un numéro qu’après avoir fait le tour ; ps ne montre que les processus encore vivants. Pour entrer dans le conteneur, docker container exec (runc) crée plusieurs processus et threads de courte durée qui consomment des numéros. Mesuré sur 26.1.5 : avec sleep en PID 1, trois docker container exec successifs donnent à la commande les PID 7, 14 puis 21, soit 7 numéros par exec. Le.bashrc d’un bash interactif en consomme aussi (lesspipe, dircolors). Sur l’hôte, entre 519 et 560 : ces mêmes processus de Docker, plus tout ce qui tourne sur la machine. c3 est en ubuntu car l’image debian ne contient pas ps (paquet procps).]
+#let _note = [Suite du corrigé. Sorties réelles (docker.io 26.1.5 de Debian 13, image ubuntu), le 17 novembre 2026. Clic 3 : l’explication. Au détachement, docker affiche « read escape sequence ». Deux bash tournent : le PID 1, relancé par docker container start, et le PID 8, lancé par docker container exec ; Ctrl+p Ctrl+q détache le terminal sans arrêter le processus. docker container top interroge l’hôte : il donne les PID de l’espace de noms de l’hôte (519, 560 ; ils varient). ps dans le conteneur donne ceux de l’espace de noms PID du conteneur (1, 8), plus ps lui-même. Numérotation : dans chaque espace de noms, le noyau attribue les PID dans l’ordre et ne réutilise un numéro qu’après avoir fait le tour ; ps ne montre que les processus encore vivants. Pour entrer dans le conteneur, docker container exec (runc) crée plusieurs processus et threads de courte durée qui consomment des numéros. Mesuré sur 26.1.5 : avec sleep en PID 1, trois docker container exec successifs donnent à la commande les PID 7, 14 puis 21, soit 7 numéros par exec. Le.bashrc d’un bash interactif en consomme aussi (lesspipe, dircolors). Sur l’hôte, entre 519 et 560 : ces mêmes processus de Docker, plus tout ce qui tourne sur la machine. c3 est en ubuntu car l’image debian ne contient pas ps (paquet procps).]
 #anime(
   stack(spacing: px(16),
     corrige(8, [`start c3`, `exec` un nouveau bash, puis détachez-vous],
@@ -1008,7 +995,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
     bloc(role: "retenir")[Résumé][
       - Un `rm -rf` dans le conteneur ne touche que sa couche en écriture
       - Supprimer le conteneur supprime ses données
-      - Pour garder des données : un *volume* (slide suivante)
+      - Pour garder des données : un *volume* (diapositive suivante)
     ],
   ),
   note: _note,
@@ -1034,7 +1021,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
 )
 
 == Volumes : deux pièges
-#let _note = [Laisser chercher : corrigé sur la slide suivante.]
+#let _note = [Laisser chercher : corrigé sur la diapositive suivante.]
 #anime(
   rang(
     bloc(role: "question")[À vous][
@@ -1102,7 +1089,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
       - Comptabilité et limitation des ressources par conteneur
       - Par défaut : *aucune* limite de CPU ni de mémoire
       - Limiter : `--memory`, `--cpus`, `--cpuset-cpus`, `--pids-limit`
-      - Sans limite, une _fork bomb_ fait tomber l'hôte (slide suivante)
+      - Sans limite, une _fork bomb_ fait tomber l'hôte (diapositive suivante)
     ],
   ),
   note: _note,
@@ -1165,7 +1152,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
       ]
     ],
   ),
-  note(role: "precaution")[Même commande : seule la configuration du démon change (slide suivante).],
+  note(role: "precaution")[Même commande : seule la configuration du démon change (diapositive suivante).],
   note: _note,
 )
 
@@ -1200,7 +1187,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
 )
 
 == seccomp et AppArmor : deux filets par défaut
-#let _note = [Slide unique, volontairement : on utilise Docker sans jamais régler ces deux mécanismes, il suffit de savoir qu’ils existent et de ne pas les retirer. Pour aller plus loin à l’oral. seccomp : mécanisme du noyau depuis 2.6.12 (2005), filtres BPF depuis 3.5 (2012) ; exemple sur docker.io 26.1.5 : docker container run --rm debian unshare --map-root-user --user whoami échoue (« Operation not permitted »), et réussit avec --security-opt seccomp\=unconfined. AppArmor : exemple du montage. docker container run --rm debian:13 mount -t tmpfs none /mnt est refusé (capabilities) ; avec --cap-add SYS\_ADMIN, seccomp laisse passer mais AppArmor bloque encore (règle « deny mount » du profil docker-default) ; avec en plus apparmor\=unconfined, le montage réussit : c’est la configuration de l’évasion « release\_agent » (F. Wilhelm, 2019). La bonne réponse : docker container run --rm --tmpfs /mnt debian:13, sans rien accorder. Non rejoué ici : la ligne apparmor de docker info et le refus par AppArmor (le bac à sable utilisé n’a pas AppArmor ; sur un hôte sans AppArmor, seule la ligne seccomp apparaît). À rejouer sur un Debian 13 réel. Sources : docs.docker.com/engine/security/seccomp et /apparmor.]
+#let _note = [Diapositive unique, volontairement : on utilise Docker sans jamais régler ces deux mécanismes, il suffit de savoir qu’ils existent et de ne pas les retirer. Pour aller plus loin à l’oral. seccomp : mécanisme du noyau depuis 2.6.12 (2005), filtres BPF depuis 3.5 (2012) ; exemple sur docker.io 26.1.5 : docker container run --rm debian unshare --map-root-user --user whoami échoue (« Operation not permitted »), et réussit avec --security-opt seccomp\=unconfined. AppArmor : exemple du montage. docker container run --rm debian:13 mount -t tmpfs none /mnt est refusé (capabilities) ; avec --cap-add SYS\_ADMIN, seccomp laisse passer mais AppArmor bloque encore (règle « deny mount » du profil docker-default) ; avec en plus apparmor\=unconfined, le montage réussit : c’est la configuration de l’évasion « release\_agent » (F. Wilhelm, 2019). La bonne réponse : docker container run --rm --tmpfs /mnt debian:13, sans rien accorder. Non rejoué ici : la ligne apparmor de docker info et le refus par AppArmor (le bac à sable utilisé n’a pas AppArmor ; sur un hôte sans AppArmor, seule la ligne seccomp apparaît). À rejouer sur un Debian 13 réel. Sources : docs.docker.com/engine/security/seccomp et /apparmor.]
 #anime(
   rang(
     bloc[Deux filets du noyau][
@@ -1267,14 +1254,14 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
     bloc(role: "precaution")[En production][
       - Sur un serveur Docker, rien d'autre que les services de base (ssh, dhcp…)
       - Pas de tests de conteneurs sur une machine de production
-      - Quelle confiance accorder à l'image téléchargée ? (slide suivante)
+      - Quelle confiance accorder à l'image téléchargée ? (diapositive suivante)
     ],
   ),
   note: _note,
 )
 
 == Quelle confiance accorder à une image ?
-#let _note = [Cas réel : en juin 2018, Kromtech détaille 17 images Docker Hub publiées par un même compte (docker123321), signalées auparavant par Fortinet : 9 embarquaient un mineur de Monero, les autres laissaient un accès à l’attaquant ; environ 5 millions de téléchargements sur l’année de présence, 544,74 XMR minés (environ 90 000 \$) ; retrait par Docker le 10 mai 2018. Sources : threatpost.com (« Malicious Docker Containers Earn Cryptomining Criminals \$90K », 13/06/2018), theregister.com (14/06/2018). Terminal : sortie réelle (docker.io 26.1.5 de Debian 13, rejouée le 17 novembre 2026) sur une image d’exemple inoffensive construite pour le cours : FROM debian:13, un RUN echo qui ajoute une ligne à /etc/bash.bashrc, CMD \["bash"\] ; le binaire et le domaine n’existent pas. Ordre d’affichage : docker image history liste les couches de la plus récente à la plus ancienne ; dans le Dockerfile, le RUN vient donc avant le CMD. Le RUN n’exécute pas le mineur pendant le build : il écrit une ligne dans un fichier de démarrage. Ce que voit l’utilisateur : rien. CMD \["bash"\] lui donne un shell ; ce bash interactif lit /etc/bash.bashrc et lance la ligne ajoutée, en arrière-plan et sans sortie. Reproduit avec un programme témoin à la place du mineur : docker container run -it affiche seulement l’invite, et le témoin a bien été exécuté. Les parenthèses lancent la commande dans un sous-shell, ce qui évite le message « \[1\]+ Done » de bash. Erreur corrigée par rapport à la version précédente de la slide : /etc/profile.d n’est lu que par les shells de connexion, pas par le bash lancé par CMD (: rien ne s’exécutait). Limite : docker image history ne montre pas le contenu des fichiers copiés par COPY/ADD ; d’où le scanner et la lecture du Dockerfile source. Les scanners cités ne sont pas dans les paquets Debian 13 : à installer à part. /usr/lib/.cache : binaire au nom banal et caché ; « pool » : serveur qui coordonne le minage (port 3333 typique). Indices à repérer : fichier caché dans un répertoire système, adresse réseau en dur, lancement automatique. Docker Scout fait aussi partie des scanners possibles. Socket Docker : il permet de piloter le démon, donc d’être root sur l’hôte. Renvoi : épingler par digest (slide « Tag ou digest »), socket Docker (slide Compose).]
+#let _note = [Cas réel : en juin 2018, Kromtech détaille 17 images Docker Hub publiées par un même compte (docker123321), signalées auparavant par Fortinet : 9 embarquaient un mineur de Monero, les autres laissaient un accès à l’attaquant ; environ 5 millions de téléchargements sur l’année de présence, 544,74 XMR minés (environ 90 000 \$) ; retrait par Docker le 10 mai 2018. Sources : threatpost.com (« Malicious Docker Containers Earn Cryptomining Criminals \$90K », 13/06/2018), theregister.com (14/06/2018). Terminal : sortie réelle (docker.io 26.1.5 de Debian 13, le 17 novembre 2026) sur une image d’exemple inoffensive construite pour le cours : FROM debian:13, un RUN echo qui ajoute une ligne à /etc/bash.bashrc, CMD \["bash"\] ; le binaire et le domaine n’existent pas. Ordre d’affichage : docker image history liste les couches de la plus récente à la plus ancienne ; dans le Dockerfile, le RUN vient donc avant le CMD. Le RUN n’exécute pas le mineur pendant le build : il écrit une ligne dans un fichier de démarrage. Ce que voit l’utilisateur : rien. CMD \["bash"\] lui donne un shell ; ce bash interactif lit /etc/bash.bashrc et lance la ligne ajoutée, en arrière-plan et sans sortie. Reproduit avec un programme témoin à la place du mineur : docker container run -it affiche seulement l’invite, et le témoin a bien été exécuté. Les parenthèses lancent la commande dans un sous-shell, ce qui évite le message « \[1\]+ Done » de bash. Erreur corrigée par rapport à la version précédente de la diapositive : /etc/profile.d n’est lu que par les shells de connexion, pas par le bash lancé par CMD (: rien ne s’exécutait). Limite : docker image history ne montre pas le contenu des fichiers copiés par COPY/ADD ; d’où le scanner et la lecture du Dockerfile source. Les scanners cités ne sont pas dans les paquets Debian 13 : à installer à part. /usr/lib/.cache : binaire au nom banal et caché ; « pool » : serveur qui coordonne le minage (port 3333 typique). Indices à repérer : fichier caché dans un répertoire système, adresse réseau en dur, lancement automatique. Docker Scout fait aussi partie des scanners possibles. Socket Docker : il permet de piloter le démon, donc d’être root sur l’hôte. Renvoi : épingler par digest (diapositive « Tag ou digest »), socket Docker (diapositive Compose).]
 #anime(
   rang(
     bloc(role: "danger")[Cas réel : Docker Hub, 2018][
@@ -1294,7 +1281,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
 )
 
 == Si Docker fonctionne dans ...
-#let _note = [Stack \= un projet Compose (vu plus loin) : un ensemble de conteneurs qui forment une application. Escalade de privilèges : depuis le conteneur, obtenir les droits de l’hôte (on parle aussi d’« évasion » du conteneur). Idée de la slide : tous les pièges de la section (root partagé, groupe docker, socket, --privileged) ont pour enjeu « ce qu’atteint celui qui sort du conteneur ». La VM déplace cette frontière : la sortie d’un conteneur mène dans la VM, pas sur le serveur. Hôte physique dédié : sur le plan de l’isolation, équivaut à une VM unique, mais sans snapshot ni reconstruction rapide. Une VM pour toutes les stacks : protège l’hyperviseur et les autres VM, pas les stacks entre elles. Une VM par stack : le seul cas où l’on peut assouplir (root dans le conteneur, socket monté pour Traefik), au prix de N systèmes à mettre à jour ; c’est ce que font, en plus léger, les microVM (Kata Containers, Firecracker : cours Virtualisation). Limites : une évasion de VM existe mais reste rare ; la VM ne protège ni des images malveillantes ni des services exposés. Nuance sur « Réparer » : restaurer un snapshot ramène toute la VM à son état figé, y compris les données écrites depuis (volumes compris) ; dans la VM partagée, tous les services reculent ensemble, d’où l’intérêt d’une VM par service si l’on veut pouvoir en restaurer un seul. Un snapshot n’est donc pas une sauvegarde incrémentale : les données à conserver vivent sur un stockage à part (volume, base, sauvegarde) et ne sont pas remontées par un rollback. Slide de synthèse, sans commande : rien à rejouer.]
+#let _note = [Stack \= un projet Compose (vu plus loin) : un ensemble de conteneurs qui forment une application. Escalade de privilèges : depuis le conteneur, obtenir les droits de l’hôte (on parle aussi d’« évasion » du conteneur). Idée de la diapositive : tous les pièges de la section (root partagé, groupe docker, socket, --privileged) ont pour enjeu « ce qu’atteint celui qui sort du conteneur ». La VM déplace cette frontière : la sortie d’un conteneur mène dans la VM, pas sur le serveur. Hôte physique dédié : sur le plan de l’isolation, équivaut à une VM unique, mais sans snapshot ni reconstruction rapide. Une VM pour toutes les stacks : protège l’hyperviseur et les autres VM, pas les stacks entre elles. Une VM par stack : le seul cas où l’on peut assouplir (root dans le conteneur, socket monté pour Traefik), au prix de N systèmes à mettre à jour ; c’est ce que font, en plus léger, les microVM (Kata Containers, Firecracker : cours Virtualisation). Limites : une évasion de VM existe mais reste rare ; la VM ne protège ni des images malveillantes ni des services exposés. Nuance sur « Réparer » : restaurer un snapshot ramène toute la VM à son état figé, y compris les données écrites depuis (volumes compris) ; dans la VM partagée, tous les services reculent ensemble, d’où l’intérêt d’une VM par service si l’on veut pouvoir en restaurer un seul. Un snapshot n’est donc pas une sauvegarde incrémentale : les données à conserver vivent sur un stockage à part (volume, base, sauvegarde) et ne sont pas remontées par un rollback. Diapositive de synthèse, sans commande : rien à rejouer.]
 #anime(
   rang(
     bloc[Hôte physique dédié][
@@ -1333,14 +1320,14 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5   → 143
     ],
     bloc[`none`][
       - Seule l'interface `lo`
-      - Vos réseaux : `docker network create` — chacun son bridge et son sous-réseau, avec *DNS par nom* (slide suivante)
+      - Vos réseaux : `docker network create` — chacun son bridge et son sous-réseau, avec *DNS par nom* (diapositive suivante)
     ],
   ),
   note: _note,
 )
 
 == Rappel : comment marche le mode bridge
-#let _note = [Rappel du schéma de la slide précédente, mécanisme par mécanisme ; le petit schéma correspond exactement à l’exemple du terminal. Le bridge travaille au niveau 2 (adresses MAC) : entre A et B, le paquet traverse docker0 sans passer par le NAT (ping de ctA vers 172.17.0.3 : réponse directe, ttl\=64). Vers Internet, l’hôte route (ip\_forward) puis remplace l’IP source par la sienne (règle MASQUERADE). Dans l’autre sens, -p ajoute une règle DNAT : ce qui arrive sur le port 8080 de l’hôte est réécrit vers 172.17.0.3:80 (curl localhost:8080 depuis l’hôte répond « bonjour »). Sorties réelles, docker.io 26.1.5 de Debian 13 ; ctB est un petit serveur nc lancé avec -p 8080:80. Schéma : quel veth pour quel conteneur ? docker container exec ctA cat /sys/class/net/eth0/iflink donne 7, l’ifindex de veth642b1a4 (cat /sys/class/net/veth642b1a4/ifindex) ; pour ctB, 9 \= vethacfb809. Noms des veth : « veth » + 7 caractères hexadécimaux tirés au hasard (crypto/rand) par Docker à la création, sans lien avec l’ID du conteneur ; les deux bouts naissent ainsi, puis le bout côté conteneur est renommé eth0 et déplacé dans son namespace réseau (source moby v26.1.5 : libnetwork/drivers/bridge, vethLen \= len("veth") + 7 ; netutils.GenerateRandomName). Règles iptables, lues de gauche à droite : -A POSTROUTING \= ajouter à la chaîne traversée par les paquets qui quittent l’hôte ; -s 172.17.0.0/16 \= venant d’un conteneur ; ! -o docker0 \= ne ressortant pas par docker0 (donc pas vers un autre conteneur) ; -j MASQUERADE \= remplacer l’IP source par celle de l’interface de sortie. -A DOCKER \= chaîne de Docker, appelée à l’arrivée des paquets ; ! -i docker0 \= pas venu d’un conteneur ; -p tcp --dport 8080 \= TCP vers le port 8080 ; -j DNAT --to-destination 172.17.0.3:80 \= réécrire la destination. MASQUERADE dans POSTROUTING (après la décision de routage) ne touche que ce qui sort du réseau des conteneurs vers l’extérieur ; ! -o docker0 exclut le trafic entre conteneurs. DNAT dans la chaîne DOCKER (appelée depuis PREROUTING pour les adresses locales de l’hôte) ; ! -i docker0 : ne s’applique pas aux paquets venant des conteneurs eux-mêmes. Sans la commande ip sur l’hôte, /sys/class/net/docker0/brif liste les ports du bridge ; avec iproute2 : ip link show master docker0 ou bridge link.]
+#let _note = [Rappel du schéma de la diapositive précédente, mécanisme par mécanisme ; le petit schéma correspond exactement à l’exemple du terminal. Le bridge travaille au niveau 2 (adresses MAC) : entre A et B, le paquet traverse docker0 sans passer par le NAT (ping de ctA vers 172.17.0.3 : réponse directe, ttl\=64). Vers Internet, l’hôte route (ip\_forward) puis remplace l’IP source par la sienne (règle MASQUERADE). Dans l’autre sens, -p ajoute une règle DNAT : ce qui arrive sur le port 8080 de l’hôte est réécrit vers 172.17.0.3:80 (curl localhost:8080 depuis l’hôte répond « bonjour »). Sorties réelles, docker.io 26.1.5 de Debian 13 ; ctB est un petit serveur nc lancé avec -p 8080:80. Schéma : quel veth pour quel conteneur ? docker container exec ctA cat /sys/class/net/eth0/iflink donne 7, l’ifindex de veth642b1a4 (cat /sys/class/net/veth642b1a4/ifindex) ; pour ctB, 9 \= vethacfb809. Noms des veth : « veth » + 7 caractères hexadécimaux tirés au hasard (crypto/rand) par Docker à la création, sans lien avec l’ID du conteneur ; les deux bouts naissent ainsi, puis le bout côté conteneur est renommé eth0 et déplacé dans son namespace réseau (source moby v26.1.5 : libnetwork/drivers/bridge, vethLen \= len("veth") + 7 ; netutils.GenerateRandomName). Règles iptables, lues de gauche à droite : -A POSTROUTING \= ajouter à la chaîne traversée par les paquets qui quittent l’hôte ; -s 172.17.0.0/16 \= venant d’un conteneur ; ! -o docker0 \= ne ressortant pas par docker0 (donc pas vers un autre conteneur) ; -j MASQUERADE \= remplacer l’IP source par celle de l’interface de sortie. -A DOCKER \= chaîne de Docker, appelée à l’arrivée des paquets ; ! -i docker0 \= pas venu d’un conteneur ; -p tcp --dport 8080 \= TCP vers le port 8080 ; -j DNAT --to-destination 172.17.0.3:80 \= réécrire la destination. MASQUERADE dans POSTROUTING (après la décision de routage) ne touche que ce qui sort du réseau des conteneurs vers l’extérieur ; ! -o docker0 exclut le trafic entre conteneurs. DNAT dans la chaîne DOCKER (appelée depuis PREROUTING pour les adresses locales de l’hôte) ; ! -i docker0 : ne s’applique pas aux paquets venant des conteneurs eux-mêmes. Sans la commande ip sur l’hôte, /sys/class/net/docker0/brif liste les ports du bridge ; avec iproute2 : ip link show master docker0 ou bridge link.]
 #anime(
   rang(
     bloc[Le bridge et les câbles][
@@ -1485,14 +1472,14 @@ hello world !
     bloc[Les instructions][
       `FROM` `RUN` `CMD` `LABEL` `EXPOSE` `ENV` `ADD` `COPY` `ENTRYPOINT` `VOLUME` `USER` `WORKDIR` `ARG` `ONBUILD` `STOPSIGNAL` `HEALTHCHECK` `SHELL`
   
-      Chaque instruction a son rôle, détaillé au fil du cours. Certaines remplacent les variables `${VAR}` (slide suivante).
+      Chaque instruction a son rôle, détaillé au fil du cours. Certaines remplacent les variables `${VAR}` (diapositive suivante).
     ],
   ),
   note: _note,
 )
 
 == Variables dans un Dockerfile : qui les remplace ?
-#let _note = [Slide recentrée sur une seule question : qui remplace les variables. Expression graphique demandée : le Dockerfile est envoyé au builder tel quel (les \${…} restent dans le fichier) ; BuildKit les remplace en lisant chaque instruction. Le bloc « résolu ligne par ligne » n’est donc pas un fichier qui existe quelque part, mais ce que chaque instruction reçoit. La réponse, le builder (BuildKit), pour les instructions de configuration. Sur docker.io 26.1.5 : ENV APP\_DIR\=/app puis WORKDIR \${APP\_DIR} donne un conteneur dont pwd vaut /app ; LABEL p\="\${PATH}" h\="\[\${HOME}\]" donne p rempli (PATH est déclaré par l’image debian:13, ENV dans sa configuration) et h vide (HOME n’existe qu’à l’exécution). Les variables interprétées sont celles déclarées par ENV ou ARG, pas l’environnement de l’hôte. Liste officielle des instructions concernées (Dockerfile reference, Environment replacement) : ADD, COPY, ENV, EXPOSE, FROM, LABEL, STOPSIGNAL, USER, VOLUME, WORKDIR, ONBUILD. RUN, CMD, ENTRYPOINT : la substitution revient au shell, et seulement en forme shell — traité avec CMD et ENTRYPOINT, pour ne pas mêler ici la notion de forme exec/shell.]
+#let _note = [Diapositive recentrée sur une seule question : qui remplace les variables. Expression graphique demandée : le Dockerfile est envoyé au builder tel quel (les \${…} restent dans le fichier) ; BuildKit les remplace en lisant chaque instruction. Le bloc « résolu ligne par ligne » n’est donc pas un fichier qui existe quelque part, mais ce que chaque instruction reçoit. La réponse, le builder (BuildKit), pour les instructions de configuration. Sur docker.io 26.1.5 : ENV APP\_DIR\=/app puis WORKDIR \${APP\_DIR} donne un conteneur dont pwd vaut /app ; LABEL p\="\${PATH}" h\="\[\${HOME}\]" donne p rempli (PATH est déclaré par l’image debian:13, ENV dans sa configuration) et h vide (HOME n’existe qu’à l’exécution). Les variables interprétées sont celles déclarées par ENV ou ARG, pas l’environnement de l’hôte. Liste officielle des instructions concernées (Dockerfile reference, Environment replacement) : ADD, COPY, ENV, EXPOSE, FROM, LABEL, STOPSIGNAL, USER, VOLUME, WORKDIR, ONBUILD. RUN, CMD, ENTRYPOINT : la substitution revient au shell, et seulement en forme shell — traité avec CMD et ENTRYPOINT, pour ne pas mêler ici la notion de forme exec/shell.]
 
 #anime(
   rang(
@@ -1532,7 +1519,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 
 
 == Le Dockerfile de hello
-#let _note = [Apparition progressive, une instruction par clic en mode Présentation. \$hostname est une variable de nginx : le hostname du conteneur, c’est-à-dire son identifiant court. Construit : docker image build -t hello. puis docker container run -d -p 8080:80 hello ; curl localhost:8080 répond « Bonjour depuis bad5b4271768 » ; docker container ls affiche (healthy) après le premier test. HEALTHCHECK est volontairement laissé sans explication détaillée à ce stade : c’est une métadonnée (0B dans docker image history, slides suivantes), et le conteneur passe à l’état healthy/unhealthy selon le test, ce que Traefik et Compose peuvent attendre. Intervalle de 5 s (30 s par défaut) pour que Traefik prenne vite les nouvelles instances en compte. Une diapositive dédiée pourrait détailler les états et l’option --health-cmd si on veut en faire une notion à part entière.]
+#let _note = [Apparition progressive, une instruction par clic en mode Présentation. \$hostname est une variable de nginx : le hostname du conteneur, c’est-à-dire son identifiant court. Construit : docker image build -t hello. puis docker container run -d -p 8080:80 hello ; curl localhost:8080 répond « Bonjour depuis bad5b4271768 » ; docker container ls affiche (healthy) après le premier test. HEALTHCHECK est volontairement laissé sans explication détaillée à ce stade : c’est une métadonnée (0B dans docker image history, diapositives suivantes), et le conteneur passe à l’état healthy/unhealthy selon le test, ce que Traefik et Compose peuvent attendre. Intervalle de 5 s (30 s par défaut) pour que Traefik prenne vite les nouvelles instances en compte. Une diapositive dédiée pourrait détailler les états et l’option --health-cmd si on veut en faire une notion à part entière.]
 #anime(
   rang(
     bloc[`hello.conf`][
@@ -1568,7 +1555,7 @@ LABEL p="${PATH}" h="[${HOME}]"
       - Une instruction après l'autre, dans l'ordre du fichier
       - Chaque instruction laisse une *image intermédiaire* (`<none>`)
       - Même `EXPOSE` passe par un conteneur temporaire, démarré puis supprimé
-      - Lent et verbeux ; remplacé par BuildKit (slides suivantes)
+      - Lent et verbeux ; remplacé par BuildKit (diapositives suivantes)
     ],
     bloc(role: "pratique")[Les images intermédiaires][
       #terminal(taille: px(15))[
@@ -1599,7 +1586,7 @@ LABEL p="${PATH}" h="[${HOME}]"
     ],
     bloc(role: "pratique")[3 · Solveur][
       - Parcourt le graphe ; exécute chaque étape dont les dépendances sont prêtes
-      - Réutilise le cache quand la clé n'a pas changé (slides suivantes)
+      - Réutilise le cache quand la clé n'a pas changé (diapositives suivantes)
     ],
   ),
   note: _note,
@@ -1623,7 +1610,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == De l’instruction à la couche : docker image build
-#let _note = [Le Dockerfile reste visible au-dessus de la sortie. Sortie complète, telle que l’affiche un terminal (mode par défaut de BuildKit), docker.io 26.1.5 et docker-buildx 0.13.1 de Debian 13, terminal de 80 colonnes : les lignes longues y sont coupées, l’ID d’image aussi. nginx:1.29-alpine est déjà présent (utilisé dans la partie Volumes) ; sinon, l’étape FROM affiche en plus une vingtaine de lignes de téléchargement. Seules FROM et COPY sont des étapes \[n/2\] : EXPOSE et HEALTHCHECK ne font que compléter la configuration de l’image. En vrai, BuildKit colore les étapes en bleu ; ici, un liseré de couleur par groupe, expliqué clic par clic à droite, chaque explication au niveau des lignes qu’elle commente. Animation automatique à l’arrivée de la slide, fidèle à l’enregistrement brut du terminal (build du 19/11, 16 h 38) : BuildKit n’a dessiné que deux états, « \[+\] Building 0.0s (0/1) » seul, puis l’état final ; le build a duré 0,1 s, l’animation l’étire à environ une seconde. Ensuite, un clic par explication.]
+#let _note = [Le Dockerfile reste visible au-dessus de la sortie. Sortie complète, telle que l’affiche un terminal (mode par défaut de BuildKit), docker.io 26.1.5 et docker-buildx 0.13.1 de Debian 13, terminal de 80 colonnes : les lignes longues y sont coupées, l’ID d’image aussi. nginx:1.29-alpine est déjà présent (utilisé dans la partie Volumes) ; sinon, l’étape FROM affiche en plus une vingtaine de lignes de téléchargement. Seules FROM et COPY sont des étapes \[n/2\] : EXPOSE et HEALTHCHECK ne font que compléter la configuration de l’image. En vrai, BuildKit colore les étapes en bleu ; ici, un liseré de couleur par groupe, expliqué clic par clic à droite, chaque explication au niveau des lignes qu’elle commente. Animation automatique à l’arrivée de la diapositive, fidèle à l’enregistrement brut du terminal (build du 19/11, 16 h 38) : BuildKit n’a dessiné que deux états, « \[+\] Building 0.0s (0/1) » seul, puis l’état final ; le build a duré 0,1 s, l’animation l’étire à environ une seconde. Ensuite, un clic par explication.]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.3)[Terminal][
@@ -1679,7 +1666,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Lire la sortie de BuildKit : les numéros \#N
-#let _note = [Sortie réelle et complète, cache de build vidé (docker builder prune -af), docker.io 26.1.5 de Debian 13, contexte : Dockerfile et hello.conf. --progress\=plain : c’est le mode où BuildKit affiche les numéros, et celui qu’il prend quand la sortie n’est pas un terminal (redirection, CI) ; dans un terminal, les mêmes opérations s’affichent sans numéro (\=\>). Un clic par numéro, de \#0 à \#7, la sortie à droite et son explication à gauche en même temps : \#0 l’en-tête, \#1 à \#4 la préparation (aucune ligne du Dockerfile), \#5 FROM (étape \[1/2\]), \#6 COPY (étape \[2/2\]), \#7 l’export, en face de EXPOSE et HEALTHCHECK, qui n’ont pas d’opération : ils vont dans la configuration de l’image, écrite à l’export (\#7, writing image). \#N : numéro d’opération attribué par BuildKit dans l’ordre d’affichage ; \[k/n\] : étape k sur n du Dockerfile (instructions qui touchent au système de fichiers). L’identifiant d’image (ee1957e9d911…) diffère de celui de la slide docker image build : la date de création fait partie de la configuration, donc chaque build depuis un cache vide donne un nouvel identifiant.]
+#let _note = [Sortie réelle et complète, cache de build vidé (docker builder prune -af), docker.io 26.1.5 de Debian 13, contexte : Dockerfile et hello.conf. --progress\=plain : c’est le mode où BuildKit affiche les numéros, et celui qu’il prend quand la sortie n’est pas un terminal (redirection, CI) ; dans un terminal, les mêmes opérations s’affichent sans numéro (\=\>). Un clic par numéro, de \#0 à \#7, la sortie à droite et son explication à gauche en même temps : \#0 l’en-tête, \#1 à \#4 la préparation (aucune ligne du Dockerfile), \#5 FROM (étape \[1/2\]), \#6 COPY (étape \[2/2\]), \#7 l’export, en face de EXPOSE et HEALTHCHECK, qui n’ont pas d’opération : ils vont dans la configuration de l’image, écrite à l’export (\#7, writing image). \#N : numéro d’opération attribué par BuildKit dans l’ordre d’affichage ; \[k/n\] : étape k sur n du Dockerfile (instructions qui touchent au système de fichiers). L’identifiant d’image (ee1957e9d911…) diffère de celui de la diapositive docker image build : la date de création fait partie de la configuration, donc chaque build depuis un cache vide donne un nouvel identifiant.]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.4)[Terminal][
@@ -1708,7 +1695,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Le cache de BuildKit : la clé de chaque étape
-#let _note = [Cinq builds réels à la suite du Dockerfile de hello (docker.io 26.1.5 de Debian 13, cache vidé au départ), un par clic ; chaque point de « À retenir » arrive avec le build qu’il explique (le dernier clic ajoute RUN et docker builder prune). Cette slide reprend aussi l’ancienne slide « Le cache de build » (fusionnée) : après le sed, la sortie complète montre CACHED \[1/2\] FROM et \[2/2\] COPY refaite, et l’ancienne image hello devient \<none\> dans docker image ls ; en remettant « Bonjour », le build suivant est entièrement CACHED et redonne la même image (même ID). Placer en dernier ce qui change souvent. Clic 2, la loupe sur le premier \#6, reliée à la ligne COPY du Dockerfile : \#6 est l’opération du COPY (sortie complète et numérotée : slide précédente) ; elle disparaît au clic 3, qui montre le 2e build ; seule la ligne COPY (surlignée) est concernée. Doc Docker « Build cache invalidation » : « The modification time of a file (mtime) is not taken into account when calculating the cache checksum » ; « The cache for RUN instructions isn’t invalidated automatically between builds ». Le 4e build retrouve la clé du 1er : le cache n’a pas qu’une version. Une étape refaite entraîne les suivantes (leur parent a changé). \#N : BuildKit numérote chaque opération du build dans l’ordre où il l’affiche, en --progress\=plain sur le même Dockerfile : \#1 load build definition, \#2 load metadata (nginx), \#3 load.dockerignore, \#4 load build context, \#5 \[1/2\] FROM, \#6 \[2/2\] COPY, \#7 exporting to image. Le numéro est le même d’un build à l’autre tant que le Dockerfile ne change pas ; il ne correspond pas à la ligne du Dockerfile, contrairement à \[2/2\] (étape 2 sur 2 : FROM puis COPY ; EXPOSE et HEALTHCHECK ne modifient que la configuration et ne sont pas comptés). Conséquence pratique (bonnes pratiques) : apt-get update et apt-get install dans le même RUN, et reconstruire régulièrement avec un cache vierge (--no-cache --pull, slide 85) : sinon les paquets restent ceux du jour où la couche a été mise en cache, avec leurs failles de sécurité connues depuis et non corrigées.]
+#let _note = [Cinq builds réels à la suite du Dockerfile de hello (docker.io 26.1.5 de Debian 13, cache vidé au départ), un par clic ; chaque point de « À retenir » arrive avec le build qu’il explique (le dernier clic ajoute RUN et docker builder prune). Cette diapositive reprend aussi l’ancienne diapositive « Le cache de build » (fusionnée) : après le sed, la sortie complète montre CACHED \[1/2\] FROM et \[2/2\] COPY refaite, et l’ancienne image hello devient \<none\> dans docker image ls ; en remettant « Bonjour », le build suivant est entièrement CACHED et redonne la même image (même ID). Placer en dernier ce qui change souvent. Clic 2, la loupe sur le premier \#6, reliée à la ligne COPY du Dockerfile : \#6 est l’opération du COPY (sortie complète et numérotée : diapositive précédente) ; elle disparaît au clic 3, qui montre le 2e build ; seule la ligne COPY (surlignée) est concernée. Doc Docker « Build cache invalidation » : « The modification time of a file (mtime) is not taken into account when calculating the cache checksum » ; « The cache for RUN instructions isn’t invalidated automatically between builds ». Le 4e build retrouve la clé du 1er : le cache n’a pas qu’une version. Une étape refaite entraîne les suivantes (leur parent a changé). \#N : BuildKit numérote chaque opération du build dans l’ordre où il l’affiche, en --progress\=plain sur le même Dockerfile : \#1 load build definition, \#2 load metadata (nginx), \#3 load.dockerignore, \#4 load build context, \#5 \[1/2\] FROM, \#6 \[2/2\] COPY, \#7 exporting to image. Le numéro est le même d’un build à l’autre tant que le Dockerfile ne change pas ; il ne correspond pas à la ligne du Dockerfile, contrairement à \[2/2\] (étape 2 sur 2 : FROM puis COPY ; EXPOSE et HEALTHCHECK ne modifient que la configuration et ne sont pas comptés). Conséquence pratique (bonnes pratiques) : apt-get update et apt-get install dans le même RUN, et reconstruire régulièrement avec un cache vierge (--no-cache --pull, diapositive 85) : sinon les paquets restent ceux du jour où la couche a été mise en cache, avec leurs failles de sécurité connues depuis et non corrigées.]
 #anime(
   rang(
     bloc(role: "retenir")[Clé de l'étape COPY][
@@ -1802,7 +1789,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Après deux builds : réponses
-#let _note = [Deux clics par question : d’abord la question, puis la réponse avec en même temps les lignes du terminal qui la justifient (cadre orange) : 1 la liste des images (aucune image intermédiaire) et des conteneurs (aucun) ; 2 l’image \<none\> ; 3 la ligne Build Cache ; 4 les deux prune, puis leurs bilans. Suite directe de la slide précédente, sorties réelles (docker.io 26.1.5). Lecture des 0B de image prune : la couche COPY de l’ancienne image (127B) figure encore dans le cache de build (entrée pqc4dq…, 127B, listée par builder prune) ; c’est builder prune qui la libère. Le cache de build se vide aussi tout seul selon une politique de rétention (garbage collection de BuildKit). Avec le builder classique, docker image rm supprimait en cascade les images intermédiaires devenues inutiles.]
+#let _note = [Deux clics par question : d’abord la question, puis la réponse avec en même temps les lignes du terminal qui la justifient (cadre orange) : 1 la liste des images (aucune image intermédiaire) et des conteneurs (aucun) ; 2 l’image \<none\> ; 3 la ligne Build Cache ; 4 les deux prune, puis leurs bilans. Suite directe de la diapositive précédente, sorties réelles (docker.io 26.1.5). Lecture des 0B de image prune : la couche COPY de l’ancienne image (127B) figure encore dans le cache de build (entrée pqc4dq…, 127B, listée par builder prune) ; c’est builder prune qui la libère. Le cache de build se vide aussi tout seul selon une politique de rétention (garbage collection de BuildKit). Avec le builder classique, docker image rm supprimait en cascade les images intermédiaires devenues inutiles.]
 
 #corriges(note: _note,
   (1, [Où sont passées les étapes ?],
@@ -1855,7 +1842,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Différence entre CMD et ENTRYPOINT
-#let _note = [DEBIAN\_FRONTEND\=noninteractive placé devant apt install : une variable en préfixe ne vaut que pour la commande qui la suit, pas pour celles après &&. Laisser chercher : réponses sur la slide suivante.]
+#let _note = [DEBIAN\_FRONTEND\=noninteractive placé devant apt install : une variable en préfixe ne vaut que pour la commande qui la suit, pas pour celles après &&. Laisser chercher : réponses sur la diapositive suivante.]
 
 #anime(
   rang(
@@ -1882,7 +1869,7 @@ CMD ["localhost"]
 
 
 == CMD et ENTRYPOINT : corrigé (1/2)
-#let _note = [Deux clics par question : l’énoncé, puis la commande et sa sortie réelle. Build rejoué sur docker.io 26.1.5 de Debian 13 avec -q, qui n’affiche que l’identifiant de l’image (sha256:23b0c0206d13…) ; la sortie BuildKit complète est détaillée dans la partie BuildKit. Sans argument, CMD fournit localhost : le conteneur exécute ping -c 2 localhost. Avec qwant.com, l’argument remplace CMD : ping -c 2 qwant.com (sortie abrégée : la résolution et les temps dépendent du réseau).]
+#let _note = [Deux clics par question : l’énoncé, puis la commande et sa sortie réelle. Build sur docker.io 26.1.5 de Debian 13 avec -q, qui n’affiche que l’identifiant de l’image (sha256:23b0c0206d13…) ; la sortie BuildKit complète est détaillée dans la partie BuildKit. Sans argument, CMD fournit localhost : le conteneur exécute ping -c 2 localhost. Avec qwant.com, l’argument remplace CMD : ping -c 2 qwant.com (sortie abrégée : la résolution et les temps dépendent du réseau).]
 
 #corriges(note: _note,
   (2, [Instanciez sans argument : `docker container run ping`],
@@ -1916,7 +1903,7 @@ PING qwant.com (…): 56 data bytes
       - `--entrypoint` remplace `ENTRYPOINT` au lancement
     ]))
   v(px(16))
-  uncover("2-", note(role: "precaution")[Forme *exec* `["ping","-c","2"]` (ici) : sans shell. Forme *shell* (`ping -c 2`) : passe par `/bin/sh -c`, qui interprète `${VAR}`, `&&`, `|`… (deux slides suivantes). #linebreak() `$ docker container run --entrypoint cat ping /etc/debian_version` → `13.7`])
+  uncover("2-", note(role: "precaution")[Forme *exec* `["ping","-c","2"]` (ici) : sans shell. Forme *shell* (`ping -c 2`) : passe par `/bin/sh -c`, qui interprète `${VAR}`, `&&`, `|`… (deux diapositives suivantes). #linebreak() `$ docker container run --entrypoint cat ping /etc/debian_version` → `13.7`])
   if _note != none { utils.speaker-note(self: self, _note) }
 })
 
@@ -1955,7 +1942,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Forme exec ou shell (2/2) : PID 1 et signaux
-#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 (images sig-exec et sig-shell). Le programme est le même ; seule la forme change. En forme shell, Docker lance /bin/sh -c "bash -c …" : sh (dash sous Debian) reste PID 1 et attend son fils, il ne le remplace pas (pas d’exec). Un PID 1 sans gestionnaire ignore SIGTERM (le noyau protège le PID 1 de son espace de noms) : docker container stop attend 10 s puis envoie SIGKILL (code 137). Même mécanisme que la slide sur --init. Dans un \["sh", "-c", "…"\], terminer par exec programme remplace le shell par le programme, qui devient PID 1.]
+#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 (images sig-exec et sig-shell). Le programme est le même ; seule la forme change. En forme shell, Docker lance /bin/sh -c "bash -c …" : sh (dash sous Debian) reste PID 1 et attend son fils, il ne le remplace pas (pas d’exec). Un PID 1 sans gestionnaire ignore SIGTERM (le noyau protège le PID 1 de son espace de noms) : docker container stop attend 10 s puis envoie SIGKILL (code 137). Même mécanisme que la diapositive sur --init. Dans un \["sh", "-c", "…"\], terminer par exec programme remplace le shell par le programme, qui devient PID 1.]
 #anime(
   rang(
     bloc[Forme exec → PID 1 = bash][
@@ -1991,7 +1978,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == --init : quand l’utiliser ?
-#let _note = [Slide placée après « CMD et ENTRYPOINT » : formes shell et exec, ENTRYPOINT et Compose sont connus. Elle prolonge la slide « --init » des Bases. Sur docker.io 26.1.5 de Debian 13. Avec --init, /proc/1/cmdline vaut « /sbin/docker-init -- … » (tini du paquet Debian). Zombies : bash -c '(sleep 1 &); exec sleep 300' laisse sans --init un \[sleep\] \<defunct\> enfant du PID 1 ; avec --init, tini le récolte (docker container top ne montre pas les zombies : ps --ppid sur l’hôte). Forme shell : docker container run debian sh -c 'sleep 300' donne un PID 1 sh avec sleep en enfant ; docker container stop prend 10 s, code 137. Le noyau ne délivre au PID 1 d’un espace de noms que les signaux pour lesquels il a un gestionnaire (sauf SIGKILL et SIGSTOP envoyés depuis l’espace parent). Documentation Docker (consultée le 16/11/2026) : docs.docker.com/build/building/best-practices/ : « CMD should almost always be used in the form of CMD \["executable", "param1", "param2"\] » ; script d’entrée terminé par exec « so that the final running application becomes the container's PID 1 \[…\] This allows the application to receive any Unix signals sent to the container » ; « Limiting each container to one process is a good rule of thumb, but it's not a hard and fast rule ». Pour tout l’hôte : "init": true dans /etc/docker/daemon.json. docs.docker.com/engine/containers/multi-service\_container/ : « If your process falls into this category, you can use the --init option » (processus principal qui ne récolte pas ses enfants) ; --init « inserts a tiny init-process into the container as the main process ».]
+#let _note = [Diapositive placée après « CMD et ENTRYPOINT » : formes shell et exec, ENTRYPOINT et Compose sont connus. Elle prolonge la diapositive « --init » des Bases. Sur docker.io 26.1.5 de Debian 13. Avec --init, /proc/1/cmdline vaut « /sbin/docker-init -- … » (tini du paquet Debian). Zombies : bash -c '(sleep 1 &); exec sleep 300' laisse sans --init un \[sleep\] \<defunct\> enfant du PID 1 ; avec --init, tini le récolte (docker container top ne montre pas les zombies : ps --ppid sur l’hôte). Forme shell : docker container run debian sh -c 'sleep 300' donne un PID 1 sh avec sleep en enfant ; docker container stop prend 10 s, code 137. Le noyau ne délivre au PID 1 d’un espace de noms que les signaux pour lesquels il a un gestionnaire (sauf SIGKILL et SIGSTOP envoyés depuis l’espace parent). Documentation Docker (consultée le 16/11/2026) : docs.docker.com/build/building/best-practices/ : « CMD should almost always be used in the form of CMD \["executable", "param1", "param2"\] » ; script d’entrée terminé par exec « so that the final running application becomes the container's PID 1 \[…\] This allows the application to receive any Unix signals sent to the container » ; « Limiting each container to one process is a good rule of thumb, but it's not a hard and fast rule ». Pour tout l’hôte : "init": true dans /etc/docker/daemon.json. docs.docker.com/engine/containers/multi-service\_container/ : « If your process falls into this category, you can use the --init option » (processus principal qui ne récolte pas ses enfants) ; --init « inserts a tiny init-process into the container as the main process ».]
 #anime(
   rang(
     bloc(role: "pratique")[Le mettre][
@@ -2031,7 +2018,7 @@ PING qwant.com (…): 56 data bytes
       - Plusieurs `FROM` : seule la *dernière* étape produit l'image
       - `COPY --from` récupère un fichier d'une étape précédente
       - `FROM scratch` : l'image vide → *758 ko* contre 120 Mo pour `debian:13`
-      - `--target builder` : s'arrêter à la compilation (slide suivante)
+      - `--target builder` : s'arrêter à la compilation (diapositive suivante)
       - Moins d'outils dans l'image : moins de surface d'attaque
     ],
   ),
@@ -2039,7 +2026,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Multi-stage : --target pour s’arrêter à une étape
-#let _note = [Sur docker.io 26.1.5 (BuildKit), Dockerfile de la slide précédente : hello-dev 361 353 488 octets (dont 184 Ko de certificats ajoutés pour l’accès apt du bac à sable, sans effet sur l’arrondi 361MB), hello-static 758 448 octets. Sans --target, BuildKit ne construit que les étapes nécessaires à la dernière ; avec --target builder, l’étape scratch n’est pas construite.]
+#let _note = [Sur docker.io 26.1.5 (BuildKit), Dockerfile de la diapositive précédente : hello-dev 361 353 488 octets (dont 184 Ko de certificats ajoutés pour l’accès apt du bac à sable, sans effet sur l’arrondi 361MB), hello-static 758 448 octets. Sans --target, BuildKit ne construit que les étapes nécessaires à la dernière ; avec --target builder, l’étape scratch n’est pas construite.]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.4)[Terminal][
@@ -2112,7 +2099,7 @@ PING qwant.com (…): 56 data bytes
   # secret éphémère
   RUN --mount=type=secret,id=db_pass …
   ```]
-      - Cache persistant, secret éphémère (slides suivantes)
+      - Cache persistant, secret éphémère (diapositives suivantes)
       - Secrets de build absents de l'image et de son historique
     ],
     bloc(role: "pratique")[Multi-architecture avec `buildx`][
@@ -2128,7 +2115,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == BuildKit : un cache qui survit aux builds
-#let _note = [Rejoué sur docker.io 26.1.5 (BuildKit) après docker builder prune -af : 1er build « Need to get 4909 kB of archives. », puis avec « curl wget » : « Need to get 984 kB/5894 kB of archives. » (seul wget). La sortie complète de --progress\=plain fait 183 lignes au 1er build (162 au 2e), d’où le grep, qui rend le filtre visible : ce qui s’affiche est la sortie complète de la commande, préfixe compris. Avec --no-cache, les deux builds téléchargent 4909 kB : le cache de montage n’est pas réutilisé. Le fichier /etc/apt/apt.conf.d/docker-clean de l’image debian vide /var/cache/apt/archives après chaque installation.]
+#let _note = [Sur docker.io 26.1.5 (BuildKit) après docker builder prune -af : 1er build « Need to get 4909 kB of archives. », puis avec « curl wget » : « Need to get 984 kB/5894 kB of archives. » (seul wget). La sortie complète de --progress\=plain fait 183 lignes au 1er build (162 au 2e), d’où le grep, qui rend le filtre visible : ce qui s’affiche est la sortie complète de la commande, préfixe compris. Avec --no-cache, les deux builds téléchargent 4909 kB : le cache de montage n’est pas réutilisé. Le fichier /etc/apt/apt.conf.d/docker-clean de l’image debian vide /var/cache/apt/archives après chaque installation.]
 #anime(
   rang(
     bloc[Dockerfile][
@@ -2160,7 +2147,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == BuildKit : un secret passé par ARG fuit
-#let _note = [Sortie complète réelle (docker.io 26.1.5, BuildKit, terminal de 80 colonnes). Le mot de passe apparaît deux fois : dans la sortie du build (le RUN y est affiché avec la valeur substituée) et dans docker image history. Il n’est pas dans docker image inspect : c’est l’historique qui fuit. Slide suivante : la bonne méthode.]
+#let _note = [Sortie complète réelle (docker.io 26.1.5, BuildKit, terminal de 80 colonnes). Le mot de passe apparaît deux fois : dans la sortie du build (le RUN y est affiché avec la valeur substituée) et dans docker image history. Il n’est pas dans docker image inspect : c’est l’historique qui fuit. Diapositive suivante : la bonne méthode.]
 #anime(
   rang(
     bloc(role: "avertissement")[À éviter : `ARG`][
@@ -2304,7 +2291,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Fausse bonne idée : sshd setuid root
-#let _note = [Variante setuid du serveur ssh du fil rouge, construite (docker.io 26.1.5 de Debian 13, OpenSSH 10) : FROM debian:13, apt install openssh-server, chmod u+s /usr/sbin/sshd, USER lambda, CMD sshd. Sans le chmod, /usr/sbin/sshd est -rwxr-xr-x (non setuid) ; avec, -rwsr-xr-x. Le listener sshd lancé par lambda a RUSER\=lambda, EUSER\=root (/proc/1/status : Uid 1000 0 0 0) ; la connexion par mot de passe est acceptée et sshd-session \[priv\] tourne : les limites de la slide précédente sont levées. Le mot de passe en clair du RUN (echo lambda:password | chpasswd) serait lisible dans docker image history : omis ici, cf. slide BuildKit secrets. Présentée comme contre-exemple : la règle 4.8 du CIS Docker Benchmark demande de retirer les bits setuid et setgid des images (find / -perm /6000 -type f -exec chmod a-s {} +). CIS : Center for Internet Security, organisme indépendant à but non lucratif ; ses « CIS Benchmarks » sont des guides de durcissement rédigés par consensus d’experts, un par produit (https://www.cisecurity.org/benchmark/docker). Numéros de règles des versions 1.5 à 1.8 du CIS Docker Benchmark (d’après les fiches d’audit Tenable) ; la dernière version publiée est la 1.9, dont le texte complet est réservé aux inscrits.]
+#let _note = [Variante setuid du serveur ssh du fil rouge, construite (docker.io 26.1.5 de Debian 13, OpenSSH 10) : FROM debian:13, apt install openssh-server, chmod u+s /usr/sbin/sshd, USER lambda, CMD sshd. Sans le chmod, /usr/sbin/sshd est -rwxr-xr-x (non setuid) ; avec, -rwsr-xr-x. Le listener sshd lancé par lambda a RUSER\=lambda, EUSER\=root (/proc/1/status : Uid 1000 0 0 0) ; la connexion par mot de passe est acceptée et sshd-session \[priv\] tourne : les limites de la diapositive précédente sont levées. Le mot de passe en clair du RUN (echo lambda:password | chpasswd) serait lisible dans docker image history : omis ici, cf. diapositive BuildKit secrets. Présentée comme contre-exemple : la règle 4.8 du CIS Docker Benchmark demande de retirer les bits setuid et setgid des images (find / -perm /6000 -type f -exec chmod a-s {} +). CIS : Center for Internet Security, organisme indépendant à but non lucratif ; ses « CIS Benchmarks » sont des guides de durcissement rédigés par consensus d’experts, un par produit (https://www.cisecurity.org/benchmark/docker). Numéros de règles des versions 1.5 à 1.8 du CIS Docker Benchmark (d’après les fiches d’audit Tenable) ; la dernière version publiée est la 1.9, dont le texte complet est réservé aux inscrits.]
 #anime(
   rang(
     bloc(role: "avertissement")[Dockerfile — variante setuid][
@@ -2325,13 +2312,13 @@ PING qwant.com (…): 56 data bytes
       Lancé par `lambda` (`USER lambda`), `sshd` s'exécute pourtant avec l'*euid de root* : il lit `/etc/shadow` (mot de passe) et fait sa séparation de privilèges.
     ],
   ),
-  note(role: "danger")[*Le danger* : n'importe quel processus du conteneur peut relancer ce binaire setuid avec sa propre configuration et devenir root (slide suivante). *Bonne pratique* : aucun binaire setuid dans une image (CIS Docker 4.8). Besoin de root au démarrage : `gosu` ou `setpriv` (plus loin).],
+  note(role: "danger")[*Le danger* : n'importe quel processus du conteneur peut relancer ce binaire setuid avec sa propre configuration et devenir root (diapositive suivante). *Bonne pratique* : aucun binaire setuid dans une image (CIS Docker 4.8). Besoin de root au démarrage : `gosu` ou `setpriv` (plus loin).],
   source-de: [#link("https://www.cisecurity.org/benchmark/docker")[CIS Docker Benchmark — règle 4.8]],
   note: _note,
 )
 
 == Pourquoi ce sshd est-il root ? uid et euid
-#let _note = [Sorties réelles (docker.io 26.1.5 de Debian 13) sur la variante setuid de la slide précédente. ls -l : -rwsr-xr-x (le s remplace le x du propriétaire root). ps -o ruser,euser : le listener sshd a pour utilisateur réel lambda (qui l'a lancé via CMD, USER lambda) et pour utilisateur effectif root (propriétaire du binaire setuid) ; /proc/1/status donne Uid: 1000 0 0 0. uid réel \= qui a lancé ; euid (e pour effectif) \= celui que le noyau utilise pour décider des permissions. C'est ce qui permet au mot de passe de fonctionner (lecture de /etc/shadow) — et ce qui ouvre l'escalade de la slide suivante. passwd (/usr/bin/passwd, -rwsr-xr-x) est l'exemple quotidien du même mécanisme : il doit écrire /etc/shadow, réservé à root.]
+#let _note = [Sorties réelles (docker.io 26.1.5 de Debian 13) sur la variante setuid de la diapositive précédente. ls -l : -rwsr-xr-x (le s remplace le x du propriétaire root). ps -o ruser,euser : le listener sshd a pour utilisateur réel lambda (qui l'a lancé via CMD, USER lambda) et pour utilisateur effectif root (propriétaire du binaire setuid) ; /proc/1/status donne Uid: 1000 0 0 0. uid réel \= qui a lancé ; euid (e pour effectif) \= celui que le noyau utilise pour décider des permissions. C'est ce qui permet au mot de passe de fonctionner (lecture de /etc/shadow) — et ce qui ouvre l'escalade de la diapositive suivante. passwd (/usr/bin/passwd, -rwsr-xr-x) est l'exemple quotidien du même mécanisme : il doit écrire /etc/shadow, réservé à root.]
 #anime(
   rang(
     bloc(role: "pratique")[uid réel et uid effectif][
@@ -2351,7 +2338,7 @@ PING qwant.com (…): 56 data bytes
       - `sshd` garde son identité (`lambda`), mais agit avec les pouvoirs de root
     ],
   ),
-  note(role: "danger")[Tout ce que fait ce `sshd` est fait en root (euid 0). Or il accepte une configuration fournie (`sshd -f`) : c'est la porte de l'escalade (slide suivante). Même mécanisme pour `su`, `sudo`, `passwd` — mais eux ne lisent pas une config arbitraire.],
+  note(role: "danger")[Tout ce que fait ce `sshd` est fait en root (euid 0). Or il accepte une configuration fournie (`sshd -f`) : c'est la porte de l'escalade (diapositive suivante). Même mécanisme pour `su`, `sudo`, `passwd` — mais eux ne lisent pas une config arbitraire.],
   note: _note,
 )
 
@@ -2387,7 +2374,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Root au démarrage seulement : gosu ou setpriv
-#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13, image construite depuis debian:13 (paquet gosu 1.17 de Debian). Clic 1 : le conteneur démarre en root (pas de USER) ; l’entrypoint prépare /data puis exec gosu lambda "\$0" "\$\@" relance le même script sous lambda, qui fait exec "\$\@" : PID 1 est sleep, sous lambda. Clic 2 : /data, volume neuf appartenant à root, a été donné à lambda. C’est le code de redis (exec gosu redis "\$0" "\$\@") et de postgres (exec gosu postgres "\$BASH\_SOURCE" "\$\@"), dépôts docker-library consultés le 20/11/2026. Clic 3 : gosu est -rwxr-xr-x : il appelle setuid() parce qu’il est lancé par root ; lancé par lambda, il échoue. Un binaire setuid fait l’inverse : il donne root à qui le lance. Clic 4 : variante, exec setpriv --reuid\=lambda --regid\=lambda --init-groups "\$0" "\$\@" : PID 1 sleep sous lambda, Uid 1000, CapEff 0. setpriv vient de util-linux (/usr/bin/setpriv présent dans debian:13) ; c’est l’alternative que l’auteur de gosu conseille (README de gosu, docker-library/postgres\#1304). Sources : doc Docker « Building best practices » (USER : éviter sudo, utiliser gosu pour démarrer en root puis continuer en non-root) ; OWASP Docker Security Cheat Sheet (règle 2 : utilisateur non privilégié). docker container exec entre en root par défaut (pas de USER dans l’image) : -u lambda simule le service compromis. Liens : doc Docker, https://docs.docker.com/build/building/best-practices/ (section USER) ; gosu, https://github.com/tianon/gosu ; discussion setpriv, https://github.com/docker-library/postgres/issues/1304 ; OWASP, https://cheatsheetseries.owasp.org/cheatsheets/Docker\_Security\_Cheat\_Sheet.html. --no-log-init : useradd n’initialise pas lastlog ni faillog. Sans ce drapeau, créer un compte à très grand UID remplit /var/log/faillog de zéros et fait gonfler la couche de l’image (bug des fichiers creux de l’archive tar de Go) ; drapeau recommandé par la doc Docker « Building best practices » déjà citée. Debian/Ubuntu : le wrapper adduser ne le propose pas. Le conteneur est nommé avec --name svc (svc pour « service ») ; les docker container exec svc qui suivent le désignent par ce nom. Comparaison des droits : gosu est -rw x r-xr-x (un x ordinaire au rang du propriétaire) ; un binaire setuid serait -rw s r-xr-x (le s des slides 103 et 105). C’est la seule différence visible dans ls -l, et c’est elle qui distingue « descendre de root » (gosu, sans setuid) de « faire monter en root » (binaire setuid).]
+#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13, image construite depuis debian:13 (paquet gosu 1.17 de Debian). Clic 1 : le conteneur démarre en root (pas de USER) ; l’entrypoint prépare /data puis exec gosu lambda "\$0" "\$\@" relance le même script sous lambda, qui fait exec "\$\@" : PID 1 est sleep, sous lambda. Clic 2 : /data, volume neuf appartenant à root, a été donné à lambda. C’est le code de redis (exec gosu redis "\$0" "\$\@") et de postgres (exec gosu postgres "\$BASH\_SOURCE" "\$\@"), dépôts docker-library consultés le 20/11/2026. Clic 3 : gosu est -rwxr-xr-x : il appelle setuid() parce qu’il est lancé par root ; lancé par lambda, il échoue. Un binaire setuid fait l’inverse : il donne root à qui le lance. Clic 4 : variante, exec setpriv --reuid\=lambda --regid\=lambda --init-groups "\$0" "\$\@" : PID 1 sleep sous lambda, Uid 1000, CapEff 0. setpriv vient de util-linux (/usr/bin/setpriv présent dans debian:13) ; c’est l’alternative que l’auteur de gosu conseille (README de gosu, docker-library/postgres\#1304). Sources : doc Docker « Building best practices » (USER : éviter sudo, utiliser gosu pour démarrer en root puis continuer en non-root) ; OWASP Docker Security Cheat Sheet (règle 2 : utilisateur non privilégié). docker container exec entre en root par défaut (pas de USER dans l’image) : -u lambda simule le service compromis. Liens : doc Docker, https://docs.docker.com/build/building/best-practices/ (section USER) ; gosu, https://github.com/tianon/gosu ; discussion setpriv, https://github.com/docker-library/postgres/issues/1304 ; OWASP, https://cheatsheetseries.owasp.org/cheatsheets/Docker\_Security\_Cheat\_Sheet.html. --no-log-init : useradd n’initialise pas lastlog ni faillog. Sans ce drapeau, créer un compte à très grand UID remplit /var/log/faillog de zéros et fait gonfler la couche de l’image (bug des fichiers creux de l’archive tar de Go) ; drapeau recommandé par la doc Docker « Building best practices » déjà citée. Debian/Ubuntu : le wrapper adduser ne le propose pas. Le conteneur est nommé avec --name svc (svc pour « service ») ; les docker container exec svc qui suivent le désignent par ce nom. Comparaison des droits : gosu est -rw x r-xr-x (un x ordinaire au rang du propriétaire) ; un binaire setuid serait -rw s r-xr-x (le s des diapositives 103 et 105). C’est la seule différence visible dans ls -l, et c’est elle qui distingue « descendre de root » (gosu, sans setuid) de « faire monter en root » (binaire setuid).]
 #anime(
   rang(
     bloc[Dockerfile + entrypoint.sh][
@@ -2430,7 +2417,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Root au démarrage : réduire ses pouvoirs
-#let _note = [Même image que la slide précédente (gosu-demo), sorties réelles sur docker.io 26.1.5 de Debian 13. Clic 1 : trois capabilities suffisent à l’entrypoint : CHOWN pour chown /data, SETUID et SETGID pour que gosu change d’identité. Avant la descente, root a CapEff 00000000000000c1 (ces trois-là) au lieu de 00000000a80425fb (les 14 par défaut). Clic 2 : après exec gosu, le noyau vide les capabilities en passant de l’uid 0 à 1000 : CapEff 0 ; NoNewPrivs 1 : un setuid ne rendrait pas root. Clic 3 : retirer CHOWN ou SETUID fait échouer le démarrage (code 1), avec un message clair : on ajuste la liste à l’essai. Encadré « Et toujours » : rappels de la partie Sécurité (user namespace, rootless, seccomp, AppArmor, --privileged, socket Docker). Sources : OWASP Docker Security Cheat Sheet (règles 3 et 4 : --cap-drop all puis ajouts, --security-opt\=no-new-privileges ; règle 11 : rootless) ; CIS Docker Benchmark 5.7 (pas de sshd dans un conteneur, docker exec depuis l’hôte) et 4.8 (retirer setuid/setgid). CIS : Center for Internet Security, organisme indépendant à but non lucratif ; ses « CIS Benchmarks » sont des guides de durcissement rédigés par consensus d’experts, un par produit (https://www.cisecurity.org/benchmark/docker). Numéros de règles des versions 1.5 à 1.8 du CIS Docker Benchmark (d’après les fiches d’audit Tenable) ; la dernière version publiée est la 1.9, dont le texte complet est réservé aux inscrits. Liens : OWASP Docker Security Cheat Sheet, https://cheatsheetseries.owasp.org/cheatsheets/Docker\_Security\_Cheat\_Sheet.html. CapEff \= ensemble effectif des capabilities, lu dans /proc/\<pid\>/status : un masque de 64 bits où chaque bit est une capability (rappel slide Capabilities). Avant la descente, root a CapEff 00000000a80425fb (les 14 capabilities par défaut de Docker), ou 00000000000000c1 avec le --cap-add de cette slide (CHOWN, SETUID, SETGID) ; après exec gosu, le noyau le vide à 0 en passant à l’uid non-root. NoNewPrivs\=1 : plus aucun setuid ne redonne de capabilities.]
+#let _note = [Même image que la diapositive précédente (gosu-demo), sorties réelles sur docker.io 26.1.5 de Debian 13. Clic 1 : trois capabilities suffisent à l’entrypoint : CHOWN pour chown /data, SETUID et SETGID pour que gosu change d’identité. Avant la descente, root a CapEff 00000000000000c1 (ces trois-là) au lieu de 00000000a80425fb (les 14 par défaut). Clic 2 : après exec gosu, le noyau vide les capabilities en passant de l’uid 0 à 1000 : CapEff 0 ; NoNewPrivs 1 : un setuid ne rendrait pas root. Clic 3 : retirer CHOWN ou SETUID fait échouer le démarrage (code 1), avec un message clair : on ajuste la liste à l’essai. Encadré « Et toujours » : rappels de la partie Sécurité (user namespace, rootless, seccomp, AppArmor, --privileged, socket Docker). Sources : OWASP Docker Security Cheat Sheet (règles 3 et 4 : --cap-drop all puis ajouts, --security-opt\=no-new-privileges ; règle 11 : rootless) ; CIS Docker Benchmark 5.7 (pas de sshd dans un conteneur, docker exec depuis l’hôte) et 4.8 (retirer setuid/setgid). CIS : Center for Internet Security, organisme indépendant à but non lucratif ; ses « CIS Benchmarks » sont des guides de durcissement rédigés par consensus d’experts, un par produit (https://www.cisecurity.org/benchmark/docker). Numéros de règles des versions 1.5 à 1.8 du CIS Docker Benchmark (d’après les fiches d’audit Tenable) ; la dernière version publiée est la 1.9, dont le texte complet est réservé aux inscrits. Liens : OWASP Docker Security Cheat Sheet, https://cheatsheetseries.owasp.org/cheatsheets/Docker\_Security\_Cheat\_Sheet.html. CapEff \= ensemble effectif des capabilities, lu dans /proc/\<pid\>/status : un masque de 64 bits où chaque bit est une capability (rappel diapositive Capabilities). Avant la descente, root a CapEff 00000000a80425fb (les 14 capabilities par défaut de Docker), ou 00000000000000c1 avec le --cap-add de cette slide (CHOWN, SETUID, SETGID) ; après exec gosu, le noyau le vide à 0 en passant à l’uid non-root. NoNewPrivs\=1 : plus aucun setuid ne redonne de capabilities.]
 #anime(
   rang(
     bloc[Réduire ce que root peut faire][
@@ -2460,7 +2447,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Rootless et user namespace : ce que ça coûte
-#let _note = [Limites d’après la documentation Docker « Rootless mode » (docs.docker.com/engine/security/rootless/, pages « known limitations » et « troubleshoot ») et « Isolate containers with a user namespace » (userns-remap). Clic 1 : le rootless déplace tout le démon sous un compte non privilégié, mais perd AppArmor, le checkpoint/restore (CRIU demande root), le réseau overlay de Swarm, et impose un réseau en espace utilisateur plus lent ; les ports \< 1024 et les limites de ressources demandent une configuration. Clic 2 : userns-remap garde le démon en root et ne décale que les UID : d’où le piège des droits sur les bind mounts (un fichier appartient à l’UID de début de plage, 165536 sur un Debian avec un compte, cf. slide User namespace). Clic 3 : les deux réduisent la surface d’attaque sans supprimer le risque d’évasion par le noyau (OWASP Docker Security Cheat Sheet, règle 11). Sources : docs.docker.com/engine/security/rootless/, docs.docker.com/engine/security/userns-remap/, cheatsheetseries.owasp.org/cheatsheets/Docker\_Security\_Cheat\_Sheet.html.]
+#let _note = [Limites d’après la documentation Docker « Rootless mode » (docs.docker.com/engine/security/rootless/, pages « known limitations » et « troubleshoot ») et « Isolate containers with a user namespace » (userns-remap). Clic 1 : le rootless déplace tout le démon sous un compte non privilégié, mais perd AppArmor, le checkpoint/restore (CRIU demande root), le réseau overlay de Swarm, et impose un réseau en espace utilisateur plus lent ; les ports \< 1024 et les limites de ressources demandent une configuration. Clic 2 : userns-remap garde le démon en root et ne décale que les UID : d’où le piège des droits sur les bind mounts (un fichier appartient à l’UID de début de plage, 165536 sur un Debian avec un compte, cf. diapositive User namespace). Clic 3 : les deux réduisent la surface d’attaque sans supprimer le risque d’évasion par le noyau (OWASP Docker Security Cheat Sheet, règle 11). Sources : docs.docker.com/engine/security/rootless/, docs.docker.com/engine/security/userns-remap/, cheatsheetseries.owasp.org/cheatsheets/Docker\_Security\_Cheat\_Sheet.html.]
 #anime(
   rang(
     bloc(role: "precaution")[Docker rootless : le démon sous un utilisateur][
@@ -2482,7 +2469,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Pourquoi Compose ? Intérêt et limite
-#let _note = [Slide de transition entre docker container run et Compose. Clic 1 : le besoin (pics de charge, application à plusieurs conteneurs). Clic 2 : ce que coûte la description à la main. Clic 3 : Compose. Clic 4 : ce qui se multiplie bien, un service sans état ; démonstration dans « Compose : passer à l’échelle » (5 instances derrière Traefik). Clic 5 : la limite, démontrée après la mise à l’échelle (slide « La limite : --scale sur une base de données ») : deux PostgreSQL sur le même volume divergent. Mettre une base à l’échelle relève de ses propres mécanismes : réplication en flux de PostgreSQL (un primaire qui écrit, des secondaires en lecture), réplication de MySQL ; ou d’un service managé.]
+#let _note = [Diapositive de transition entre docker container run et Compose. Clic 1 : le besoin (pics de charge, application à plusieurs conteneurs). Clic 2 : ce que coûte la description à la main. Clic 3 : Compose. Clic 4 : ce qui se multiplie bien, un service sans état ; démonstration dans « Compose : passer à l’échelle » (5 instances derrière Traefik). Clic 5 : la limite, démontrée après la mise à l’échelle (diapositive « La limite : --scale sur une base de données ») : deux PostgreSQL sur le même volume divergent. Mettre une base à l’échelle relève de ses propres mécanismes : réplication en flux de PostgreSQL (un primaire qui écrit, des secondaires en lecture), réplication de MySQL ; ou d’un service managé.]
 #anime(
   rang(
     bloc(role: "pratique")[Un cas réel : une boutique en ligne][
@@ -2620,7 +2607,7 @@ PING qwant.com (…): 56 data bytes
 = Utilisation avancée · Sécurité
 
 == Le socket Docker : un accès root
-#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 ; outil-docker \= debian:13 + paquet docker-cli de Debian (le client seul). Clic 1 : srw-rw---- root docker : seuls root et le groupe docker peuvent s’y connecter (rappel : groupe docker \= root de fait, slide « Le démon Docker »). Clic 2 : le conteneur reçoit le socket en lecture seule, comme Traefik dans la slide Compose ; son client docker demande à dockerd un nouveau conteneur qui monte / de l’hôte en /hote. Clic 3 : le fichier existe sur l’hôte, propriétaire root. « :ro » rend le fichier du socket non modifiable, mais se connecter et envoyer des requêtes reste permis (le noyau ne vérifie pas le montage en lecture seule pour un connect() sur un socket Unix). Sources : CIS Docker Benchmark 5.32 « Ensure that the Docker socket is not mounted inside any containers » ; doc Docker « Docker Engine security » (« only trusted users should be allowed to control your Docker daemon »). CIS : Center for Internet Security, organisme indépendant à but non lucratif ; ses « CIS Benchmarks » sont des guides de durcissement rédigés par consensus d’experts, un par produit (https://www.cisecurity.org/benchmark/docker). Numéros de règles des versions 1.5 à 1.8 du CIS Docker Benchmark (d’après les fiches d’audit Tenable) ; la dernière version publiée est la 1.9, dont le texte complet est réservé aux inscrits. Lien doc Docker : https://docs.docker.com/engine/security/.]
+#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 ; outil-docker \= debian:13 + paquet docker-cli de Debian (le client seul). Clic 1 : srw-rw---- root docker : seuls root et le groupe docker peuvent s’y connecter (rappel : groupe docker \= root de fait, diapositive « Le démon Docker »). Clic 2 : le conteneur reçoit le socket en lecture seule, comme Traefik dans la diapositive Compose ; son client docker demande à dockerd un nouveau conteneur qui monte / de l’hôte en /hote. Clic 3 : le fichier existe sur l’hôte, propriétaire root. « :ro » rend le fichier du socket non modifiable, mais se connecter et envoyer des requêtes reste permis (le noyau ne vérifie pas le montage en lecture seule pour un connect() sur un socket Unix). Sources : CIS Docker Benchmark 5.32 « Ensure that the Docker socket is not mounted inside any containers » ; doc Docker « Docker Engine security » (« only trusted users should be allowed to control your Docker daemon »). CIS : Center for Internet Security, organisme indépendant à but non lucratif ; ses « CIS Benchmarks » sont des guides de durcissement rédigés par consensus d’experts, un par produit (https://www.cisecurity.org/benchmark/docker). Numéros de règles des versions 1.5 à 1.8 du CIS Docker Benchmark (d’après les fiches d’audit Tenable) ; la dernière version publiée est la 1.9, dont le texte complet est réservé aux inscrits. Lien doc Docker : https://docs.docker.com/engine/security/.]
 #anime(
   rang(
     bloc(role: "danger", poids: 1.3)[Terminal — preuve][
@@ -2650,7 +2637,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Si un service doit lire l’API : filtrer
-#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13, tecnativa/docker-socket-proxy (HAProxy 3.4.7, image du 17/11/2026). La doc Traefik recommande ce proxy pour filtrer l’accès à l’API. DISABLE\_IPV6\=1 n’est nécessaire que sur la machine de test, sans IPv6 (sinon HAProxy refuse de démarrer) ; sur un poste normal, l’omettre. Clic 1 : le proxy est le seul à monter le socket ; CONTAINERS\=1 autorise GET /containers ; POST\=0 (défaut) interdit toute écriture. Clic 2 : charming\_elbakyan est le conteneur outil-docker lui-même. Clic 3 : POST /containers/create refusé par le proxy (403), le fichier n’est pas créé. Clic 4 : limites. GET /containers/{id}/json renvoie la configuration complète, variables d’environnement comprises : un secret passé par -e reste lisible. exposedbydefault\=false n’agit que sur le routage de Traefik (seuls les conteneurs avec traefik.enable\=true sont publiés). Rootless : slide « Le démon Docker ». Liens : docker-socket-proxy, https://github.com/Tecnativa/docker-socket-proxy ; doc Traefik (sécurité de l’accès à l’API Docker), https://doc.traefik.io/traefik/reference/install-configuration/providers/docker/.]
+#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13, tecnativa/docker-socket-proxy (HAProxy 3.4.7, image du 17/11/2026). La doc Traefik recommande ce proxy pour filtrer l’accès à l’API. DISABLE\_IPV6\=1 n’est nécessaire que sur la machine de test, sans IPv6 (sinon HAProxy refuse de démarrer) ; sur un poste normal, l’omettre. Clic 1 : le proxy est le seul à monter le socket ; CONTAINERS\=1 autorise GET /containers ; POST\=0 (défaut) interdit toute écriture. Clic 2 : charming\_elbakyan est le conteneur outil-docker lui-même. Clic 3 : POST /containers/create refusé par le proxy (403), le fichier n’est pas créé. Clic 4 : limites. GET /containers/{id}/json renvoie la configuration complète, variables d’environnement comprises : un secret passé par -e reste lisible. exposedbydefault\=false n’agit que sur le routage de Traefik (seuls les conteneurs avec traefik.enable\=true sont publiés). Rootless : diapositive « Le démon Docker ». Liens : docker-socket-proxy, https://github.com/Tecnativa/docker-socket-proxy ; doc Traefik (sécurité de l’accès à l’API Docker), https://doc.traefik.io/traefik/reference/install-configuration/providers/docker/.]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.3)[Terminal][
@@ -2731,7 +2718,7 @@ PING qwant.com (…): 56 data bytes
 = Ouverture · Podman
 
 == Podman : un moteur de conteneurs sans démon
-#let _note = [Podman (pod manager), moteur de conteneurs de Red Hat, bibliothèque libpod. Architecture d’après la documentation Podman et Red Hat « What is Podman » (redhat.com/en/topics/containers/what-is-podman). Modèle fork/exec : podman run duplique le processus de l’utilisateur ; l’enfant met en place le conteneur et exec le runtime OCI (crun par défaut, ou runc), sous la surveillance de conmon (le moniteur de conteneur, qui tient le tty, les journaux et le code de sortie). Le conteneur n’est donc pas l’enfant d’un démon root mais de l’utilisateur ; conmon le garde en vie après la fermeture du CLI. À comparer avec la chaîne Docker client → dockerd (root) → containerd → runc (slides Architecture et Le démon Docker). Rootless par défaut : mêmes user namespaces que la slide correspondante, mais actifs d’emblée, sans démon root ni groupe docker. Debian 13 : paquet podman 5.4.2. Source : docs Podman, podman.io.]
+#let _note = [Podman (pod manager), moteur de conteneurs de Red Hat, bibliothèque libpod. Architecture d’après la documentation Podman et Red Hat « What is Podman » (redhat.com/en/topics/containers/what-is-podman). Modèle fork/exec : podman run duplique le processus de l’utilisateur ; l’enfant met en place le conteneur et exec le runtime OCI (crun par défaut, ou runc), sous la surveillance de conmon (le moniteur de conteneur, qui tient le tty, les journaux et le code de sortie). Le conteneur n’est donc pas l’enfant d’un démon root mais de l’utilisateur ; conmon le garde en vie après la fermeture du CLI. À comparer avec la chaîne Docker client → dockerd (root) → containerd → runc (diapositives Architecture et Le démon Docker). Rootless par défaut : mêmes user namespaces que la diapositive correspondante, mais actifs d’emblée, sans démon root ni groupe docker. Debian 13 : paquet podman 5.4.2. Source : docs Podman, podman.io.]
 #anime(
   rang(
     bloc[Docker : un démon central][
@@ -2762,7 +2749,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Podman et Docker : différences et compatibilité
-#let _note = [Tableau et compatibilité d’après la documentation Podman et Red Hat « What is Podman », la page Debian du paquet podman (5.4.2 sur Debian 13) et podman.io. Sans démon : plus de point unique en root ni d’appartenance au groupe docker équivalant à root (slide Le démon Docker) ; l’audit attribue chaque conteneur à son utilisateur. Compatibilité : la CLI reprend les mêmes verbes que Docker (run, build, images, ps…), d’où alias docker\=podman et le paquet podman-docker qui installe une commande docker ; podman build réutilise Buildah, podman lit les Dockerfile et les images OCI/Docker Hub. podman system service expose un socket compatible avec l’API Docker, ce qui fait tourner docker compose et les outils qui lisent /var/run/docker.sock (à filtrer de même, cf. annexe socket). Pods : un groupe de conteneurs partageant les namespaces (réseau, IPC…) autour d’un conteneur « infra », calqué sur le pod Kubernetes ; podman kube play consomme un manifeste Kubernetes. Mêmes mécanismes du noyau que Docker et même runtime OCI (crun/runc) : toute la partie Sécurité (capabilities, seccomp, AppArmor, user namespaces) reste valable. Sources : redhat.com/en/topics/containers/what-is-podman, docs.podman.io, packages.debian.org/trixie/podman.]
+#let _note = [Tableau et compatibilité d’après la documentation Podman et Red Hat « What is Podman », la page Debian du paquet podman (5.4.2 sur Debian 13) et podman.io. Sans démon : plus de point unique en root ni d’appartenance au groupe docker équivalant à root (diapositive Le démon Docker) ; l’audit attribue chaque conteneur à son utilisateur. Compatibilité : la CLI reprend les mêmes verbes que Docker (run, build, images, ps…), d’où alias docker\=podman et le paquet podman-docker qui installe une commande docker ; podman build réutilise Buildah, podman lit les Dockerfile et les images OCI/Docker Hub. podman system service expose un socket compatible avec l’API Docker, ce qui fait tourner docker compose et les outils qui lisent /var/run/docker.sock (à filtrer de même, cf. annexe socket). Pods : un groupe de conteneurs partageant les namespaces (réseau, IPC…) autour d’un conteneur « infra », calqué sur le pod Kubernetes ; podman kube play consomme un manifeste Kubernetes. Mêmes mécanismes du noyau que Docker et même runtime OCI (crun/runc) : toute la partie Sécurité (capabilities, seccomp, AppArmor, user namespaces) reste valable. Sources : redhat.com/en/topics/containers/what-is-podman, docs.podman.io, packages.debian.org/trixie/podman.]
 #anime(
   rang(
     bloc[Les différences][

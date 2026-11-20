@@ -32,6 +32,8 @@ VM imbriquée (pointillés).
 - Blocs colorés côte à côte, à hauteur égale :
   `#colonnes(bloc[Titre][- point], bloc(role: "pratique")[Titre][- point])`
 - Note courte : `#note(role: "pratique")[...]` ; encadré à libellé : `#encadre(role: "precaution", libelle: [En vrai :])[...]`.
+- Plusieurs questions et réponses sur une diapo : `#corriges(note: […], (1, [question], reponse[…]), …)`.
+- Couverture : `#couverture(illustration: "vm" | "couches")[titre][sous-titre][auteur][date]`.
 - Corrigé de TP : `#corrige(n, [question], uncover("2-", reponse(terminal[...])))` ; la question porte le vert
   clair du rôle `question`, la réponse une barre vert foncé qui apparaît avec elle.
 - Machine lancée par la commande au-dessus, dans un terminal : `#cadre([VM (niveau 1)], niveau: 1)[...]`.

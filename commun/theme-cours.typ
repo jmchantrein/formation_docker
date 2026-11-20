@@ -317,6 +317,20 @@
 #let corrige(n, q, rep) = grid(columns: (px(700), 1fr), column-gutter: px(32),
   question(n, q), rep)
 
+// Plusieurs questions et leurs réponses sur une diapo : la question reste visible, chaque réponse apparaît
+// à son clic. items : (n, [question], reponse[…]) ; la réponse s’écrit avec reponse(…).
+#let corriges(note: none, ..items) = {
+  let qa = items.pos()
+  slide(repeat: qa.len() + 1, self => {
+    let (uncover,) = utils.methods(self)
+    for (i, it) in qa.enumerate() {
+      corrige(it.at(0), it.at(1), uncover(str(i + 2) + "-", it.at(2)))
+      if i < qa.len() - 1 { v(px(16)) }
+    }
+    if note != none { utils.speaker-note(self: self, note) }
+  })
+}
+
 // ---------- Schémas en couches ----------
 #let couche(texte, fond: c.nuit, hauteur: px(72), taille: px(30), puces: ()) = block(
   width: 100%, height: hauteur, fill: fond, radius: px(8),
@@ -360,18 +374,27 @@
 #let pose(x, y, corps) = place(top + left, dx: px(x), dy: px(y), corps)
 
 // ---------- Couverture ----------
-#let couverture-seule(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA") = touying-slide-wrapper(self => {
+// Illustrations de couverture : « vm » (trois VM sur un hyperviseur, sur le matériel) ou
+// « couches » (les couches d’une image : trois en lecture seule, une en lecture/écriture au sommet).
+#let illustrations = (
+  vm: stack(spacing: px(16),
+    grid(columns: (px(176),) * 3, column-gutter: px(16),
+      ..range(3).map(_ => box(width: px(176), height: px(96), fill: c.invite-t, radius: px(12)))),
+    box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
+    box(width: px(560), height: px(56), fill: c.gris, radius: px(12)),
+  ),
+  couches: stack(spacing: px(16),
+    box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
+    ..range(3).map(_ => box(width: px(560), height: px(56), fill: c.commentaire, radius: px(12))),
+  ),
+)
+
+#let couverture-seule(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA", illustration: "vm") = touying-slide-wrapper(self => {
   self = utils.merge-dicts(self,
     config-common(subslide-preamble: none),
     config-page(fill: c.nuit, footer: none, margin: px(128)))
   touying-slide(self: self, {
-    // Illustration : trois VM sur un hyperviseur, sur le matériel.
-    place(top + left, dx: px(1104), dy: px(184), stack(spacing: px(16),
-      grid(columns: (px(176),) * 3, column-gutter: px(16),
-        ..range(3).map(_ => box(width: px(176), height: px(96), fill: c.invite-t, radius: px(12)))),
-      box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
-      box(width: px(560), height: px(56), fill: c.gris, radius: px(12)),
-    ))
+    place(top + left, dx: px(1104), dy: px(184), illustrations.at(illustration))
     text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, maj(surtitre))
     v(1fr)
     block(width: px(1040), {
