@@ -4,24 +4,49 @@
 #import "@preview/touying:0.8.0": *
 #import themes.simple: *
 
+// ---------- Rôles pédagogiques ----------
+// Le cours dit ce qu’est un bloc (son rôle) ; la charte décide de son apparence.
+#let roles-def = (
+  notion: (nom: "Notion", projection: "bleu", sens: "définir, expliquer"),
+  pratique: (nom: "Pratique", projection: "vert", sens: "exemple, démonstration, exercice, usage réel"),
+  retenir: (nom: "À retenir", projection: "bleu nuit", sens: "synthèse, point clé"),
+  precaution: (nom: "Précaution", projection: "jaune", sens: "nuance, confusion fréquente, limite"),
+  avertissement: (nom: "Avertissement", projection: "orange", sens: "erreur probable, mauvaise pratique"),
+  danger: (nom: "Danger", projection: "rouge", sens: "risque réel : sécurité, perte de données"),
+)
+
 // ---------- Variantes de rendu ----------
-// Choisies à la compilation, sans toucher aux cours : typst compile --input variante=<nom> …
-// - normal (défaut) : rendu de projection ;
-// - deuteranopie, protanopie, tritanopie, achromatopsie : palette ajustée (voir `palettes` plus bas) ;
+// Choisies à la compilation : typst compile --input variante=<nom> …
+// - normal (défaut) : rendu de projection, pensé pour la vision typique ;
+// - deuteranopie, protanopie, tritanopie, achromatopsie : palette propre à chaque vision ;
 // - dyslexie : lettres, mots et lignes plus espacés, ni capitales forcées ni italique.
-// Écarts de couleur vérifiés par simulation (ΔE CIELAB ; Machado 2009 pour les dichromasies,
-// luminance seule pour l’achromatopsie) ; texte blanc sur en-tête et texte sur terminal : contraste ≥ 4,5.
-#let rouge-vert = (vert: rgb("#00695C"), vert-clair: rgb("#E0F2F1"), menthe: rgb("#A0E0D0"))
+// Chaque palette garde les rôles distincts pour la vision visée (écarts ΔE CIELAB simulés : Machado 2009
+// pour les dichromasies, clarté seule pour l’achromatopsie) ; les pictogrammes doublent la couleur partout.
+// Contraste du texte d’en-tête (blanc ou encre, choisi selon la clarté) et du texte sur terminal : ≥ 4,5.
+// Clés : en-têtes des rôles ; invite / invite-clair (schémas) ; appli ; cadres de terminal hote-t, invite-t, imbrique-t.
+#let palette-projection = (
+  notion: rgb("#1F63C9"), pratique: rgb("#1E7A46"), retenir: rgb("#14213D"),
+  precaution: rgb("#F2C94C"), avertissement: rgb("#B4530F"), danger: rgb("#B3123C"),
+  invite: rgb("#7B3FB0"), invite-clair: rgb("#DDC4F5"), appli: rgb("#D3E4FB"),
+  hote-t: rgb("#7DB4FF"), invite-t: rgb("#C9A7F5"), imbrique-t: rgb("#FF9EC4"),
+)
+// Dichromasies rouge-vert : seuls l’axe bleu/jaune et la clarté restent. Le vert passe au bleu-vert, le rouge
+// s’assombrit, l’invité (violet, vu comme du bleu) devient ocre. Écart minimal entre rôles : 28 (deutéranopie),
+// 23 (protanopie), contre 9 et 12 avec la palette de projection.
+#let rouge-vert = (pratique: rgb("#006E7A"), danger: rgb("#7A0F2A"), invite: rgb("#7A5A00"),
+  invite-clair: rgb("#EEDC9A"), invite-t: rgb("#E8C95A"), imbrique-t: rgb("#E8E8E8"))
 #let palettes = (
-  // Le vert devient bleu-vert. Écart minimal bleu/vert/orange : 27 → 58 (deutéranopie), 17 → 45 (protanopie).
   deuteranopie: rouge-vert,
   protanopie: rouge-vert,
-  // Confusion bleu/vert : le vert devient violet. Écart minimal des en-têtes 16 → 37, des cadres 23 → 44.
-  tritanopie: (vert: rgb("#6A3D9A"), vert-clair: rgb("#EFE8F6"), menthe: rgb("#D9B3FF")),
-  // Sans couleur, seule la clarté distingue : niveaux L* espacés de 16 au moins
-  // (en-têtes 15/32/48, cadres 58/75/88, cases OS/appli 76/91), au lieu de 1 à 2.
-  achromatopsie: (vert: rgb("#002F0B"), bleu: rgb("#174996"), orange: rgb("#AD5D2A"),
-    menthe: rgb("#629775"), prompt: rgb("#94BAF7"), ambre: rgb("#FFD796"), os: rgb("#CFB7A3")),
+  // Confusion bleu/vert et jaune/violet : le vert tire vers l’olive. Écart minimal : 18 → 28.
+  tritanopie: (pratique: rgb("#6B6B00"), danger: rgb("#C2002F"), invite: rgb("#8E2C8C"),
+    invite-clair: rgb("#F4C6E6"), invite-t: rgb("#F29ACB"), imbrique-t: rgb("#E9E39A")),
+  // Sans couleur : une échelle de clarté L* (en-têtes 8/20/31/45/70/90, invité 38 ;
+  // cadres 58/76/91), la pratique et la précaution passant en en-tête clair à texte foncé.
+  achromatopsie: (retenir: rgb("#10172A"), danger: rgb("#68001D"), notion: rgb("#25468A"),
+    avertissement: rgb("#9E582D"), pratique: rgb("#7EB88F"), precaution: rgb("#FFDF8A"),
+    invite: rgb("#714793"), invite-clair: rgb("#CCBADC"), appli: rgb("#E0ECFC"),
+    hote-t: rgb("#6C8DBF"), invite-t: rgb("#CAB1E8"), imbrique-t: rgb("#FFDAF4")),
 )
 #let variantes = ("normal", "dyslexie") + palettes.keys()
 #let variante = sys.inputs.at("variante", default: "normal")
@@ -34,16 +59,70 @@
 // Échelle : 1 px de la maquette = 0,4385 pt sur la page 16:9 de Touying.
 #let px(n) = n * 0.4385pt
 
+#let pal = palette-projection + palettes.at(variante, default: (:))
 #let c = (
-  bleu: rgb("#1F63C9"), bleu-clair: rgb("#E8EFFA"),
-  vert: rgb("#1E7A46"), vert-clair: rgb("#E4F2E9"),
-  orange: rgb("#B4530F"), orange-clair: rgb("#FBE9DA"),
   nuit: rgb("#0F1E33"), encre: rgb("#14213D"), gris: rgb("#5B6680"),
   ardoise: rgb("#44506A"), fond: rgb("#F6F7F3"), espace: rgb("#EDF0F3"),
-  filet: rgb("#D5DAE0"), appli: rgb("#D6E6FB"), os: rgb("#FBDDC2"),
-  prompt: rgb("#7DB4FF"), commentaire: rgb("#9FB0C8"), texte-term: rgb("#E6EDF7"),
-  ambre: rgb("#F29A4B"), menthe: rgb("#8FD6A8"), encart: rgb("#2A3954"),
-) + palettes.at(variante, default: (:))
+  filet: rgb("#D5DAE0"), prompt: rgb("#7DB4FF"), commentaire: rgb("#9FB0C8"), texte-term: rgb("#E6EDF7"),
+  encart: rgb("#2A3954"),
+  // Accent de la charte (surtitres, code, numéros) : la couleur des notions.
+  bleu: pal.notion, bleu-clair: rgb("#E8EFFA"),
+  // Structure des schémas : hôte et applications en bleu, invité (VM, OS invité) en violet.
+  appli: pal.appli, invite: pal.invite, invite-clair: pal.invite-clair,
+  hote-t: pal.hote-t, invite-t: pal.invite-t, imbrique-t: pal.imbrique-t,
+)
+
+// Texte lisible sur une couleur : encre sur fond clair, blanc cassé sur fond foncé.
+#let clarte(col) = {
+  let (r, g, b, ..) = col.rgb().components()
+  let lin(x) = { let v = x / 100%; if v <= 0.04045 { v / 12.92 } else { calc.pow((v + 0.055) / 1.055, 2.4) } }
+  0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+}
+#let texte-sur(col) = if clarte(col) > 0.3 { c.encre } else { c.fond }
+
+// Fonds clairs des rôles en projection (choisis à la main) ; dans les variantes, dérivés de l’en-tête.
+#let fonds-projection = (
+  notion: rgb("#E8EFFA"), pratique: rgb("#E4F2E9"), retenir: rgb("#E6E9F0"),
+  precaution: rgb("#FFF6D9"), avertissement: rgb("#FBE9DA"), danger: rgb("#FBE3E8"),
+)
+#let roles = roles-def.keys().map(r => {
+  let entete = pal.at(r)
+  let fond = if variante in palettes { color.mix((entete, 14%), (c.fond, 86%)) } else { fonds-projection.at(r) }
+  // accent : texte coloré sur le fond clair du rôle (le jaune, trop clair, est assombri)
+  let accent = if clarte(entete) > 0.3 { entete.darken(60%) } else { entete }
+  (r, (entete: entete, fond: fond, texte: texte-sur(entete), accent: accent))
+}).to-dict()
+
+// Pictogramme d’un rôle : la forme porte le rôle sans la couleur (triangle → losange → octogone
+// pour les trois niveaux d’alerte, comme la signalisation routière).
+#let picto(role, forme, glyphe, t: px(30)) = {
+  let pt(x, y) = (t * x, t * y)
+  let alerte = role in ("precaution", "avertissement", "danger")
+  let fig = if role == "pratique" { polygon(fill: forme, pt(0.1, 0), pt(0.95, 0.5), pt(0.1, 1)) }
+    else if role == "retenir" {
+      polygon(fill: forme, ..range(10).map(i => {
+        let a = -90deg + i * 36deg
+        let r = if calc.even(i) { 0.5 } else { 0.21 }
+        pt(0.5 + r * calc.cos(a), 0.53 + r * calc.sin(a))
+      }))
+    }
+    else if role == "precaution" { polygon(fill: forme, pt(0.5, 0), pt(1, 0.95), pt(0, 0.95)) }
+    else if role == "avertissement" { polygon(fill: forme, pt(0.5, 0), pt(1, 0.5), pt(0.5, 1), pt(0, 0.5)) }
+    else if role == "danger" {
+      polygon(fill: forme, ..range(8).map(i => {
+        let a = 22.5deg + i * 45deg
+        pt(0.5 + 0.52 * calc.cos(a), 0.5 + 0.52 * calc.sin(a))
+      }))
+    }
+  if fig == none { return none }
+  box(width: t, height: t, baseline: 18%, {
+    fig
+    if alerte {
+      place(top + left, dy: if role == "precaution" { t * 0.2 } else { t * 0.08 }, box(width: t, height: t * 0.8,
+        align(center + horizon, text(size: t * 0.62, weight: 700, fill: glyphe, top-edge: "cap-height", bottom-edge: "baseline", "!"))))
+    }
+  })
+}
 
 #let mono = "IBM Plex Mono"
 
@@ -104,15 +183,24 @@
 
 // ---------- Blocs colorés ----------
 // bloc(...) décrit un bloc ; colonnes(...) les pose côte à côte, à hauteur égale.
-#let bloc(titre, entete: c.bleu, fond: c.bleu-clair, poids: 1, taille: px(28), taille-titre: px(28), corps) = (
-  titre: titre, entete: entete, fond: fond, poids: poids, taille: taille, taille-titre: taille-titre, corps: corps,
-)
+// role : notion (défaut), pratique, retenir, precaution, avertissement, danger (voir roles-def).
+#let bloc(titre, role: "notion", poids: 1, taille: px(28), taille-titre: px(28), corps) = {
+  assert(role in roles, message: "rôle inconnu : " + role + " (attendu : " + roles.keys().join(", ") + ")")
+  (titre: titre, role: role, poids: poids, taille: taille, taille-titre: taille-titre, corps: corps)
+}
+
+// En-tête d’un rôle : pictogramme puis titre.
+#let entete-role(role, titre, taille) = {
+  let r = roles.at(role)
+  let p = picto(role, r.texte, r.entete, t: taille * 1.05)
+  text(fill: r.texte, size: taille, weight: 600, { if p != none { p; h(taille * 0.4) }; titre })
+}
 
 #let rendre-bloc(b, hauteur: auto) = block(
-  width: 100%, height: hauteur, radius: px(12), clip: true, fill: b.fond,
+  width: 100%, height: hauteur, radius: px(12), clip: true, fill: roles.at(b.role).fond,
   stack(
-    block(width: 100%, fill: b.entete, inset: (x: px(28), y: px(12)),
-      text(fill: c.fond, size: b.taille-titre, weight: 600, b.titre)),
+    block(width: 100%, fill: roles.at(b.role).entete, inset: (x: px(28), y: px(12)),
+      entete-role(b.role, b.titre, b.taille-titre)),
     block(width: 100%, inset: (x: px(28), y: px(22)), { set text(size: b.taille); b.corps }),
   ),
 )
@@ -131,9 +219,25 @@
     corps
   })
 
-// Petite note sur fond coloré.
-#let note(fond: c.vert-clair, couleur: c.encre, taille: px(20), corps) = block(width: 100%, fill: fond,
-  radius: px(10), inset: (x: px(18), y: px(12)), text(size: taille, fill: couleur, corps))
+// Petite note sur le fond clair d’un rôle, avec son pictogramme.
+#let note(role: "pratique", taille: px(20), corps) = {
+  let r = roles.at(role)
+  let p = picto(role, r.accent, r.fond, t: taille * 1.05)
+  block(width: 100%, fill: r.fond, radius: px(10), inset: (x: px(18), y: px(12)),
+    text(size: taille, fill: c.encre, { if p != none { p; h(taille * 0.4) }; corps }))
+}
+
+// Encadré pleine hauteur sur le fond clair d’un rôle, à libellé en tête (« En vrai : », « Intérêt : »…).
+#let encadre(role: "notion", libelle: none, taille: px(22), hauteur: auto, corps) = {
+  let r = roles.at(role)
+  let p = picto(role, r.accent, r.fond, t: taille * 1.05)
+  block(width: 100%, height: hauteur, fill: r.fond, radius: px(12), inset: (x: px(20), y: px(12)),
+    align(horizon, text(size: taille, {
+      if p != none { p; h(taille * 0.4) }
+      if libelle != none { text(weight: 600, fill: r.accent, libelle); " " }
+      corps
+    })))
+}
 
 // ---------- Terminal ----------
 // Lignes « $ … » : invite colorée ; lignes « # … » : commentaire grisé.
@@ -158,18 +262,25 @@
 // Encart plus clair dans un terminal (moniteur QEMU, session dans l'invité…).
 #let encart(titre, corps) = block(width: 100%, fill: c.encart, radius: px(8),
   inset: (x: px(14), y: px(10)), above: px(10), below: px(4), {
-    block(below: px(6), text(font: mono, size: px(22), weight: 600, fill: c.ambre, maj(titre)))
+    block(below: px(6), text(font: mono, size: px(22), weight: 600, fill: c.invite-t, maj(titre)))
     corps
   })
 
-// Cadre coloré dans un terminal : une machine lancée par la commande au-dessus.
-#let cadre(etiquette, couleur, corps) = block(
-  width: 100%, stroke: px(2) + couleur, radius: px(10), fill: couleur.transparentize(90%),
-  inset: (x: px(12), top: px(6), bottom: px(8)), above: px(8), below: px(4), {
-    block(below: px(6), text(size: px(18), weight: 600, tracking: px(1), fill: couleur, maj(etiquette)))
-    corps
-  },
-)
+// Cadre dans un terminal : une machine lancée par la commande au-dessus.
+// niveau 0 = hôte (bleu, trait plein), 1 = VM invitée (violet, tirets), 2 = VM imbriquée (rose, pointillés) :
+// le trait double la couleur.
+#let cadre(etiquette, niveau: 0, corps) = {
+  let couleur = (c.hote-t, c.invite-t, c.imbrique-t).at(niveau)
+  let trait = ("solid", "dashed", "dotted").at(niveau)
+  block(
+    width: 100%, stroke: (paint: couleur, thickness: px(2), dash: trait), radius: px(10),
+    fill: couleur.transparentize(90%),
+    inset: (x: px(12), top: px(6), bottom: px(8)), above: px(8), below: px(4), {
+      block(below: px(6), text(size: px(18), weight: 600, tracking: px(1), fill: couleur, maj(etiquette)))
+      corps
+    },
+  )
+}
 
 // ---------- Listes à deux colonnes (chronologie, fiches) ----------
 #let lignes(largeur: px(260), taille-cle: px(36), taille: px(30), ..paires) = {
@@ -215,7 +326,7 @@
   )),
 )
 
-#let vm(nom, haut: "Appli", bas: "OS invité", couleur: c.orange, fond-bas: c.os, case: px(80),
+#let vm(nom, haut: "Appli", bas: "OS invité", couleur: c.invite, fond-bas: c.invite-clair, case: px(80),
   taille: px(28)) = block(
   width: 100%, stroke: px(3) + couleur, radius: px(12), inset: px(8), fill: c.fond,
   stack(spacing: px(8),
@@ -246,7 +357,7 @@
 #let pose(x, y, corps) = place(top + left, dx: px(x), dy: px(y), corps)
 
 // ---------- Couverture ----------
-#let couverture(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA") = touying-slide-wrapper(self => {
+#let couverture-seule(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA") = touying-slide-wrapper(self => {
   self = utils.merge-dicts(self,
     config-common(subslide-preamble: none),
     config-page(fill: c.nuit, footer: none, margin: px(128)))
@@ -254,8 +365,8 @@
     // Illustration : trois VM sur un hyperviseur, sur le matériel.
     place(top + left, dx: px(1104), dy: px(184), stack(spacing: px(16),
       grid(columns: (px(176),) * 3, column-gutter: px(16),
-        ..range(3).map(_ => box(width: px(176), height: px(96), fill: c.ambre, radius: px(12)))),
-      box(width: px(560), height: px(56), fill: rgb("#4F8FE6"), radius: px(12)),
+        ..range(3).map(_ => box(width: px(176), height: px(96), fill: c.invite-t, radius: px(12)))),
+      box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
       box(width: px(560), height: px(56), fill: c.gris, radius: px(12)),
     ))
     text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, maj(surtitre))
@@ -271,3 +382,32 @@
     text(size: px(32), fill: rgb("#C3D0E4"), date)
   })
 })
+
+// ---------- Légende (variantes seulement) ----------
+// Relie ce rendu à la projection : quand l’enseignant dit « le bloc orange », c’est le bloc avertissement.
+// Hors numérotation, pour que les numéros de diapo restent ceux de la projection.
+#let legende = touying-slide-wrapper(self => {
+  self = utils.merge-dicts(self, config-common(subslide-preamble: none, freeze-slide-counter: true))
+  touying-slide(self: self, {
+    text(size: px(24), weight: 600, tracking: px(2), fill: c.bleu, maj("Légende · rendu " + variante))
+    v(px(16), weak: true)
+    text(size: px(64), weight: 600)[Lire les couleurs de ce rendu]
+    v(px(28))
+    grid(columns: (1fr, 1fr), column-gutter: px(32), row-gutter: px(20),
+      ..roles-def.pairs().map(((r, d)) => block(width: 100%, radius: px(12), clip: true, fill: roles.at(r).fond, stack(
+        block(width: 100%, fill: roles.at(r).entete, inset: (x: px(24), y: px(10)), entete-role(r, d.nom, px(26))),
+        block(width: 100%, inset: (x: px(24), y: px(12)), text(size: px(22))[
+          #d.sens. En projection : *#d.projection*.]),
+      ))))
+    v(px(24))
+    grid(columns: (1fr, 1fr, 1fr), column-gutter: px(24),
+      ..((0, [Hôte], [bleu, trait plein]), (1, [VM invitée], [violet, tirets]), (2, [VM imbriquée], [rose, pointillés]))
+        .map(((n, nom, proj)) => block(width: 100%, fill: c.nuit, radius: px(12), inset: px(12),
+          cadre([#nom], niveau: n)[#text(size: px(20), fill: c.texte-term)[En projection : #proj]])))
+  })
+})
+
+#let couverture(..args) = {
+  couverture-seule(..args)
+  if variante != "normal" { legende }
+}

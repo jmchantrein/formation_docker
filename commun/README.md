@@ -4,10 +4,32 @@
   `#import "../commun/theme-cours.typ": *`
 - `fonts/` : IBM Plex Sans et Mono (SIL Open Font License 1.1, voir `fonts/OFL-IBM-Plex.txt`).
 
+## Principe : le cours dit le rôle, la charte décide de l’apparence
+Un cours n’écrit jamais de couleur : il déclare le **rôle pédagogique** d’un bloc, et la charte en tire
+la couleur, le pictogramme et leur adaptation dans chaque variante.
+
+| Rôle | Pictogramme | Couleur en projection | Usage |
+|---|---|---|---|
+| `notion` (défaut) | — | bleu | définir, expliquer |
+| `pratique` | ▶ | vert | exemple, démonstration, exercice, usage réel |
+| `retenir` | ★ | bleu nuit | synthèse, point clé |
+| `precaution` | triangle ! | jaune | nuance, confusion fréquente, limite |
+| `avertissement` | losange ! | orange | erreur probable, mauvaise pratique |
+| `danger` | octogone ! | rouge | risque réel : sécurité, perte de données |
+
+Les trois niveaux d’alerte suivent la gradation des normes de signalisation (ISO 3864, ANSI Z535) :
+précaution, avertissement, danger ; la forme du pictogramme porte le niveau même sans couleur.
+
+Dans les schémas : hôte et applications en **bleu**, invité (VM, OS invité) en **violet** (`c.invite`,
+`c.invite-clair`). Dans les terminaux, `cadre(…, niveau: 0 | 1 | 2)` : hôte (trait plein), VM invitée (tirets),
+VM imbriquée (pointillés).
+
 ## Écrire une diapo
 - Une section (surtitre bleu) = un titre `=` ; une diapo = un titre `==`.
 - Blocs colorés côte à côte, à hauteur égale :
-  `#colonnes(bloc[Titre][- point], bloc(entete: c.vert, fond: c.vert-clair)[Titre][- point])`
+  `#colonnes(bloc[Titre][- point], bloc(role: "pratique")[Titre][- point])`
+- Note courte : `#note(role: "pratique")[...]` ; encadré à libellé : `#encadre(role: "precaution", libelle: [En vrai :])[...]`.
+- Machine lancée par la commande au-dessus, dans un terminal : `#cadre([VM (niveau 1)], niveau: 1)[...]`.
 - Terminal : `#terminal[```...```]` ; une ligne `$ ` colore l’invite, une ligne `# ` grise le commentaire.
 - Bandeau sombre (origine, éditeur, version) : `#bandeau[...]`.
 - Notes de l’orateur : `#speaker-note[...]`.
@@ -19,6 +41,8 @@
 
 ## Variantes de rendu
 La charte lit `--input variante=<nom>` (normal, deuteranopie, protanopie, tritanopie, achromatopsie, dyslexie)
-et adapte palette et espacements ; les cours n’ont rien à faire. Les réglages et leur justification sont en tête
+et adapte palette et espacements ; les cours n’ont rien à faire. Chaque variante commence par une page
+« Légende », hors numérotation, qui relie ses couleurs à celles de la projection (« le bloc orange » = avertissement). Les réglages et leur justification sont en tête
 de `theme-cours.typ`. Une nouvelle palette s’ajoute dans `palettes` ; penser à l’ajouter aussi à la liste des
-variantes de `.github/workflows/compilation-cours.yml`. Une variante qui déborde sur une page de plus est acceptée.
+variantes de `.github/workflows/compilation-cours.yml`. Si une variante déborde, chercher d’abord une mise en page qui tienne ; le débordement n’est acceptable qu’en
+dernier recours.

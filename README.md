@@ -21,8 +21,9 @@ les autres se téléchargent, pour lire les diapos dans le rendu qui convient à
 | achromatopsie | `<cours>-achromatopsie.pdf` | Vision sans couleur : les couleurs se distinguent par leur clarté. |
 | dyslexie | `<cours>-dyslexie.pdf` | Lettres, mots et lignes plus espacés ; pas de capitales forcées ni d’italique. |
 
-Les palettes sont vérifiées par simulation de chaque type de vision. Une variante peut déborder sur une page
-de plus là où la mise en page est serrée : c’est accepté, l’adaptation prime.
+Les palettes sont vérifiées par simulation de chaque type de vision, et chaque rôle pédagogique porte aussi
+un pictogramme (voir [`commun/README.md`](commun/README.md)). Chaque variante s’ouvre sur une page « Légende »
+qui relie ses couleurs à celles de la projection.
 
 ## Organisation
 - `<cours>/<cours>.typ` : les diapos d’un cours, en [Typst](https://typst.app) avec [Touying](https://github.com/touying-typ/touying).
