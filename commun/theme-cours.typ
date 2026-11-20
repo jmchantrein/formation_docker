@@ -8,8 +8,9 @@
 // Le cours dit ce qu’est un bloc (son rôle) ; la charte décide de son apparence.
 #let roles-def = (
   notion: (nom: "Notion", projection: "bleu", sens: "définir, expliquer"),
-  pratique: (nom: "Pratique", projection: "vert", sens: "exemple, démonstration, exercice, usage réel"),
   retenir: (nom: "À retenir", projection: "bleu nuit", sens: "synthèse, point clé"),
+  pratique: (nom: "Pratique", projection: "vert", sens: "exemple, démo, exercice (la question)"),
+  reponse: (nom: "Réponse", projection: "vert clair", sens: "corrigé d’une question pratique"),
   precaution: (nom: "Précaution", projection: "jaune", sens: "nuance, confusion fréquente, limite"),
   avertissement: (nom: "Avertissement", projection: "orange", sens: "erreur probable, mauvaise pratique"),
   danger: (nom: "Danger", projection: "rouge", sens: "risque réel : sécurité, perte de données"),
@@ -25,7 +26,7 @@
 // Contraste du texte d’en-tête (blanc ou encre, choisi selon la clarté) et du texte sur terminal : ≥ 4,5.
 // Clés : en-têtes des rôles ; invite / invite-clair (schémas) ; appli ; cadres de terminal hote-t, invite-t, imbrique-t.
 #let palette-projection = (
-  notion: rgb("#1F63C9"), pratique: rgb("#1E7A46"), retenir: rgb("#14213D"),
+  notion: rgb("#1F63C9"), pratique: rgb("#1E7A46"), reponse: rgb("#9BCCA9"), retenir: rgb("#14213D"),
   precaution: rgb("#F2C94C"), avertissement: rgb("#B4530F"), danger: rgb("#B3123C"),
   invite: rgb("#7B3FB0"), invite-clair: rgb("#DDC4F5"), appli: rgb("#D3E4FB"),
   hote-t: rgb("#7DB4FF"), invite-t: rgb("#C9A7F5"), imbrique-t: rgb("#FF9EC4"),
@@ -33,18 +34,18 @@
 // Dichromasies rouge-vert : seuls l’axe bleu/jaune et la clarté restent. Le vert passe au bleu-vert, le rouge
 // s’assombrit, l’invité (violet, vu comme du bleu) devient ocre. Écart minimal entre rôles : 28 (deutéranopie),
 // 23 (protanopie), contre 9 et 12 avec la palette de projection.
-#let rouge-vert = (pratique: rgb("#006E7A"), danger: rgb("#7A0F2A"), invite: rgb("#7A5A00"),
+#let rouge-vert = (pratique: rgb("#006E7A"), reponse: rgb("#9CC9D0"), danger: rgb("#7A0F2A"), invite: rgb("#7A5A00"),
   invite-clair: rgb("#EEDC9A"), invite-t: rgb("#E8C95A"), imbrique-t: rgb("#E8E8E8"))
 #let palettes = (
   deuteranopie: rouge-vert,
   protanopie: rouge-vert,
   // Confusion bleu/vert et jaune/violet : le vert tire vers l’olive. Écart minimal : 18 → 28.
-  tritanopie: (pratique: rgb("#6B6B00"), danger: rgb("#C2002F"), invite: rgb("#8E2C8C"),
+  tritanopie: (pratique: rgb("#6B6B00"), reponse: rgb("#C9C389"), danger: rgb("#C2002F"), invite: rgb("#8E2C8C"),
     invite-clair: rgb("#F4C6E6"), invite-t: rgb("#F29ACB"), imbrique-t: rgb("#E9E39A")),
-  // Sans couleur : une échelle de clarté L* (en-têtes 8/20/31/45/70/90, invité 38 ;
-  // cadres 58/76/91), la pratique et la précaution passant en en-tête clair à texte foncé.
-  achromatopsie: (retenir: rgb("#10172A"), danger: rgb("#68001D"), notion: rgb("#25468A"),
-    avertissement: rgb("#9E582D"), pratique: rgb("#7EB88F"), precaution: rgb("#FFDF8A"),
+  // Sans couleur : une échelle de clarté L* (en-têtes retenir 8, danger 18, notion 28, pratique 38,
+  // avertissement 48 ; en-têtes clairs à texte foncé : réponse 74, précaution 90 ; cadres 58/76/91).
+  achromatopsie: (retenir: rgb("#10172A"), danger: rgb("#620019"), notion: rgb("#1A4082"),
+    avertissement: rgb("#A76034"), pratique: rgb("#2D6441"), reponse: rgb("#90C19E"), precaution: rgb("#FFDF8A"),
     invite: rgb("#714793"), invite-clair: rgb("#CCBADC"), appli: rgb("#E0ECFC"),
     hote-t: rgb("#6C8DBF"), invite-t: rgb("#CAB1E8"), imbrique-t: rgb("#FFDAF4")),
 )
@@ -82,7 +83,7 @@
 
 // Fonds clairs des rôles en projection (choisis à la main) ; dans les variantes, dérivés de l’en-tête.
 #let fonds-projection = (
-  notion: rgb("#E8EFFA"), pratique: rgb("#E4F2E9"), retenir: rgb("#E6E9F0"),
+  notion: rgb("#E8EFFA"), pratique: rgb("#E4F2E9"), reponse: rgb("#F0F8F2"), retenir: rgb("#E6E9F0"),
   precaution: rgb("#FFF6D9"), avertissement: rgb("#FBE9DA"), danger: rgb("#FBE3E8"),
 )
 #let roles = roles-def.keys().map(r => {
@@ -93,20 +94,29 @@
   (r, (entete: entete, fond: fond, texte: texte-sur(entete), accent: accent))
 }).to-dict()
 
-// Pictogramme d’un rôle : cerveau pour « à retenir », coureur en sueur pour « pratique »
-// (dessins Tabler Icons, MIT, dans pictos/), triangle « ! » pour les trois niveaux d’alerte ; rien pour une notion.
+// Pictogramme d’un rôle : cerveau pour « à retenir », coureur en sueur pour « pratique » et « réponse »
+// (dessins Tabler Icons, MIT, dans pictos/), triangle « ! » pour les trois niveaux d’alerte, suivi d’un
+// feu tricolore (précaution : feu du bas, avertissement : milieu, danger : haut) qui porte le niveau
+// par la position, sans la couleur ; rien pour une notion.
 // Les dessins au trait paraissent plus petits qu’une forme pleine : on les agrandit d’un quart.
 #let icone(fichier, couleur, t) = box(width: t * 1.25, height: t * 1.25, baseline: 24%,
   image(bytes(read(fichier).replace("currentColor", couleur.to-hex())), format: "svg", width: t * 1.25, height: t * 1.25))
 #let picto(role, forme, glyphe, t: px(30)) = {
   if role == "retenir" { return icone("pictos/cerveau.svg", forme, t) }
-  if role == "pratique" { return icone("pictos/coureur.svg", forme, t) }
-  if role not in ("precaution", "avertissement", "danger") { return none }
-  box(width: t, height: t, baseline: 18%, {
+  if role in ("pratique", "reponse") { return icone("pictos/coureur.svg", forme, t) }
+  let niveaux = ("danger", "avertissement", "precaution")  // de haut en bas
+  if role not in niveaux { return none }
+  let triangle = box(width: t, height: t, baseline: 18%, {
     polygon(fill: forme, (t * 0.5, 0pt), (t, t * 0.95), (0pt, t * 0.95))
     place(top + left, dy: t * 0.2, box(width: t, height: t * 0.8,
       align(center + horizon, text(size: t * 0.62, weight: 700, fill: glyphe, top-edge: "cap-height", bottom-edge: "baseline", "!"))))
   })
+  let d = t * 0.27
+  let feu = box(baseline: 18%, height: t, stroke: t * 0.06 + forme, radius: t * 0.2,
+    inset: (x: t * 0.07, y: t * 0.04),
+    stack(spacing: t * 0.04, ..niveaux.map(n => circle(radius: d / 2,
+      fill: if n == role { forme } else { none }, stroke: t * 0.05 + forme))))
+  triangle; h(t * 0.15); feu
 }
 
 #let mono = "IBM Plex Mono"
@@ -289,15 +299,18 @@
 }
 
 // ---------- Corrigé de TP ----------
+// La question porte la couleur de la pratique ; la réponse, une barre de la couleur « réponse ».
 #let question(n, corps) = grid(columns: (auto, 1fr), column-gutter: px(12),
-  box(fill: c.bleu, radius: px(6), inset: (x: px(10), y: px(2)),
-    text(size: px(22), weight: 600, fill: c.fond, str(n))),
+  box(fill: roles.pratique.entete, radius: px(6), inset: (x: px(10), y: px(2)),
+    text(size: px(22), weight: 600, fill: roles.pratique.texte, str(n))),
   text(size: px(26), fill: c.ardoise, corps))
+#let reponse(corps) = block(width: 100%, stroke: (left: px(8) + roles.reponse.entete), inset: (left: px(16)), corps)
 
 #let filet-corrige = line(length: 100%, stroke: px(2) + rgb("#C9D6EA"))
 
-#let corrige(n, q, reponse) = grid(columns: (px(700), 1fr), column-gutter: px(32),
-  question(n, q), reponse)
+// La réponse s’écrit reponse(...) dans le cours, à l’intérieur de son uncover : la barre apparaît avec elle.
+#let corrige(n, q, rep) = grid(columns: (px(700), 1fr), column-gutter: px(32),
+  question(n, q), rep)
 
 // ---------- Schémas en couches ----------
 #let couche(texte, fond: c.nuit, hauteur: px(72), taille: px(30), puces: ()) = block(
@@ -375,16 +388,16 @@
   self = utils.merge-dicts(self, config-common(subslide-preamble: none, freeze-slide-counter: true))
   touying-slide(self: self, {
     text(size: px(24), weight: 600, tracking: px(2), fill: c.bleu, maj("Légende · rendu " + variante))
-    v(px(16), weak: true)
-    text(size: px(64), weight: 600)[Lire les couleurs de ce rendu]
-    v(px(28))
-    grid(columns: (1fr, 1fr), column-gutter: px(32), row-gutter: px(20),
+    v(px(12), weak: true)
+    text(size: px(52), weight: 600)[Lire les couleurs de ce rendu]
+    v(px(16))
+    grid(columns: (1fr, 1fr), column-gutter: px(32), row-gutter: px(14),
       ..roles-def.pairs().map(((r, d)) => block(width: 100%, radius: px(12), clip: true, fill: roles.at(r).fond, stack(
-        block(width: 100%, fill: roles.at(r).entete, inset: (x: px(24), y: px(10)), entete-role(r, d.nom, px(26))),
-        block(width: 100%, inset: (x: px(24), y: px(12)), text(size: px(22))[
+        block(width: 100%, fill: roles.at(r).entete, inset: (x: px(24), y: px(8)), entete-role(r, d.nom, px(26))),
+        block(width: 100%, inset: (x: px(24), y: px(8)), text(size: px(22))[
           #d.sens. En projection : *#d.projection*.]),
       ))))
-    v(px(24))
+    v(px(16))
     grid(columns: (1fr, 1fr, 1fr), column-gutter: px(24),
       ..((0, [Hôte], [bleu, trait plein]), (1, [VM invitée], [violet, tirets]), (2, [VM imbriquée], [rose, pointillés]))
         .map(((n, nom, proj)) => block(width: 100%, fill: c.nuit, radius: px(12), inset: px(12),

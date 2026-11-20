@@ -478,17 +478,17 @@
 #slide(repeat: 4, self => {
   let (uncover,) = utils.methods(self)
   corrige(1, [Votre processeur expose-t-il les extensions de virtualisation (VT-x ou AMD-V) ?],
-    uncover("2-", terminal(titre: none, taille: px(22))[
+    uncover("2-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ lscpu | grep -E 'Virtualization|Virtualisation'
       Virtualisation :    VT-x
       $ grep -cE 'vmx|svm' /proc/cpuinfo
       8
       ```
-    ]))
+    ])))
   v(px(4)); filet-corrige; v(px(4))
   corrige(2, [KVM est-il utilisable sur votre hôte ?],
-    uncover("3-", terminal(titre: none, taille: px(22))[
+    uncover("3-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ lsmod | grep kvm
       kvm_intel   …
@@ -496,10 +496,10 @@
       $ ls -l /dev/kvm
       crw-rw---- 1 root kvm 10, 232 … /dev/kvm
       ```
-    ]))
+    ])))
   v(px(4)); filet-corrige; v(px(4))
   corrige(3, [Installez Debian dans une VM (QEMU et KVM, ISO + disque), puis montrez que cette VM est un *processus de l’hôte*],
-    uncover("4-", terminal(titre: none, taille: px(22))[
+    uncover("4-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ qemu-img create -f qcow2 debian.qcow2 20G
       $ qemu-system-x86_64 -enable-kvm -m 2048 \
@@ -508,7 +508,7 @@
       $ pgrep -a qemu
       4242 qemu-system-x86_64 -enable-kvm -m 2048 …
       ```
-    ]))
+    ])))
   utils.speaker-note(self: self)[Question 1 : un résultat 0 signifie extensions absentes ou désactivées dans l’UEFI. Question 2 : il faut être membre du groupe kvm pour utiliser /dev/kvm. Sorties types, non rejouées dans l’environnement de préparation (pas de KVM disponible) : à vérifier sur le poste de démonstration. lscpu affiche « Virtualization » ou « Virtualisation » selon la langue. /dev/kvm : périphérique caractère 10, 232, groupe kvm. Question 3 : qemu-img crée un disque qcow2 de 20 Go, alloué au fil de l’eau (le fichier grossit avec les données écrites) ; on installe Debian dessus depuis l’ISO, ce qui sert aux questions 5 et 6. Après l’installation, on relance sans -cdrom. pgrep -a liste le PID et la ligne de commande ; ps -o pid,user,args -C qemu-system-x86\_64 montre en plus que le processus QEMU appartient à l’utilisateur qui l’a lancé. Un clic par réponse.]
 })
 
@@ -517,7 +517,7 @@
 #slide(repeat: 3, self => {
   let (uncover,) = utils.methods(self)
   corrige(4, [Relancez-la *sans KVM* : que constatez-vous ? Comment le vérifier depuis le moniteur QEMU ?],
-    uncover("2-", terminal(titre: none, taille: px(22))[
+    uncover("2-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ qemu-system-x86_64 -m 1024 \
         -cdrom debian-13.7.0-amd64-netinst.iso
@@ -529,10 +529,10 @@
         kvm support: disabled
         ```
       ]
-    ]))
+    ])))
   v(px(8)); filet-corrige; v(px(8))
   corrige(5, [Dans l’invité : l’OS sait-il qu’il est virtualisé ?],
-    uncover("3-", terminal(titre: none, taille: px(22))[
+    uncover("3-", reponse(terminal(titre: none, taille: px(22))[
       #encart[Invité][
         ```
         $ systemd-detect-virt
@@ -542,7 +542,7 @@
         # périphériques virtio : pilotes paravirtualisés
         ```
       ]
-    ]))
+    ])))
   utils.speaker-note(self: self)[Question 4 : sans -enable-kvm, QEMU émule le processeur avec TCG ; le démarrage de l’installateur est nettement plus lent. Dans le moniteur QEMU (Ctrl+Alt+2, retour à l’affichage par Ctrl+Alt+1), info kvm affiche « kvm support: disabled ». Question 5 : elle suppose un système Debian installé dans la VM (l’installateur seul ne fournit pas systemd-detect-virt). systemd-detect-virt renvoie kvm sous KVM, qemu en émulation pure. Attention : lspci ne montre des périphériques virtio que si la VM en utilise ; la commande qemu du TP garde les périphériques par défaut (carte réseau e1000, lecteur IDE), alors que virt-install (diapositive « KVM en pratique ») choisit virtio. Sorties types, non rejouées dans l’environnement de préparation (pas de KVM) : à vérifier sur le poste de démonstration. Un clic par réponse.]
 })
 
@@ -551,7 +551,7 @@
 #slide(repeat: 3, self => {
   let (uncover,) = utils.methods(self)
   corrige(6, [Virtualisation imbriquée : dans votre VM Debian, lancez une VM Alpine],
-    terminal(titre: none, taille: px(20))[
+    reponse(terminal(titre: none, taille: px(20))[
       #cadre([Hôte (niveau 0)], niveau: 0)[
         ```
         $ cat /sys/module/kvm_intel/parameters/nested
@@ -577,7 +577,7 @@
           ])
         ])
       ]
-    ])
+    ]))
   utils.speaker-note(self: self)[Prérequis : la VM Debian installée sur debian.qcow2 à la question 3. Clic 1, hôte : nested doit valoir Y (Intel) ou 1 (AMD, /sys/module/kvm\_amd/parameters/nested) ; sinon, recharger le module avec l’option nested=1. La VM de niveau 1 doit être relancée avec -cpu host : sans cette option, le processeur virtuel n’expose pas vmx/svm, /dev/kvm est absent dans la VM et la VM imbriquée tourne en émulation pure (TCG), très lentement. Prévoir assez de mémoire au niveau 1 pour héberger le niveau 2. Clic 2, niveau 1 : /dev/kvm présent, on installe QEMU et on lance l’invité. Alpine (image « virt », quelques dizaines de Mo, sur alpinelinux.org/downloads) est le choix le plus léger et démarre en quelques secondes ; Debian netinst ou Arch fonctionneraient aussi. Clic 3, niveau 2 : Alpine démarre sur l’ISO en mode live, login root sans mot de passe ; dmesg confirme l’hyperviseur KVM (ici celui de la VM de niveau 1). Sorties types, non rejouées dans l’environnement de préparation (pas de KVM) : à vérifier sur le poste de démonstration.]
 })
 
