@@ -11,4 +11,4 @@
 - [x] 2026-11-19 — Restructuration en monorepo : `commun/` (charte, polices), un dossier par cours, PDF `<cours>.pdf` à la racine, CI générique
 - [x] 2026-11-19 — PDF déplacés dans leur dossier de cours (`<cours>/<cours>.pdf`), `.gitignore` supprimé
 - [x] 2026-11-19 — Compilation locale dans `build/` (ignoré), CI déclenchée sur `main`
-- [x] 2026-11-20 — Rendus adaptés compilés par la CI : daltonien, dyslexie, polycopié (charte commune, cours inchangés)
+- [x] 2026-11-20 — Rendus adaptés compilés par la CI : deutéranopie, protanopie, tritanopie, achromatopsie, dyslexie (charte commune, cours inchangés ; polycopié abandonné)

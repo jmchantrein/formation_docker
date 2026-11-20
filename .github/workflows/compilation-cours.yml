@@ -34,7 +34,7 @@ jobs:
           for src in */*.typ; do
             cours=$(dirname "$src")
             [ "$src" = "$cours/$cours.typ" ] || continue
-            for variante in normal daltonien dyslexie polycopie; do
+            for variante in normal deuteranopie protanopie tritanopie achromatopsie dyslexie; do
               pdf="$cours/$cours.pdf"
               [ "$variante" = normal ] || pdf="$cours/$cours-$variante.pdf"
               echo "::group::$pdf"

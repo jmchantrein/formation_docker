@@ -7,10 +7,23 @@
 // ---------- Variantes de rendu ----------
 // Choisies à la compilation, sans toucher aux cours : typst compile --input variante=<nom> …
 // - normal (défaut) : rendu de projection ;
-// - daltonien : le vert devient bleu-vert, distinct de l’orange et du bleu en deutéranopie et protanopie ;
-// - dyslexie : lettres, mots et lignes plus espacés, ni capitales forcées ni italique ;
-// - polycopie : une page par diapo, dans son état final (sans les apparitions au clic).
-#let variantes = ("normal", "daltonien", "dyslexie", "polycopie")
+// - deuteranopie, protanopie, tritanopie, achromatopsie : palette ajustée (voir `palettes` plus bas) ;
+// - dyslexie : lettres, mots et lignes plus espacés, ni capitales forcées ni italique.
+// Écarts de couleur vérifiés par simulation (ΔE CIELAB ; Machado 2009 pour les dichromasies,
+// luminance seule pour l’achromatopsie) ; texte blanc sur en-tête et texte sur terminal : contraste ≥ 4,5.
+#let rouge-vert = (vert: rgb("#00695C"), vert-clair: rgb("#E0F2F1"), menthe: rgb("#A0E0D0"))
+#let palettes = (
+  // Le vert devient bleu-vert. Écart minimal bleu/vert/orange : 27 → 58 (deutéranopie), 17 → 45 (protanopie).
+  deuteranopie: rouge-vert,
+  protanopie: rouge-vert,
+  // Confusion bleu/vert : le vert devient violet. Écart minimal des en-têtes 16 → 37, des cadres 23 → 44.
+  tritanopie: (vert: rgb("#6A3D9A"), vert-clair: rgb("#EFE8F6"), menthe: rgb("#D9B3FF")),
+  // Sans couleur, seule la clarté distingue : niveaux L* espacés de 16 au moins
+  // (en-têtes 15/32/48, cadres 58/75/88, cases OS/appli 76/91), au lieu de 1 à 2.
+  achromatopsie: (vert: rgb("#002F0B"), bleu: rgb("#174996"), orange: rgb("#AD5D2A"),
+    menthe: rgb("#629775"), prompt: rgb("#94BAF7"), ambre: rgb("#FFD796"), os: rgb("#CFB7A3")),
+)
+#let variantes = ("normal", "dyslexie") + palettes.keys()
 #let variante = sys.inputs.at("variante", default: "normal")
 #assert(variante in variantes,
   message: "variante inconnue : " + variante + " (attendu : " + variantes.join(", ") + ")")
@@ -30,11 +43,7 @@
   filet: rgb("#D5DAE0"), appli: rgb("#D6E6FB"), os: rgb("#FBDDC2"),
   prompt: rgb("#7DB4FF"), commentaire: rgb("#9FB0C8"), texte-term: rgb("#E6EDF7"),
   ambre: rgb("#F29A4B"), menthe: rgb("#8FD6A8"), encart: rgb("#2A3954"),
-) + if variante == "daltonien" {
-  // Écarts simulés (ΔE, Machado 2009) : vert/orange 36 → 58 en deutéranopie, 22 → 45 en protanopie,
-  // en gardant vert/bleu ≥ 60 ; texte blanc sur l’en-tête : contraste 6,1.
-  (vert: rgb("#00695C"), vert-clair: rgb("#E0F2F1"), menthe: rgb("#A0E0D0"))
-} else { (:) }
+) + palettes.at(variante, default: (:))
 
 #let mono = "IBM Plex Mono"
 
@@ -60,7 +69,7 @@
       v(px(16), weak: true)
       text(size: px(64), weight: 600, utils.display-current-heading(level: 2))
     }),
-    config-common(new-section-slide-fn: none, show-strong-with-alert: false, handout: variante == "polycopie"),
+    config-common(new-section-slide-fn: none, show-strong-with-alert: false),
     config-page(fill: c.fond, margin: (x: px(128), top: px(120), bottom: px(150)), footer-descent: px(62)),
   )
   // Boîtes de ligne comme en CSS (ascendante → descendante) : mêmes hauteurs de blocs que le deck HTML.

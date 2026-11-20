@@ -18,7 +18,7 @@
 Édition avec aperçu en direct : extension Tinymist (VS Code, VSCodium, Neovim…), avec la racine du dépôt comme racine du projet.
 
 ## Variantes de rendu
-La charte lit `--input variante=<nom>` (normal, daltonien, dyslexie, polycopie) et adapte palette, espacements
-et animations ; les cours n’ont rien à faire. Les réglages et leur justification sont en tête de `theme-cours.typ`.
-Après une modification de la charte, compiler la variante dyslexie et vérifier qu’aucune diapo ne déborde
-(même nombre de pages que le rendu normal).
+La charte lit `--input variante=<nom>` (normal, deuteranopie, protanopie, tritanopie, achromatopsie, dyslexie)
+et adapte palette et espacements ; les cours n’ont rien à faire. Les réglages et leur justification sont en tête
+de `theme-cours.typ`. Une nouvelle palette s’ajoute dans `palettes` ; penser à l’ajouter aussi à la liste des
+variantes de `.github/workflows/compilation-cours.yml`. Une variante qui déborde sur une page de plus est acceptée.
