@@ -11,14 +11,15 @@ la couleur, le pictogramme et leur adaptation dans chaque variante.
 | Rôle | Pictogramme | Couleur en projection | Usage |
 |---|---|---|---|
 | `notion` (défaut) | — | bleu | définir, expliquer |
-| `pratique` | ▶ | vert | exemple, démonstration, exercice, usage réel |
-| `retenir` | ★ | bleu nuit | synthèse, point clé |
+| `pratique` | coureur en sueur (l’effort) | vert | exemple, démonstration, exercice, usage réel |
+| `retenir` | cerveau | bleu nuit | synthèse, point clé |
 | `precaution` | triangle ! | jaune | nuance, confusion fréquente, limite |
-| `avertissement` | losange ! | orange | erreur probable, mauvaise pratique |
-| `danger` | octogone ! | rouge | risque réel : sécurité, perte de données |
+| `avertissement` | triangle ! | orange | erreur probable, mauvaise pratique |
+| `danger` | triangle ! | rouge | risque réel : sécurité, perte de données |
 
 Les trois niveaux d’alerte suivent la gradation des normes de signalisation (ISO 3864, ANSI Z535) :
-précaution, avertissement, danger ; la forme du pictogramme porte le niveau même sans couleur.
+précaution, avertissement, danger ; les trois partagent le triangle « ! », le niveau est porté par la couleur
+et le titre. Les dessins du cerveau et du coureur viennent de Tabler Icons (MIT, `pictos/LICENSE-tabler-icons.txt`).
 
 Dans les schémas : hôte et applications en **bleu**, invité (VM, OS invité) en **violet** (`c.invite`,
 `c.invite-clair`). Dans les terminaux, `cadre(…, niveau: 0 | 1 | 2)` : hôte (trait plein), VM invitée (tirets),

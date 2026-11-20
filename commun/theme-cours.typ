@@ -93,34 +93,19 @@
   (r, (entete: entete, fond: fond, texte: texte-sur(entete), accent: accent))
 }).to-dict()
 
-// Pictogramme d’un rôle : la forme porte le rôle sans la couleur (triangle → losange → octogone
-// pour les trois niveaux d’alerte, comme la signalisation routière).
+// Pictogramme d’un rôle : cerveau pour « à retenir », coureur en sueur pour « pratique »
+// (dessins Tabler Icons, MIT, dans pictos/), triangle « ! » pour les trois niveaux d’alerte ; rien pour une notion.
+// Les dessins au trait paraissent plus petits qu’une forme pleine : on les agrandit d’un quart.
+#let icone(fichier, couleur, t) = box(width: t * 1.25, height: t * 1.25, baseline: 24%,
+  image(bytes(read(fichier).replace("currentColor", couleur.to-hex())), format: "svg", width: t * 1.25, height: t * 1.25))
 #let picto(role, forme, glyphe, t: px(30)) = {
-  let pt(x, y) = (t * x, t * y)
-  let alerte = role in ("precaution", "avertissement", "danger")
-  let fig = if role == "pratique" { polygon(fill: forme, pt(0.1, 0), pt(0.95, 0.5), pt(0.1, 1)) }
-    else if role == "retenir" {
-      polygon(fill: forme, ..range(10).map(i => {
-        let a = -90deg + i * 36deg
-        let r = if calc.even(i) { 0.5 } else { 0.21 }
-        pt(0.5 + r * calc.cos(a), 0.53 + r * calc.sin(a))
-      }))
-    }
-    else if role == "precaution" { polygon(fill: forme, pt(0.5, 0), pt(1, 0.95), pt(0, 0.95)) }
-    else if role == "avertissement" { polygon(fill: forme, pt(0.5, 0), pt(1, 0.5), pt(0.5, 1), pt(0, 0.5)) }
-    else if role == "danger" {
-      polygon(fill: forme, ..range(8).map(i => {
-        let a = 22.5deg + i * 45deg
-        pt(0.5 + 0.52 * calc.cos(a), 0.5 + 0.52 * calc.sin(a))
-      }))
-    }
-  if fig == none { return none }
+  if role == "retenir" { return icone("pictos/cerveau.svg", forme, t) }
+  if role == "pratique" { return icone("pictos/coureur.svg", forme, t) }
+  if role not in ("precaution", "avertissement", "danger") { return none }
   box(width: t, height: t, baseline: 18%, {
-    fig
-    if alerte {
-      place(top + left, dy: if role == "precaution" { t * 0.2 } else { t * 0.08 }, box(width: t, height: t * 0.8,
-        align(center + horizon, text(size: t * 0.62, weight: 700, fill: glyphe, top-edge: "cap-height", bottom-edge: "baseline", "!"))))
-    }
+    polygon(fill: forme, (t * 0.5, 0pt), (t, t * 0.95), (0pt, t * 0.95))
+    place(top + left, dy: t * 0.2, box(width: t, height: t * 0.8,
+      align(center + horizon, text(size: t * 0.62, weight: 700, fill: glyphe, top-edge: "cap-height", bottom-edge: "baseline", "!"))))
   })
 }
 
