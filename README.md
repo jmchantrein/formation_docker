@@ -4,7 +4,7 @@ Supports de cours de Jean-Mathieu Chantrein : un dossier par cours, une charte c
 
 | Cours | Diapos | Rendus adaptés | Sources |
 |---|---|---|---|
-| Docker : fondements de la conteneurisation | [`docker.pdf`](docker/docker.pdf) | — | [`docker/`](docker/) (travaux pratiques) |
+| Docker : fondements de la conteneurisation | [`docker.pdf`](docker/docker.pdf) | [deutéranopie](docker/docker-deuteranopie.pdf) · [protanopie](docker/docker-protanopie.pdf) · [tritanopie](docker/docker-tritanopie.pdf) · [achromatopsie](docker/docker-achromatopsie.pdf) · [dyslexie](docker/docker-dyslexie.pdf) | [`docker/`](docker/) (Typst, travaux pratiques) |
 | Fondements de la virtualisation de machines | [`virtualisation.pdf`](virtualisation/virtualisation.pdf) | [deutéranopie](virtualisation/virtualisation-deuteranopie.pdf) · [protanopie](virtualisation/virtualisation-protanopie.pdf) · [tritanopie](virtualisation/virtualisation-tritanopie.pdf) · [achromatopsie](virtualisation/virtualisation-achromatopsie.pdf) · [dyslexie](virtualisation/virtualisation-dyslexie.pdf) | [`virtualisation/`](virtualisation/) (Typst) |
 
 ## Rendus adaptés
