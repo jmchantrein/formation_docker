@@ -1,7 +1,8 @@
 name: Compilation des cours (Typst)
 
 # Chaque cours est un dossier <cours>/ contenant <cours>/<cours>.typ ;
-# le PDF est publié à côté : <cours>/<cours>.pdf.
+# le PDF est publié à côté : <cours>/<cours>.pdf (projection), plus une variante
+# <cours>/<cours>-<variante>.pdf par rendu adapté (liste dans commun/theme-cours.typ).
 on:
   push:
     branches: [main]
@@ -33,10 +34,14 @@ jobs:
           for src in */*.typ; do
             cours=$(dirname "$src")
             [ "$src" = "$cours/$cours.typ" ] || continue
-            echo "::group::$cours"
-            typst compile --root . --font-path commun/fonts "$src" "$cours/$cours.pdf"
-            git add "$cours/$cours.pdf"
-            echo "::endgroup::"
+            for variante in normal deuteranopie protanopie tritanopie achromatopsie dyslexie; do
+              pdf="$cours/$cours.pdf"
+              [ "$variante" = normal ] || pdf="$cours/$cours-$variante.pdf"
+              echo "::group::$pdf"
+              typst compile --root . --font-path commun/fonts --input variante="$variante" "$src" "$pdf"
+              git add "$pdf"
+              echo "::endgroup::"
+            done
           done
 
       - name: Publication des PDF

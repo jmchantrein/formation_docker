@@ -10,7 +10,7 @@
 )
 
 #couverture[Virtualisation][Fondements de la virtualisation de machines][Jean-Mathieu Chantrein][12 novembre 2026]
-#speaker-note[À droite : trois VM (orange) sur un hyperviseur (bleu), lui-même sur le matériel (gris). Cours compagnon : Docker, fondements de la conteneurisation.]
+#speaker-note[À droite : trois VM (violet) sur un hyperviseur (bleu), lui-même sur le matériel (gris). Cours compagnon : Docker, fondements de la conteneurisation.]
 
 // ======================================================================
 = Sommaire
@@ -61,7 +61,7 @@
   ],
 )
 #espace
-#colonnes(bloc[À retenir][
+#colonnes(bloc(role: "retenir")[À retenir][
   Une VM n’est pas, en général, une machine émulée. *QEMU* (_Quick EMUlator_, « émulateur rapide », Fabrice Bellard, 2003) sait pourtant faire les deux : exemple à la diapositive suivante.
 ])
 
@@ -70,7 +70,7 @@
 == Émuler ou virtualiser : l’exemple de QEMU
 
 #colonnes(
-  bloc(taille: px(25))[Émulation : une machine ARM sur un PC x86][
+  bloc(role: "pratique", taille: px(25))[Émulation : une machine ARM sur un PC x86][
     #terminal(taille: px(24))[
       ```
       # le processeur invité est émulé (TCG)
@@ -82,7 +82,7 @@
     - *`-cpu cortex-a57`* : modèle de processeur présenté à l’invité : ARM Cortex-A57, architecture ARMv8-A, 64 bits (AArch64)
     - *`…`* : reste de la commande : mémoire, disque, noyau ou firmware
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(25))[Virtualisation : une machine x86 sur un PC x86][
+  bloc(role: "pratique", taille: px(25))[Virtualisation : une machine x86 sur un PC x86][
     #terminal(taille: px(24))[
       ```
       # le processeur invité est le vrai processeur
@@ -124,7 +124,7 @@
   ],
 )
 #espace
-#colonnes(bloc(entete: c.orange, fond: c.orange-clair)[Ce qu’il faut bien comprendre][
+#colonnes(bloc(role: "retenir")[Ce qu’il faut bien comprendre][
   - La frontière entre les deux types est floue : KVM et Hyper-V sont classés en type 1, alors qu’ils s’appuient sur un système d’exploitation complet (Linux pour KVM, Windows pour Hyper-V)
   - Le type d’hyperviseur ne dit pas si le système invité sait qu’il tourne dans une VM : c’est une autre question, celle de la paravirtualisation, traitée deux diapositives plus loin
 ])
@@ -160,7 +160,7 @@
   ],
 )
 #espace
-#colonnes(bloc(entete: c.orange, fond: c.orange-clair)[Ce qu’il faut bien comprendre][
+#colonnes(bloc(role: "retenir")[Ce qu’il faut bien comprendre][
   Que le système invité sache ou non qu’il est virtualisé ne dépend pas du type d’hyperviseur : une VM sous KVM (type 1) comme sous VirtualBox (type 2) peut utiliser des pilotes virtio.
 ])
 
@@ -170,9 +170,9 @@
 
 #grid(columns: (1fr, 1.3fr), column-gutter: px(40),
   stack(spacing: px(8),
-    block(width: 100%, stroke: px(3) + c.orange, radius: px(12), inset: px(12), stack(spacing: px(8),
-      align(center, text(size: px(24), weight: 600, fill: c.orange)[Processus QEMU (espace utilisateur)]),
-      block(width: 100%, height: px(72), fill: c.os, radius: px(8),
+    block(width: 100%, stroke: px(3) + c.invite, radius: px(12), inset: px(12), stack(spacing: px(8),
+      align(center, text(size: px(24), weight: 600, fill: c.invite)[Processus QEMU (espace utilisateur)]),
+      block(width: 100%, height: px(72), fill: c.invite-clair, radius: px(8),
         align(center + horizon, text(weight: 600)[VM : OS invité et applis])),
       block(width: 100%, height: px(72), fill: c.appli, radius: px(8),
         align(center + horizon, text(size: px(26), weight: 600)[Périphériques émulés, mémoire])),
@@ -190,7 +190,7 @@
       - Module du noyau (2007) : le processeur exécute le code de la VM
       - Aucun périphérique : il faut un programme comme QEMU
     ]),
-    rendre-bloc(bloc(entete: c.orange, fond: c.orange-clair, taille: px(26))[Ensemble][
+    rendre-bloc(bloc(role: "retenir", taille: px(26))[Ensemble][
       QEMU pour la machine, KVM pour la vitesse.
     ]),
   ),
@@ -224,7 +224,7 @@
         ]
       ]))
       espace
-      uncover("7-", colonnes(bloc(entete: c.orange, fond: c.orange-clair)[Inconvénients][
+      uncover("7-", colonnes(bloc(role: "precaution")[Inconvénients][
         #utils.item-by-item(self: self, start: 7)[
           - Performance inférieure à l’exécution native
           - Forte consommation de mémoire vive
@@ -248,8 +248,8 @@
 #let barre(t, fond) = block(width: px(552), height: px(80), fill: fond, radius: px(12),
   align(center + horizon, text(size: px(32), weight: 600, fill: c.fond, t)))
 #let etape(n, t) = block(width: px(440),
-  align(center, text(size: px(28))[#text(weight: 600, fill: c.orange)[#n.] #t]))
-#let fleche = polygon(fill: c.ambre, (0pt, px(27)), (px(156), px(27)), (px(156), 0pt),
+  align(center, text(size: px(28))[#text(weight: 600, fill: c.invite)[#n.] #t]))
+#let fleche = polygon(fill: c.invite, (0pt, px(27)), (px(156), px(27)), (px(156), 0pt),
   (px(240), px(45)), (px(156), px(90)), (px(156), px(63)), (0pt, px(63)))
 
 // 8 étapes, comme le schéma au tableau : hôte A, hôte B, stockage, pré-copie,
@@ -266,7 +266,7 @@
       pose(24, 212, barre([Hyperviseur], c.nuit))
       pose(24, 304, barre([Matériel (CPU, RAM)], c.ardoise))
     })
-    uncover("2-6", pose(400, 88, mvm(fond: c.os)[VM 3]))
+    uncover("2-6", pose(400, 88, mvm(fond: c.invite-clair)[VM 3]))
     uncover("3-", {
       pose(1064, 0, hote[Hôte B])
       pose(1088, 88, mvm[VM 4])
@@ -283,19 +283,17 @@
     uncover("5-", pose(612, 28, etape(1)[Copie de la mémoire, la VM continue de tourner]))
     uncover("5-6", {
       pose(712, 318, fleche)
-      pose(1276, 88, mvm(fond: none, couleur: c.orange, bas: [copie],
-        trait: (paint: c.orange, thickness: px(2), dash: "dashed"))[VM 3])
+      pose(1276, 88, mvm(fond: none, couleur: c.invite, bas: [copie],
+        trait: (paint: c.invite, thickness: px(2), dash: "dashed"))[VM 3])
     })
     uncover("6-", pose(612, 124, etape(2)[Recopie des pages modifiées entre-temps]))
     uncover("7-", {
       pose(612, 220, etape(3)[Bascule : pause très brève, reprise sur B])
-      pose(1276, 88, mvm(fond: c.os)[VM 3])
+      pose(1276, 88, mvm(fond: c.invite-clair)[VM 3])
     })
     uncover("8-", pose(0, 612, block(width: px(1664), rangee(gouttiere: px(28), poids: (1, 1.35),
-      h => block(width: 100%, height: h, fill: c.bleu-clair, radius: px(12), inset: (x: px(20), y: px(12)),
-        align(horizon, text(size: px(22), weight: 600, fill: c.bleu)[Intérêt : maintenir ou rééquilibrer un hôte sans coupure de service.])),
-      h => block(width: 100%, height: h, fill: c.orange-clair, radius: px(12), inset: (x: px(20), y: px(12)),
-        align(horizon, text(size: px(22))[#text(weight: 600, fill: c.orange)[En vrai :] un cluster fait au moins *3 hôtes* (quorum → pas de _split-brain_ si un hôte tombe). #text(weight: 600, fill: c.orange)[Avant de basculer], vérifier que l’hôte cible a assez de *CPU/RAM libres*.])),
+      h => encadre(role: "retenir", libelle: [Intérêt :], hauteur: h)[maintenir ou rééquilibrer un hôte sans coupure de service.],
+      h => encadre(role: "precaution", libelle: [En vrai :], hauteur: h)[un cluster fait au moins *3 hôtes* (quorum → pas de _split-brain_ si un hôte tombe). *Avant de basculer*, vérifier que l’hôte cible a assez de *CPU/RAM libres*.],
     ))))
   })
   utils.speaker-note(self: self)[Schéma dessiné pas à pas, un clic par étape (comme au tableau). 1. Hôte A : matériel, hyperviseur, trois VM. 2. Hôte B. 3. Stockage partagé : le disque de la VM n’a pas à être copié (sans stockage partagé, il faut aussi migrer les disques). 4. Pré-copie : la mémoire de VM 3 est envoyée vers B pendant que la VM continue de tourner. 5. Les pages modifiées entre-temps sont recopiées, en boucle, jusqu’à ce qu’il en reste très peu. 6. Bascule : la VM est brièvement suspendue, son dernier état est transféré, elle reprend sur B et disparaît de A. 7. Usage : maintenance ou équilibrage de charge sans coupure. Réalité d’un cluster : au moins 3 hôtes pour le quorum (Proxmox VE, vSphere HA : une majorité de nœuds doit rester jointe pour éviter le split-brain et relancer les VM d’un hôte défaillant). La migration à chaud elle-même ne demande que 2 hôtes, mais la haute disponibilité qui l’entoure en demande 3. Avant chaque bascule (manuelle ou automatique via DRS/HA), l’ordonnanceur vérifie que l’hôte cible a les ressources CPU/RAM libres ; on garde donc une marge sur chaque hôte pour absorber la panne d’un autre. Côté conteneurs : le conteneur est sans état et jetable, on le recrée ailleurs plutôt que de le migrer ; le checkpoint/restore (CRIU) existe mais reste un cas particulier.]
@@ -310,21 +308,21 @@
     - Coût : chaque niveau ajoute des passages par l’hyperviseur
     - On imbrique aussi des conteneurs dans une VM : très courant (Docker Desktop, cloud)
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, poids: 1.25)[Avec KVM : trois niveaux][
+  bloc(role: "pratique", poids: 1.25)[Avec KVM : trois niveaux][
     #terminal(titre: none)[
-      #cadre([Hôte (niveau 0)], c.prompt)[
+      #cadre([Hôte (niveau 0)], niveau: 0)[
         ```
         $ cat /sys/module/kvm_intel/parameters/nested
         Y
         $ qemu-system-x86_64 -enable-kvm -cpu host …
         ```
-        #cadre([VM (niveau 1)], c.ambre)[
+        #cadre([VM (niveau 1)], niveau: 1)[
           ```
           $ ls /dev/kvm
           /dev/kvm
           $ qemu-system-x86_64 -enable-kvm …
           ```
-          #cadre([VM imbriquée (niveau 2)], c.menthe)[
+          #cadre([VM imbriquée (niveau 2)], niveau: 2)[
             ```
             $ systemd-detect-virt
             kvm
@@ -337,7 +335,7 @@
   ],
 )
 
-#speaker-note[Lecture des couleurs : bleu = terminal de l’hôte physique (niveau 0) ; orange = terminal de la VM lancée par la première commande qemu (niveau 1) ; vert = terminal de la VM lancée depuis cette VM (niveau 2). -cpu host transmet les extensions vmx/svm à la VM, d’où la présence de /dev/kvm au niveau 1. Sur AMD : /sys/module/kvm\_amd/parameters/nested (affiche 1). Sorties typiques, non rejouées (pas de KVM dans l’environnement de préparation).]
+#speaker-note[Lecture des couleurs : bleu à trait plein = terminal de l’hôte physique (niveau 0) ; violet à tirets = terminal de la VM lancée par la première commande qemu (niveau 1) ; rose à pointillés = terminal de la VM lancée depuis cette VM (niveau 2). -cpu host transmet les extensions vmx/svm à la VM, d’où la présence de /dev/kvm au niveau 1. Sur AMD : /sys/module/kvm\_amd/parameters/nested (affiche 1). Sorties typiques, non rejouées (pas de KVM dans l’environnement de préparation).]
 
 == Prérequis : quelle image Debian prendre
 
@@ -347,14 +345,14 @@
     - Image *netinst amd64* (756 Mio) : installateur minimal, les paquets viennent ensuite du réseau
     - Le dossier « current » suit la dernière version (13.7.0 en novembre 2026) : le nom du fichier change à chaque mise à jour
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(24))[Trois fichiers à télécharger][
+  bloc(role: "pratique", taille: px(24))[Trois fichiers à télécharger][
     - *debian-13.7.0-amd64-netinst.iso* : l’image elle-même
     - *SHA256SUMS* : les sommes de contrôle des images
     - *SHA256SUMS.sign* : la signature de ce fichier par Debian
   ],
 )
 #espace
-#colonnes(bloc(entete: c.orange, fond: c.orange-clair, taille: px(26))[Attention : une image téléchargée se vérifie avant usage][
+#colonnes(bloc(role: "danger", taille: px(26))[Attention : une image téléchargée se vérifie avant usage][
   - *Intégrité* : le fichier est-il arrivé intact (téléchargement interrompu, disque, miroir défaillant) ? → somme de contrôle
   - *Authenticité* : est-ce bien l’image publiée par Debian, et pas une image piégée ? → signature
 ])
@@ -370,7 +368,7 @@
     - Même contenu : toujours la même empreinte
     - Un seul bit modifié : une empreinte complètement différente
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, poids: 1.1, taille: px(24))[Démonstration][
+  bloc(role: "pratique", poids: 1.1, taille: px(24))[Démonstration][
     #terminal[
       ```
       $ echo bonjour | sha256sum
@@ -417,7 +415,7 @@
       - *Intégrité* → `SHA256SUMS` : l’image est-elle intacte ?
       - *Authenticité* → `SHA256SUMS.sign` : vient-elle bien de Debian ?
     ]),
-    rendre-bloc(bloc(entete: c.orange, fond: c.orange-clair, taille: px(22), taille-titre: px(24))[Quel algorithme d’empreinte ?][
+    rendre-bloc(bloc(role: "avertissement", taille: px(22), taille-titre: px(24))[Quel algorithme d’empreinte ?][
       - *MD5, SHA-1* : cassés — on sait fabriquer deux fichiers de même empreinte (collisions). À éviter.
       - *SHA-256 / SHA-512* (SHA-2) : standard actuel, aucune collision connue. Debian publie les deux.
       - Corruption accidentelle : n’importe quel hachage suffit. Contre une image *substituée*, il faut la résistance aux collisions → SHA-2.
@@ -431,7 +429,7 @@
 == KVM en pratique
 
 #colonnes(
-  bloc(entete: c.vert, fond: c.vert-clair, poids: 1.2)[À vous][
+  bloc(role: "question", poids: 1.2)[À vous][
     #terminal(taille: px(24))[
       ```
       $ grep -cE 'vmx|svm' /proc/cpuinfo
@@ -449,7 +447,7 @@
       ```
     ]
   ],
-  bloc[À retenir][
+  bloc(role: "retenir")[À retenir][
     - vmx (Intel VT-x) ou svm (AMD-V) : extensions présentes
     - KVM : module du noyau qui exécute les VM
     - QEMU : émule les périphériques de la VM
@@ -463,7 +461,7 @@
 
 == Mini TP : votre première VM
 
-#colonnes(bloc(entete: c.vert, fond: c.vert-clair)[À vous][
+#colonnes(bloc(role: "question")[À vous][
   + Votre processeur expose-t-il les extensions de virtualisation (VT-x ou AMD-V) ?
   + KVM est-il utilisable sur votre hôte ?
   + Installez Debian dans une VM (QEMU et KVM, ISO + disque), puis montrez que cette VM est un *processus de l’hôte*
@@ -480,17 +478,17 @@
 #slide(repeat: 4, self => {
   let (uncover,) = utils.methods(self)
   corrige(1, [Votre processeur expose-t-il les extensions de virtualisation (VT-x ou AMD-V) ?],
-    uncover("2-", terminal(titre: none, taille: px(22))[
+    uncover("2-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ lscpu | grep -E 'Virtualization|Virtualisation'
       Virtualisation :    VT-x
       $ grep -cE 'vmx|svm' /proc/cpuinfo
       8
       ```
-    ]))
+    ])))
   v(px(4)); filet-corrige; v(px(4))
   corrige(2, [KVM est-il utilisable sur votre hôte ?],
-    uncover("3-", terminal(titre: none, taille: px(22))[
+    uncover("3-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ lsmod | grep kvm
       kvm_intel   …
@@ -498,10 +496,10 @@
       $ ls -l /dev/kvm
       crw-rw---- 1 root kvm 10, 232 … /dev/kvm
       ```
-    ]))
+    ])))
   v(px(4)); filet-corrige; v(px(4))
   corrige(3, [Installez Debian dans une VM (QEMU et KVM, ISO + disque), puis montrez que cette VM est un *processus de l’hôte*],
-    uncover("4-", terminal(titre: none, taille: px(22))[
+    uncover("4-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ qemu-img create -f qcow2 debian.qcow2 20G
       $ qemu-system-x86_64 -enable-kvm -m 2048 \
@@ -510,7 +508,7 @@
       $ pgrep -a qemu
       4242 qemu-system-x86_64 -enable-kvm -m 2048 …
       ```
-    ]))
+    ])))
   utils.speaker-note(self: self)[Question 1 : un résultat 0 signifie extensions absentes ou désactivées dans l’UEFI. Question 2 : il faut être membre du groupe kvm pour utiliser /dev/kvm. Sorties types, non rejouées dans l’environnement de préparation (pas de KVM disponible) : à vérifier sur le poste de démonstration. lscpu affiche « Virtualization » ou « Virtualisation » selon la langue. /dev/kvm : périphérique caractère 10, 232, groupe kvm. Question 3 : qemu-img crée un disque qcow2 de 20 Go, alloué au fil de l’eau (le fichier grossit avec les données écrites) ; on installe Debian dessus depuis l’ISO, ce qui sert aux questions 5 et 6. Après l’installation, on relance sans -cdrom. pgrep -a liste le PID et la ligne de commande ; ps -o pid,user,args -C qemu-system-x86\_64 montre en plus que le processus QEMU appartient à l’utilisateur qui l’a lancé. Un clic par réponse.]
 })
 
@@ -519,7 +517,7 @@
 #slide(repeat: 3, self => {
   let (uncover,) = utils.methods(self)
   corrige(4, [Relancez-la *sans KVM* : que constatez-vous ? Comment le vérifier depuis le moniteur QEMU ?],
-    uncover("2-", terminal(titre: none, taille: px(22))[
+    uncover("2-", reponse(terminal(titre: none, taille: px(22))[
       ```
       $ qemu-system-x86_64 -m 1024 \
         -cdrom debian-13.7.0-amd64-netinst.iso
@@ -531,10 +529,10 @@
         kvm support: disabled
         ```
       ]
-    ]))
+    ])))
   v(px(8)); filet-corrige; v(px(8))
   corrige(5, [Dans l’invité : l’OS sait-il qu’il est virtualisé ?],
-    uncover("3-", terminal(titre: none, taille: px(22))[
+    uncover("3-", reponse(terminal(titre: none, taille: px(22))[
       #encart[Invité][
         ```
         $ systemd-detect-virt
@@ -544,7 +542,7 @@
         # périphériques virtio : pilotes paravirtualisés
         ```
       ]
-    ]))
+    ])))
   utils.speaker-note(self: self)[Question 4 : sans -enable-kvm, QEMU émule le processeur avec TCG ; le démarrage de l’installateur est nettement plus lent. Dans le moniteur QEMU (Ctrl+Alt+2, retour à l’affichage par Ctrl+Alt+1), info kvm affiche « kvm support: disabled ». Question 5 : elle suppose un système Debian installé dans la VM (l’installateur seul ne fournit pas systemd-detect-virt). systemd-detect-virt renvoie kvm sous KVM, qemu en émulation pure. Attention : lspci ne montre des périphériques virtio que si la VM en utilise ; la commande qemu du TP garde les périphériques par défaut (carte réseau e1000, lecteur IDE), alors que virt-install (diapositive « KVM en pratique ») choisit virtio. Sorties types, non rejouées dans l’environnement de préparation (pas de KVM) : à vérifier sur le poste de démonstration. Un clic par réponse.]
 })
 
@@ -553,8 +551,8 @@
 #slide(repeat: 3, self => {
   let (uncover,) = utils.methods(self)
   corrige(6, [Virtualisation imbriquée : dans votre VM Debian, lancez une VM Alpine],
-    terminal(titre: none, taille: px(20))[
-      #cadre([Hôte (niveau 0)], c.prompt)[
+    reponse(terminal(titre: none, taille: px(20))[
+      #cadre([Hôte (niveau 0)], niveau: 0)[
         ```
         $ cat /sys/module/kvm_intel/parameters/nested
         Y
@@ -562,7 +560,7 @@
         $ qemu-system-x86_64 -enable-kvm -cpu host \
           -m 2048 -smp 2 -drive file=debian.qcow2,format=qcow2
         ```
-        #uncover("2-", cadre([VM Debian (niveau 1)], c.ambre)[
+        #uncover("2-", cadre([VM Debian (niveau 1)], niveau: 1)[
           ```
           $ ls /dev/kvm
           /dev/kvm
@@ -570,7 +568,7 @@
           $ qemu-system-x86_64 -enable-kvm -cpu host \
             -m 512 -cdrom alpine-virt-x86_64.iso
           ```
-          #uncover("3-", cadre([VM Alpine (niveau 2)], c.menthe)[
+          #uncover("3-", cadre([VM Alpine (niveau 2)], niveau: 2)[
             ```
             # identifiant root, sans mot de passe
             $ dmesg | grep -i hypervisor
@@ -579,7 +577,7 @@
           ])
         ])
       ]
-    ])
+    ]))
   utils.speaker-note(self: self)[Prérequis : la VM Debian installée sur debian.qcow2 à la question 3. Clic 1, hôte : nested doit valoir Y (Intel) ou 1 (AMD, /sys/module/kvm\_amd/parameters/nested) ; sinon, recharger le module avec l’option nested=1. La VM de niveau 1 doit être relancée avec -cpu host : sans cette option, le processeur virtuel n’expose pas vmx/svm, /dev/kvm est absent dans la VM et la VM imbriquée tourne en émulation pure (TCG), très lentement. Prévoir assez de mémoire au niveau 1 pour héberger le niveau 2. Clic 2, niveau 1 : /dev/kvm présent, on installe QEMU et on lance l’invité. Alpine (image « virt », quelques dizaines de Mo, sur alpinelinux.org/downloads) est le choix le plus léger et démarre en quelques secondes ; Debian netinst ou Arch fonctionneraient aussi. Clic 3, niveau 2 : Alpine démarre sur l’ISO en mode live, login root sans mot de passe ; dmesg confirme l’hyperviseur KVM (ici celui de la VM de niveau 1). Sorties types, non rejouées dans l’environnement de préparation (pas de KVM) : à vérifier sur le poste de démonstration.]
 })
 
@@ -591,7 +589,7 @@
     - Créer, démarrer, arrêter, cloner une VM ; console graphique (VNC/SPICE) intégrée
     - Gère l’hôte local, ou un hôte distant via SSH : `qemu+ssh://serveur/system`
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(27))[Bon à savoir][
+  bloc(role: "pratique", taille: px(27))[Bon à savoir][
     - Application de *bureau, mono-poste* : ni cluster, ni haute disponibilité, ni multi-utilisateur
     - Sur Debian/Ubuntu : paquet `virt-manager`, l’outil graphique de référence
     - Sous Red Hat, déprécié au profit de la console web *Cockpit* (`cockpit-machines`)
@@ -610,7 +608,7 @@
     - Conteneur « système » : un OS complet avec son init, persistant — à distinguer des conteneurs *applicatifs* de Docker
     - Fondé sur des *images*, API REST, instantanés, migration à chaud
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(27))[Bon à savoir][
+  bloc(role: "pratique", taille: px(27))[Bon à savoir][
     - *Cluster* de plusieurs nœuds, projets et profils, quotas de ressources
     - Une VM : `incus launch images:debian/13 v1 --vm`
     - Un conteneur : la même commande *sans* `--vm`
@@ -629,7 +627,7 @@
     - *KVM* pour les machines virtuelles, *LXC* pour les conteneurs système
     - Tout se pilote depuis l’interface web : création, console, modèles, sauvegardes
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(27))[Pour la production][
+  bloc(role: "pratique", taille: px(27))[Pour la production][
     - Cluster de plusieurs nœuds, *haute disponibilité*, migration à chaud
     - Stockage et réseau définis par logiciel : *Ceph* intégré, SDN
     - Sauvegardes avec Proxmox Backup Server
@@ -648,7 +646,7 @@
     - Pilote un *cluster d’hôtes* KVM/libvirt : création de VM, *migration à chaud*, haute disponibilité
     - Stockage, réseaux, modèles et instantanés depuis une seule interface — alternative libre à VMware vSphere
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(27))[Statut aujourd’hui][
+  bloc(role: "pratique", taille: px(27))[Statut aujourd’hui][
     - Était l’*amont* de Red Hat Virtualization (RHV)
     - Red Hat a *arrêté RHV* et bascule vers *OpenShift Virtualization* (KubeVirt)
     - oVirt continue surtout en *communautaire* ; *Oracle Linux Virtualization Manager* (OLVM) en est un dérivé maintenu
@@ -667,7 +665,7 @@
     - Ajoute à Kubernetes : console web, CI/CD intégrée, registre d’images, build _source-to-image_, Operators, sécurité renforcée (RBAC, SCC)
     - Tourne sur un socle Red Hat (RHEL CoreOS) ; *OKD* en est la version communautaire libre
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(27))[Place dans le cours][
+  bloc(role: "pratique", taille: px(27))[Place dans le cours][
     - On change d’échelle : non plus gérer *un hôte*, mais un *cluster* qui ordonnance les conteneurs
     - *OpenShift Virtualization* (KubeVirt) fait tourner des VM *à côté* des conteneurs, sur la même plateforme
     - La marche d’après : la conteneurisation (cours suivant) industrialisée en production
@@ -686,7 +684,7 @@
     - Développé par *Vates*, l’éditeur de XCP-ng
     - Gère un ou plusieurs *pools* de serveurs depuis une seule interface
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(27))[Fonctions][
+  bloc(role: "pratique", taille: px(27))[Fonctions][
     - Sauvegarde et réplication des VM, migration à chaud
     - Ordonnancement des tâches, statistiques
     - Multi-utilisateur : rôles et délégation de droits
@@ -705,7 +703,7 @@
     - Repose sur l’hyperviseur *Xen* (type 1) : c’est tout le *poste de travail* qui est virtualisé, pas un serveur
     - Fenêtres *bordées de couleur* selon le niveau de confiance (travail, perso, non fiable)
   ],
-  bloc(entete: c.vert, fond: c.vert-clair, taille: px(27))[Comment ça marche][
+  bloc(role: "pratique", taille: px(27))[Comment ça marche][
     - *dom0* administrateur, sans réseau ; réseau et USB isolés dans des qubes dédiés (`sys-net`, `sys-usb`)
     - *Qubes jetables* : ouvrir une pièce jointe douteuse, puis tout détruire
     - VM dérivées de *modèles* (Fedora, Debian, Whonix/Tor) : mises à jour centralisées
@@ -727,7 +725,7 @@
   - Démarrage direct du noyau invité : rapide, peu de mémoire, donc des milliers de microVM par hôte
 ])
 #espace
-#colonnes(bloc(entete: c.gris, fond: c.espace, taille: px(24))[Où se place la microVM ?][
+#colonnes(bloc(role: "notion", taille: px(24))[Où se place la microVM ?][
   #table(columns: (1fr, 1.2fr, 1.2fr, 1.2fr), stroke: none, inset: (x: px(8), y: px(6)),
     fill: (x, y) => if y == 0 or calc.even(y) { rgb("#DCE5F3") } else { c.fond },
     table.header([], ..([VM classique], [MicroVM], [Conteneur]).map(t => align(center, strong(t)))),
@@ -751,7 +749,7 @@
   ([Kata Containers], [Chaque conteneur dans sa microVM : s’utilise comme runtime avec containerd et Kubernetes]),
 )
 #espace
-#colonnes(bloc(entete: c.orange, fond: c.orange-clair)[À ne pas confondre][
+#colonnes(bloc(role: "precaution")[À ne pas confondre][
   gVisor n’est pas une microVM : c’est un noyau réécrit en espace utilisateur, qui intercepte les appels système du conteneur.
 ])
 
