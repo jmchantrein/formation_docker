@@ -11,8 +11,8 @@ la couleur, le pictogramme et leur adaptation dans chaque variante.
 | Rôle | Pictogramme | Couleur en projection | Usage |
 |---|---|---|---|
 | `notion` (défaut) | — | bleu | définir, expliquer |
-| `pratique` | coureur en sueur (l’effort) | vert | exemple, démonstration, exercice (la question), usage réel |
-| `reponse` | coureur en sueur | vert clair | corrigé : la réponse à une question pratique |
+| `pratique` | coureur en sueur (l’effort) | vert clair | exemple, démonstration, exercice (la question), usage réel |
+| `reponse` | coureur en sueur | vert foncé | corrigé : la réponse à une question pratique |
 | `retenir` | cerveau | bleu nuit | synthèse, point clé |
 | `precaution` | triangle ! + feu du bas | jaune | nuance, confusion fréquente, limite |
 | `avertissement` | triangle ! + feu du milieu | orange | erreur probable, mauvaise pratique |
@@ -32,7 +32,7 @@ VM imbriquée (pointillés).
   `#colonnes(bloc[Titre][- point], bloc(role: "pratique")[Titre][- point])`
 - Note courte : `#note(role: "pratique")[...]` ; encadré à libellé : `#encadre(role: "precaution", libelle: [En vrai :])[...]`.
 - Corrigé de TP : `#corrige(n, [question], uncover("2-", reponse(terminal[...])))` ; la question porte le vert
-  de la pratique, la réponse une barre vert clair qui apparaît avec elle.
+  clair de la pratique, la réponse une barre vert foncé qui apparaît avec elle.
 - Machine lancée par la commande au-dessus, dans un terminal : `#cadre([VM (niveau 1)], niveau: 1)[...]`.
 - Terminal : `#terminal[```...```]` ; une ligne `$ ` colore l’invite, une ligne `# ` grise le commentaire.
 - Bandeau sombre (origine, éditeur, version) : `#bandeau[...]`.
