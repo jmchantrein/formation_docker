@@ -3,7 +3,7 @@
 ## À faire
 
 ### Cours Docker
-- [ ] Rejouer les sorties marquées « à rejouer » avec `docker/rejouer.sh` sur un Debian 13 (docker.io 26.1.5, AppArmor), puis les recopier dans les diapos
+- [ ] Rejouer les sorties marquées « à rejouer » avec `conteneurisation/rejouer.sh` sur un Debian 13 (docker.io 26.1.5, AppArmor), puis les recopier dans les diapos
 
 ### Cours Virtualisation
 - [ ] Rejouer les sorties types (KVM, TP) avec `virtualisation/rejouer-tp.sh` sur une machine avec KVM, puis remplacer les sorties des diapos et les mentions « à rejouer » des notes

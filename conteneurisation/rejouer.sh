@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Rejoue les commandes du cours Docker dont la sortie est marquée « à rejouer » dans les notes de l'orateur,
 # et relève les versions. À lancer sur un Debian 13 avec docker.io (26.1.5), AppArmor actif, utilisateur du
-# groupe docker et accès sudo : ./rejouer.sh > sorties-docker.txt 2>&1
+# groupe docker et accès sudo : ./rejouer.sh > sorties-conteneurisation.txt 2>&1
 # Les commandes interactives (bash, ssh) ne sont pas rejouées ; tout est créé dans un dossier temporaire.
 set -u
 run() { printf '\n$ %s\n' "$1"; bash -c "$1" 2>&1; }
