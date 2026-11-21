@@ -4,7 +4,7 @@ Supports de cours de Jean-Mathieu Chantrein : un dossier par cours, une charte c
 
 | Cours | Diapos | Rendus adaptés | Sources |
 |---|---|---|---|
-| Docker : fondements de la conteneurisation | [`conteneurisation-projection.pdf`](conteneurisation/conteneurisation-projection.pdf) | [deutéranopie](conteneurisation/conteneurisation-deuteranopie.pdf) · [protanopie](conteneurisation/conteneurisation-protanopie.pdf) · [tritanopie](conteneurisation/conteneurisation-tritanopie.pdf) · [achromatopsie](conteneurisation/conteneurisation-achromatopsie.pdf) · [dyslexie](conteneurisation/conteneurisation-dyslexie.pdf) | [`conteneurisation/`](conteneurisation/) (Typst, travaux pratiques) |
+| Fondements de la conteneurisation | [`conteneurisation-projection.pdf`](conteneurisation/conteneurisation-projection.pdf) | [deutéranopie](conteneurisation/conteneurisation-deuteranopie.pdf) · [protanopie](conteneurisation/conteneurisation-protanopie.pdf) · [tritanopie](conteneurisation/conteneurisation-tritanopie.pdf) · [achromatopsie](conteneurisation/conteneurisation-achromatopsie.pdf) · [dyslexie](conteneurisation/conteneurisation-dyslexie.pdf) | [`conteneurisation/`](conteneurisation/) (Typst, travaux pratiques) |
 | Fondements de la virtualisation de machines | [`virtualisation-projection.pdf`](virtualisation/virtualisation-projection.pdf) | [deutéranopie](virtualisation/virtualisation-deuteranopie.pdf) · [protanopie](virtualisation/virtualisation-protanopie.pdf) · [tritanopie](virtualisation/virtualisation-tritanopie.pdf) · [achromatopsie](virtualisation/virtualisation-achromatopsie.pdf) · [dyslexie](virtualisation/virtualisation-dyslexie.pdf) | [`virtualisation/`](virtualisation/) (Typst) |
 
 ## Rendus adaptés

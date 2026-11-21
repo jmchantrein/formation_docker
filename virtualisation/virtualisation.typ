@@ -876,3 +876,6 @@
   ]),
   note: [Récapitulatif, une idée par clic, dans l’ordre du cours.],
 )
+
+#cloture(illustration: "vm")[Merci][Des questions ?][Jean-Mathieu Chantrein][Supports : github.com/jmchantrein/cours]
+#speaker-note[Page de clôture, dans le même design que la couverture.]

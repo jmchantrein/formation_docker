@@ -8,11 +8,11 @@
 
 #show: cours-theme.with(
   auteur: [Jean-Mathieu Chantrein],
-  titre-court: [Fondements de la technologie de conteneurisation Docker],
+  titre-court: [Fondements de la conteneurisation],
 )
 
-#couverture(illustration: "couches")[Docker][Fondements de la technologie de conteneurisation][Jean-Mathieu Chantrein][12 novembre 2026]
-#speaker-note[Les quatre barres à droite évoquent les couches d’une image : trois en lecture seule (gris), une couche en lecture/écriture au sommet (bleu vif).]
+#couverture(illustration: "couches")[Conteneurisation][Fondements de la conteneurisation][Jean-Mathieu Chantrein][12 novembre 2026]
+#speaker-note[Les quatre barres à droite évoquent les couches d’une image : trois en lecture seule (dégradé de bleus, de la base au sommet), et au sommet la couche du conteneur, en lecture/écriture (claire, bordée de tirets).]
 
 = Sommaire
 
@@ -79,7 +79,7 @@
 #let _note = none
 #anime(
   rang(
-    bloc(role: "pratique")[Avantages][
+    bloc[Avantages][
       - Portabilité : l'image tourne sur tout hôte de même noyau et de même architecture (x86-64, ARM)
       - Isolation des applications, plus faible qu'une VM : le noyau est partagé
       - Mutualisation des ressources, à la demande
@@ -3197,3 +3197,6 @@ PING qwant.com (…): 56 data bytes
   ),
   note: _note,
 )
+
+#cloture(illustration: "couches")[Merci][Des questions ?][Jean-Mathieu Chantrein][Supports : github.com/jmchantrein/cours]
+#speaker-note[Page de clôture, dans le même design que la couverture.]

@@ -11,9 +11,9 @@ la couleur, le pictogramme et leur adaptation dans chaque variante.
 | Rôle | Pictogramme | Couleur en projection | Usage |
 |---|---|---|---|
 | `notion` (défaut) | — | bleu | définir, expliquer |
-| `pratique` | coureur en sueur (l’effort) | vert | exemple, démonstration, usage réel |
-| `question` | coureur en sueur | vert clair | exercice : ce qu’on demande de faire |
-| `reponse` | coureur en sueur | vert foncé | corrigé : la réponse à une question |
+| `pratique` | — | vert | exemple, démonstration, usage réel |
+| `question` | coureur en sueur (l’effort des étudiants) | vert clair | exercice : ce qu’on demande de faire |
+| `reponse` | — | vert foncé | corrigé : la réponse à une question |
 | `retenir` | cerveau | bleu nuit | synthèse, point clé |
 | `precaution` | triangle ! (+ feu du bas) | jaune | nuance, confusion fréquente, limite |
 | `avertissement` | triangle ! (+ feu du milieu) | orange | erreur probable, mauvaise pratique |
@@ -21,7 +21,7 @@ la couleur, le pictogramme et leur adaptation dans chaque variante.
 
 Les trois niveaux d’alerte suivent la gradation des normes de signalisation (ISO 3864, ANSI Z535) :
 précaution, avertissement, danger ; les trois partagent le triangle « ! ». Dans les variantes, il est suivi d’un feu
-tricolore dont le feu allumé (bas, milieu, haut) donne le niveau par sa position, donc même sans couleur. Les dessins du cerveau et du coureur viennent de Tabler Icons (MIT, `pictos/LICENSE-tabler-icons.txt`).
+tricolore dont le feu allumé (bas, milieu, haut) donne le niveau par sa position, donc même sans couleur. Le coureur ne marque que les questions : il signale une manipulation à faire. Les dessins du cerveau et du coureur viennent de Tabler Icons (MIT, `pictos/LICENSE-tabler-icons.txt`).
 
 Dans les schémas : hôte et applications en **bleu**, invité (VM, OS invité) en **violet** (`c.invite`,
 `c.invite-clair`). Dans les terminaux, `cadre(…, niveau: 0 | 1 | 2)` : hôte (trait plein), VM invitée (tirets),
@@ -33,7 +33,7 @@ VM imbriquée (pointillés).
   `#colonnes(bloc[Titre][- point], bloc(role: "pratique")[Titre][- point])`
 - Note courte : `#note(role: "pratique")[...]` ; encadré à libellé : `#encadre(role: "precaution", libelle: [En vrai :])[...]`.
 - Plusieurs questions et réponses sur une diapo : `#corriges(note: […], (1, [question], reponse[…]), …)`.
-- Couverture : `#couverture(illustration: "vm" | "couches")[titre][sous-titre][auteur][date]`.
+- Couverture : `#couverture(illustration: "vm" | "couches")[titre][sous-titre][auteur][date]` ; clôture, même design, en fin de cours : `#cloture(illustration: …)[Merci][Des questions ?][auteur][lien]`.
 - Corrigé de TP : `#corrige(n, [question], uncover("2-", reponse(terminal[...])))` ; la question porte le vert
   clair du rôle `question`, la réponse une barre vert foncé qui apparaît avec elle.
 - Machine lancée par la commande au-dessus, dans un terminal : `#cadre([VM (niveau 1)], niveau: 1)[...]`.

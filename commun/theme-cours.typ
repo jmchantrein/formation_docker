@@ -104,7 +104,8 @@
   image(bytes(read(fichier).replace("currentColor", couleur.to-hex())), format: "svg", width: t * 1.25, height: t * 1.25))
 #let picto(role, forme, glyphe, t: px(30)) = {
   if role == "retenir" { return icone("pictos/cerveau.svg", forme, t) }
-  if role in ("pratique", "question", "reponse") { return icone("pictos/coureur.svg", forme, t) }
+  // le coureur signale un effort des étudiants : seulement sur les questions (« À vous »)
+  if role == "question" { return icone("pictos/coureur.svg", forme, t) }
   let niveaux = ("danger", "avertissement", "precaution")  // de haut en bas
   if role not in niveaux { return none }
   let triangle = box(width: t, height: t, baseline: 18%, {
@@ -386,13 +387,17 @@
     box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
     box(width: px(560), height: px(56), fill: c.gris, radius: px(12)),
   ),
-  couches: stack(spacing: px(16),
-    box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
-    ..range(3).map(_ => box(width: px(560), height: px(56), fill: c.commentaire, radius: px(12))),
+  // couches d'image en lecture seule : un dégradé de bleus, du plus sombre (base) au plus clair ;
+  // au sommet, la couche du conteneur en lecture/écriture, claire et bordée de tirets
+  couches: stack(spacing: px(14),
+    box(width: px(560), height: px(56), radius: px(12), fill: c.hote-t.transparentize(80%),
+      stroke: (paint: c.hote-t, thickness: px(3), dash: "dashed")),
+    ..(70%, 45%, 20%).map(p => box(width: px(560), height: px(56), radius: px(12),
+      fill: color.mix((c.hote-t, p), (c.nuit, 100% - p)))),
   ),
 )
 
-#let couverture-seule(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA", illustration: "vm") = touying-slide-wrapper(self => {
+#let page-titre(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA", illustration: "vm") = touying-slide-wrapper(self => {
   self = utils.merge-dicts(self,
     config-common(subslide-preamble: none),
     config-page(fill: c.nuit, footer: none, margin: px(128)))
@@ -401,7 +406,12 @@
     text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, maj(surtitre))
     v(1fr)
     block(width: px(1040), {
-      text(size: px(144), weight: 600, fill: c.fond, titre)
+      // un titre trop long pour sa place (1040 px) est réduit pour ne pas chevaucher l'illustration
+      context {
+        let w = measure(text(size: px(144), weight: 600, titre)).width
+        let k = calc.min(1, px(1040) / w)
+        text(size: px(144) * k, weight: 600, fill: c.fond, titre)
+      }
       v(px(32), weak: true)
       text(size: px(64), fill: rgb("#C3D0E4"), sous-titre)
     })
@@ -437,9 +447,13 @@
 })
 
 #let couverture(..args) = {
-  couverture-seule(..args)
+  page-titre(..args)
   if variante != "projection" { legende }
 }
+
+// Page de clôture, dans le même design que la couverture :
+// #cloture(illustration: …)[Merci][Des questions ?][auteur][contact ou lien]
+#let cloture(..args) = page-titre(..args)
 
 // ---------- Animation : bloc par bloc, puis puce par puce ----------
 // Les apparitions passent par uncover (le contenu caché garde sa place) : seules des apparitions,

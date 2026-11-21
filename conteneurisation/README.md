@@ -1,6 +1,6 @@
-# Cours « Docker : fondements de la technologie de conteneurisation »
+# Cours « Fondements de la conteneurisation »
 
-Les diapos du cours Docker, avec les notes de l’orateur, dans `conteneurisation.typ` ; les travaux pratiques dans
+Les diapos du cours, avec les notes de l’orateur, dans `conteneurisation.typ` ; les travaux pratiques dans
 `travaux_pratiques.md`. PDF compilé : [`conteneurisation-projection.pdf`](conteneurisation-projection.pdf). Compilation et charte : voir le
 [README racine](../README.md) et [`../commun/README.md`](../commun/README.md).
 
