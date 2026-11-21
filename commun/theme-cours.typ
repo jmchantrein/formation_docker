@@ -190,6 +190,8 @@
 #let entete-role(role, titre, taille) = {
   let r = roles.at(role)
   let p = picto(role, r.texte, r.entete, t: taille * 1.05)
+  // le code d'un titre prend la couleur du titre (sinon : code bleu sur en-tête bleu)
+  show raw: set text(fill: r.texte)
   text(fill: r.texte, size: taille, weight: 600, { if p != none { p; h(taille * 0.4) }; titre })
 }
 
@@ -292,14 +294,15 @@
 }
 
 // Plan du cours : numéro, titre de partie, description.
-#let plan-cours(..parties) = {
+#let plan-cours(uncover: none, ..parties) = {
   let ps = parties.pos()
+  let montre(i, x) = if uncover == none { x } else { uncover(str(i + 1) + "-", x) }
   grid(columns: (px(96), 1fr), align: horizon, column-gutter: px(40),
     inset: (y: px(16)),
     stroke: (x, y) => if y < ps.len() - 1 { (bottom: px(1) + c.filet) },
     ..ps.enumerate().map(((i, (t, d))) => (
-      text(size: px(64), weight: 600, fill: c.bleu, str(i + 1)),
-      { text(size: px(40), weight: 600, t); linebreak(); text(size: px(32), fill: c.ardoise, d) },
+      montre(i, text(size: px(64), weight: 600, fill: c.bleu, str(i + 1))),
+      montre(i, { text(size: px(40), weight: 600, t); linebreak(); text(size: px(32), fill: c.ardoise, d) }),
     )).flatten())
 }
 
@@ -316,6 +319,20 @@
 // La réponse s’écrit reponse(...) dans le cours, à l’intérieur de son uncover : la barre apparaît avec elle.
 #let corrige(n, q, rep) = grid(columns: (px(700), 1fr), column-gutter: px(32),
   question(n, q), rep)
+
+// Plusieurs questions et leurs réponses sur une diapo : la question reste visible, chaque réponse apparaît
+// à son clic. items : (n, [question], reponse[…]) ; la réponse s’écrit avec reponse(…).
+#let corriges(note: none, ..items) = {
+  let qa = items.pos()
+  slide(repeat: qa.len() + 1, self => {
+    let (uncover,) = utils.methods(self)
+    for (i, it) in qa.enumerate() {
+      corrige(it.at(0), it.at(1), uncover(str(i + 2) + "-", it.at(2)))
+      if i < qa.len() - 1 { v(px(16)) }
+    }
+    if note != none { utils.speaker-note(self: self, note) }
+  })
+}
 
 // ---------- Schémas en couches ----------
 #let couche(texte, fond: c.nuit, hauteur: px(72), taille: px(30), puces: ()) = block(
@@ -360,18 +377,27 @@
 #let pose(x, y, corps) = place(top + left, dx: px(x), dy: px(y), corps)
 
 // ---------- Couverture ----------
-#let couverture-seule(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA") = touying-slide-wrapper(self => {
+// Illustrations de couverture : « vm » (trois VM sur un hyperviseur, sur le matériel) ou
+// « couches » (les couches d’une image : trois en lecture seule, une en lecture/écriture au sommet).
+#let illustrations = (
+  vm: stack(spacing: px(16),
+    grid(columns: (px(176),) * 3, column-gutter: px(16),
+      ..range(3).map(_ => box(width: px(176), height: px(96), fill: c.invite-t, radius: px(12)))),
+    box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
+    box(width: px(560), height: px(56), fill: c.gris, radius: px(12)),
+  ),
+  couches: stack(spacing: px(16),
+    box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
+    ..range(3).map(_ => box(width: px(560), height: px(56), fill: c.commentaire, radius: px(12))),
+  ),
+)
+
+#let couverture-seule(titre, sous-titre, auteur, date, surtitre: "Cours · LERIA", illustration: "vm") = touying-slide-wrapper(self => {
   self = utils.merge-dicts(self,
     config-common(subslide-preamble: none),
     config-page(fill: c.nuit, footer: none, margin: px(128)))
   touying-slide(self: self, {
-    // Illustration : trois VM sur un hyperviseur, sur le matériel.
-    place(top + left, dx: px(1104), dy: px(184), stack(spacing: px(16),
-      grid(columns: (px(176),) * 3, column-gutter: px(16),
-        ..range(3).map(_ => box(width: px(176), height: px(96), fill: c.invite-t, radius: px(12)))),
-      box(width: px(560), height: px(56), fill: c.hote-t, radius: px(12)),
-      box(width: px(560), height: px(56), fill: c.gris, radius: px(12)),
-    ))
+    place(top + left, dx: px(1104), dy: px(184), illustrations.at(illustration))
     text(size: px(24), weight: 600, tracking: px(2), fill: c.prompt, maj(surtitre))
     v(1fr)
     block(width: px(1040), {
@@ -455,6 +481,8 @@
       let debuts = ()
       for b in e.rang { debuts.push(s); s += etapes-bloc(b) }
       plan.push((e, debuts))
+    } else if type(e) == dictionary and "etapes" in e {
+      plan.push((e, s)); s += e.etapes
     } else { plan.push((e, s)); s += 1 }
   }
   slide(repeat: s - 1, self => {
@@ -464,9 +492,20 @@
       if type(e) == dictionary and "rang" in e {
         rangee(gouttiere: e.gouttiere, poids: e.rang.map(b => b.poids),
           ..e.rang.zip(d).map(((b, db)) => h => bloc-anime(b, db, uncover, hauteur: h)))
-      } else { uncover(str(d) + "-", e) }
+      } else if type(e) == dictionary and "etapes" in e { (e.rendu)(uncover, d) }
+      else { uncover(str(d) + "-", e) }
     }
     if source-de != none { source(source-de) }
     if note != none { utils.speaker-note(self: self, note) }
   })
 }
+
+// Éléments à plusieurs clics, pour anime() : `pas(n, (uncover, debut) => …)` occupe n clics à partir de debut.
+#let pas(n, rendu) = (etapes: n, rendu: rendu)
+// Une ligne de `lignes` par clic.
+#let lignes-anime(..args) = pas(args.pos().len(), (u, d) => lignes(uncover: u, debut: d, ..args))
+// Terminal dont les morceaux apparaissent un par clic : terminal-etapes([```…```], [```…```], titre: …).
+#let terminal-etapes(titre: "Terminal", taille: px(20), ..morceaux) = pas(morceaux.pos().len(), (u, d) =>
+  terminal(titre: titre, taille: taille, morceaux.pos().enumerate().map(((i, m)) => u(str(d + i) + "-", m)).join()))
+// Plan du cours, une partie par clic.
+#let plan-anime(..parties) = pas(parties.pos().len(), (u, d) => plan-cours(uncover: (v, x) => u(str(d - 1 + int(v.split("-").at(0))) + "-", x), ..parties))
