@@ -10,5 +10,5 @@ l’organisation et la compilation dans [`README.md`](README.md).
 - Pour un besoin visuel nouveau, ajoute un rôle ou un composant à la charte, avec sa couleur dans chaque palette.
 - Après une modification, compile chaque variante dans `build/` et vérifie qu’elle a le nombre de pages
   de la projection, plus une (la légende).
-- Laisse la CI produire les PDF versionnés `<cours>/<cours>*.pdf`.
+- Laisse la CI produire les PDF versionnés `<cours>/<cours>-<variante>.pdf`.
 - Pour créer ou réviser des diapos, applique les règles de structure de `structurer-diapos-cours`.
