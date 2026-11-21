@@ -19,7 +19,7 @@
 
 // ---------- Variantes de rendu ----------
 // Choisies à la compilation : typst compile --input variante=<nom> …
-// - normal (défaut) : rendu de projection, pensé pour la vision typique ;
+// - projection (défaut) : rendu de projection, pensé pour la vision typique ;
 // - deuteranopie, protanopie, tritanopie, achromatopsie : palette propre à chaque vision ;
 // - dyslexie : lettres, mots et lignes plus espacés, ni capitales forcées ni italique.
 // Chaque palette garde les rôles distincts pour la vision visée (écarts ΔE CIELAB simulés : Machado 2009
@@ -50,8 +50,8 @@
     invite: rgb("#714793"), invite-clair: rgb("#CCBADC"), appli: rgb("#E0ECFC"),
     hote-t: rgb("#6C8DBF"), invite-t: rgb("#CAB1E8"), imbrique-t: rgb("#FFDAF4")),
 )
-#let variantes = ("normal", "dyslexie") + palettes.keys()
-#let variante = sys.inputs.at("variante", default: "normal")
+#let variantes = ("projection", "dyslexie") + palettes.keys()
+#let variante = sys.inputs.at("variante", default: "projection")
 #assert(variante in variantes,
   message: "variante inconnue : " + variante + " (attendu : " + variantes.join(", ") + ")")
 #let dys = variante == "dyslexie"
@@ -117,7 +117,7 @@
     inset: (x: t * 0.07, y: t * 0.04),
     stack(spacing: t * 0.04, ..niveaux.map(n => circle(radius: d / 2,
       fill: if n == role { forme } else { none }, stroke: t * 0.05 + forme))))
-  if variante == "normal" { return triangle }
+  if variante == "projection" { return triangle }
   triangle; h(t * 0.15); feu
 }
 
@@ -438,7 +438,7 @@
 
 #let couverture(..args) = {
   couverture-seule(..args)
-  if variante != "normal" { legende }
+  if variante != "projection" { legende }
 }
 
 // ---------- Animation : bloc par bloc, puis puce par puce ----------

@@ -59,7 +59,7 @@ Les apparitions suivent la skill `structurer-diapos-cours` : bloc par bloc, puis
 Édition avec aperçu en direct : extension Tinymist (VS Code, VSCodium, Neovim…), avec la racine du dépôt comme racine du projet.
 
 ## Variantes de rendu
-La charte lit `--input variante=<nom>` (normal, deuteranopie, protanopie, tritanopie, achromatopsie, dyslexie)
+La charte lit `--input variante=<nom>` (projection, deuteranopie, protanopie, tritanopie, achromatopsie, dyslexie)
 et adapte palette et espacements ; les cours n’ont rien à faire. Chaque variante commence par une page
 « Légende », hors numérotation, qui relie ses couleurs à celles de la projection (« le bloc orange » = avertissement). Les réglages et leur justification sont en tête
 de `theme-cours.typ`. Une nouvelle palette s’ajoute dans `palettes` ; penser à l’ajouter aussi à la liste des

@@ -4,17 +4,17 @@ Supports de cours de Jean-Mathieu Chantrein : un dossier par cours, une charte c
 
 | Cours | Diapos | Rendus adaptés | Sources |
 |---|---|---|---|
-| Docker : fondements de la conteneurisation | [`docker.pdf`](docker/docker.pdf) | [deutéranopie](docker/docker-deuteranopie.pdf) · [protanopie](docker/docker-protanopie.pdf) · [tritanopie](docker/docker-tritanopie.pdf) · [achromatopsie](docker/docker-achromatopsie.pdf) · [dyslexie](docker/docker-dyslexie.pdf) | [`docker/`](docker/) (Typst, travaux pratiques) |
-| Fondements de la virtualisation de machines | [`virtualisation.pdf`](virtualisation/virtualisation.pdf) | [deutéranopie](virtualisation/virtualisation-deuteranopie.pdf) · [protanopie](virtualisation/virtualisation-protanopie.pdf) · [tritanopie](virtualisation/virtualisation-tritanopie.pdf) · [achromatopsie](virtualisation/virtualisation-achromatopsie.pdf) · [dyslexie](virtualisation/virtualisation-dyslexie.pdf) | [`virtualisation/`](virtualisation/) (Typst) |
+| Docker : fondements de la conteneurisation | [`conteneurisation-projection.pdf`](conteneurisation/conteneurisation-projection.pdf) | [deutéranopie](conteneurisation/conteneurisation-deuteranopie.pdf) · [protanopie](conteneurisation/conteneurisation-protanopie.pdf) · [tritanopie](conteneurisation/conteneurisation-tritanopie.pdf) · [achromatopsie](conteneurisation/conteneurisation-achromatopsie.pdf) · [dyslexie](conteneurisation/conteneurisation-dyslexie.pdf) | [`conteneurisation/`](conteneurisation/) (Typst, travaux pratiques) |
+| Fondements de la virtualisation de machines | [`virtualisation-projection.pdf`](virtualisation/virtualisation-projection.pdf) | [deutéranopie](virtualisation/virtualisation-deuteranopie.pdf) · [protanopie](virtualisation/virtualisation-protanopie.pdf) · [tritanopie](virtualisation/virtualisation-tritanopie.pdf) · [achromatopsie](virtualisation/virtualisation-achromatopsie.pdf) · [dyslexie](virtualisation/virtualisation-dyslexie.pdf) | [`virtualisation/`](virtualisation/) (Typst) |
 
 ## Rendus adaptés
 Chaque cours Typst est compilé en plusieurs rendus, à partir des mêmes sources ; la charte commune
-(`commun/theme-cours.typ`) applique la variante choisie à la compilation. Le rendu normal sert à la projection ;
+(`commun/theme-cours.typ`) applique la variante choisie à la compilation. Le rendu de projection sert en cours ;
 les autres se téléchargent, pour lire les diapos dans le rendu qui convient à sa vision ou à sa lecture.
 
 | Variante | Fichier | Pour qui, quoi |
 |---|---|---|
-| normal | `<cours>.pdf` | La projection en cours. |
+| projection | `<cours>-projection.pdf` | La projection en cours, pour la vision typique. |
 | deuteranopie | `<cours>-deuteranopie.pdf` | Daltonisme rouge-vert, la forme la plus fréquente : le vert devient bleu-vert, bien distinct de l’orange et du bleu. |
 | protanopie | `<cours>-protanopie.pdf` | Daltonisme rouge-vert (insensibilité au rouge) : même palette que la deutéranopie. |
 | tritanopie | `<cours>-tritanopie.pdf` | Confusion bleu-vert et jaune-violet : le vert devient violet. |
@@ -28,7 +28,7 @@ qui relie ses couleurs à celles de la projection.
 ## Organisation
 - `<cours>/<cours>.typ` : les diapos d’un cours, en [Typst](https://typst.app) avec [Touying](https://github.com/touying-typ/touying).
 - `commun/` : la charte partagée (`theme-cours.typ`) et les polices IBM Plex ; voir [`commun/README.md`](commun/README.md).
-- `<cours>/<cours>.pdf` : le PDF publié, compilé par la CI.
+- `<cours>/<cours>-<variante>.pdf` : les PDF publiés, compilés par la CI.
 
 ## Compiler
 Typst 0.15 ou plus récent, depuis la racine du dépôt (Touying se télécharge seul à la première compilation) :
@@ -39,10 +39,10 @@ Typst 0.15 ou plus récent, depuis la racine du dépôt (Touying se télécharge
 Pour une variante : ajouter `--input variante=<variante>` (par exemple `--input variante=dyslexie`).
 
 `--root .` autorise l’import de `../commun/theme-cours.typ`. On compile dans `build/` (ignoré par git) :
-le PDF versionné `<cours>/<cours>.pdf` est produit et commité par la CI, ce qui évite les conflits sur ce fichier binaire.
+les PDF versionnés `<cours>/<cours>-<variante>.pdf` sont produits et commité par la CI, ce qui évite les conflits sur ce fichier binaire.
 
 Sur GitHub, l’action `.github/workflows/compilation-cours.yml` recompile chaque cours `<cours>/<cours>.typ`
-à chaque push sur `main` touchant les sources ou la charte, et commite `<cours>/<cours>.pdf` et ses variantes.
+à chaque push sur `main` touchant les sources ou la charte, et commite `<cours>/<cours>-<variante>.pdf` pour chaque variante.
 Ajouter un cours : créer `<cours>/<cours>.typ` qui importe `../commun/theme-cours.typ`, rien d’autre.
 
 ## Licences

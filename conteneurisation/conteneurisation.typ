@@ -1,6 +1,6 @@
 // Cours « Docker : fondements de la technologie de conteneurisation » — Typst + Touying.
 // Compilation (depuis la racine du dépôt) :
-//   typst compile --root . --font-path commun/fonts docker/docker.typ build/docker.pdf
+//   typst compile --root . --font-path commun/fonts conteneurisation/conteneurisation.typ build/conteneurisation.pdf
 // Une diapo = un titre `==` ; une section (surtitre bleu) = un titre `=`.
 // Structure : règles de .claude/skills/structurer-diapos-cours ; apparence : charte de commun/.
 
@@ -490,7 +490,7 @@
 )
 
 == Plusieurs commandes pour un même résultat
-#let _note = [Le conteneur a6ae41d6d9bc est celui de hello-world (diapositive « Notre premier conteneur ») : sortie à rejouer dans l’ordre du cours avec docker/rejouer.sh.]
+#let _note = [Le conteneur a6ae41d6d9bc est celui de hello-world (diapositive « Notre premier conteneur ») : sortie à rejouer dans l’ordre du cours avec conteneurisation/rejouer.sh.]
 #anime(
   rang(
     bloc[Commandes regroupées par objet][
@@ -762,7 +762,7 @@
 )
 
 == Premiers conteneurs : cas faciles, corrigé (1/2)
-#let _note = [Sur debian:13 (docker.io 26.1.5 de Debian 13). La question reste affichée ; un clic par réponse. Sortie de ls à rejouer avec docker/rejouer.sh.]
+#let _note = [Sur debian:13 (docker.io 26.1.5 de Debian 13). La question reste affichée ; un clic par réponse. Sortie de ls à rejouer avec conteneurisation/rejouer.sh.]
 #corriges(note: _note,
   (1, [Exécutez `/bin/bash` dans un conteneur interactif `debian`],
     reponse(terminal(titre: none, taille: px(19))[```
@@ -791,7 +791,7 @@
 )
 
 == Premiers conteneurs : cas faciles, corrigé (2/2)
-#let _note = [Sur debian:13 (docker.io 26.1.5 de Debian 13). La question reste affichée ; un clic par réponse. Sorties de ls et de prune à rejouer avec docker/rejouer.sh.]
+#let _note = [Sur debian:13 (docker.io 26.1.5 de Debian 13). La question reste affichée ; un clic par réponse. Sorties de ls et de prune à rejouer avec conteneurisation/rejouer.sh.]
 #corriges(note: _note,
   (5, [Rattachez-vous à « mon_conteneur_c0 », puis sortez-en],
     reponse(terminal(titre: none, taille: px(19))[```
@@ -836,7 +836,7 @@
 )
 
 == Premiers conteneurs : un service, corrigé (1/2)
-#let _note = [Sortie réelle (docker.io 26.1.5 de Debian 13). curl n’est pas installé par défaut sur Debian 13 : apt install curl, ou ouvrir http://localhost:8080 dans un navigateur. La question reste affichée ; un clic par réponse. Ligne de journal à recopier telle quelle avec docker/rejouer.sh.]
+#let _note = [Sortie réelle (docker.io 26.1.5 de Debian 13). curl n’est pas installé par défaut sur Debian 13 : apt install curl, ou ouvrir http://localhost:8080 dans un navigateur. La question reste affichée ; un clic par réponse. Ligne de journal à recopier telle quelle avec conteneurisation/rejouer.sh.]
 #corriges(note: _note,
   (1, [Lancez `nginx` en arrière-plan, nommé « web », port 80 → 8080 de l'hôte],
     reponse(terminal(titre: none, taille: px(19))[```
@@ -896,7 +896,7 @@
 )
 
 == Premiers conteneurs : cas pénibles, corrigé (1/5)
-#let _note = [Question 2 : sortie réelle sur l’image ubuntu, le 17 novembre 2026 ; le conteneur ne voit que ses propres processus, et la commande lancée y porte le PID 1. L’image debian ne contient pas ps (paquet procps), d’où le choix d’ubuntu ici et pour c3. Le cours d’origine utilisait centos, image abandonnée depuis la fin de vie de CentOS Linux (juin 2024). Sortie complète de ps à recopier avec docker/rejouer.sh.]
+#let _note = [Question 2 : sortie réelle sur l’image ubuntu, le 17 novembre 2026 ; le conteneur ne voit que ses propres processus, et la commande lancée y porte le PID 1. L’image debian ne contient pas ps (paquet procps), d’où le choix d’ubuntu ici et pour c3. Le cours d’origine utilisait centos, image abandonnée depuis la fin de vie de CentOS Linux (juin 2024). Sortie complète de ps à recopier avec conteneurisation/rejouer.sh.]
 #corriges(note: _note,
   (1, [`/bin/bash` interactif dans `alpine`],
     reponse(terminal(titre: none, taille: px(19))[```
@@ -960,7 +960,7 @@
 )
 
 == Premiers conteneurs : cas pénibles, corrigé (4/5)
-#let _note = [Suite du corrigé. Sorties réelles (docker.io 26.1.5 de Debian 13, image ubuntu), le 17 novembre 2026. Deux bash tournent : le PID 1, relancé par docker container start, et le PID 8, lancé par docker container exec ; Ctrl+p Ctrl+q détache le terminal sans arrêter le processus. docker container top interroge l’hôte : il donne les PID de l’espace de noms de l’hôte (519, 560 ; ils varient). ps dans le conteneur donne ceux de l’espace de noms PID du conteneur (1, 8), plus ps lui-même. Numérotation : dans chaque espace de noms, le noyau attribue les PID dans l’ordre et ne réutilise un numéro qu’après avoir fait le tour ; ps ne montre que les processus encore vivants. Pour entrer dans le conteneur, docker container exec (runc) crée plusieurs processus et threads de courte durée qui consomment des numéros. Mesuré sur 26.1.5 : avec sleep en PID 1, trois docker container exec successifs donnent à la commande les PID 7, 14 puis 21, soit 7 numéros par exec. Le .bashrc d’un bash interactif en consomme aussi (lesspipe, dircolors). Sur l’hôte, entre 519 et 560 : ces mêmes processus de Docker, plus tout ce qui tourne sur la machine. Colonnes TTY et TIME de ps à recopier avec docker/rejouer.sh.]
+#let _note = [Suite du corrigé. Sorties réelles (docker.io 26.1.5 de Debian 13, image ubuntu), le 17 novembre 2026. Deux bash tournent : le PID 1, relancé par docker container start, et le PID 8, lancé par docker container exec ; Ctrl+p Ctrl+q détache le terminal sans arrêter le processus. docker container top interroge l’hôte : il donne les PID de l’espace de noms de l’hôte (519, 560 ; ils varient). ps dans le conteneur donne ceux de l’espace de noms PID du conteneur (1, 8), plus ps lui-même. Numérotation : dans chaque espace de noms, le noyau attribue les PID dans l’ordre et ne réutilise un numéro qu’après avoir fait le tour ; ps ne montre que les processus encore vivants. Pour entrer dans le conteneur, docker container exec (runc) crée plusieurs processus et threads de courte durée qui consomment des numéros. Mesuré sur 26.1.5 : avec sleep en PID 1, trois docker container exec successifs donnent à la commande les PID 7, 14 puis 21, soit 7 numéros par exec. Le .bashrc d’un bash interactif en consomme aussi (lesspipe, dircolors). Sur l’hôte, entre 519 et 560 : ces mêmes processus de Docker, plus tout ce qui tourne sur la machine. Colonnes TTY et TIME de ps à recopier avec conteneurisation/rejouer.sh.]
 #corriges(note: _note,
   (8, [`start c3`, `exec` un nouveau bash, puis détachez-vous],
     reponse(terminal(titre: none, taille: px(19))[```
@@ -1042,7 +1042,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5
 = Bases · Persistance
 
 == Supprimer le conteneur supprime ses données
-#let _note = [docker.io 26.1.5 de Debian 13. Le rm parcourt plus de 15 000 fichiers ; /proc et /sys, montés par Docker, résistent. Le second conteneur est neuf : son ls fonctionne. Sortie de ls à rejouer avec docker/rejouer.sh.]
+#let _note = [docker.io 26.1.5 de Debian 13. Le rm parcourt plus de 15 000 fichiers ; /proc et /sys, montés par Docker, résistent. Le second conteneur est neuf : son ls fonctionne. Sortie de ls à rejouer avec conteneurisation/rejouer.sh.]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.25)[Une expérience plus ambitieuse][
@@ -1111,7 +1111,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5
 )
 
 == Montages : deux pièges, corrigé
-#let _note = [Sur docker.io 26.1.5 de Debian 13, nginx:1.29-alpine, debian:13 : dossier vide en bind mount → 403 ; volume nommé vide → 200 (pré-rempli depuis l’image) ; dossier créé par le conteneur : propriétaire 0, rm refusé à l’utilisateur 1000 ; avec --user 1000:1000, fichier à l’utilisateur. Lignes complètes de ls -ln à recopier avec docker/rejouer.sh.]
+#let _note = [Sur docker.io 26.1.5 de Debian 13, nginx:1.29-alpine, debian:13 : dossier vide en bind mount → 403 ; volume nommé vide → 200 (pré-rempli depuis l’image) ; dossier créé par le conteneur : propriétaire 0, rm refusé à l’utilisateur 1000 ; avec --user 1000:1000, fichier à l’utilisateur. Lignes complètes de ls -ln à recopier avec conteneurisation/rejouer.sh.]
 #corriges(note: _note,
   (1, [Dossier vide, puis volume nommé vide, sur la racine web de nginx],
     reponse(terminal(titre: none, taille: px(18))[```
@@ -1292,7 +1292,7 @@ $ docker container inspect -f '{{.State.ExitCode}}' c5
 )
 
 == seccomp et AppArmor : deux filets par défaut
-#let _note = [Diapositive unique, volontairement : on utilise Docker sans jamais régler ces deux mécanismes, il suffit de savoir qu’ils existent et de ne pas les retirer. Pour aller plus loin à l’oral. seccomp : mécanisme du noyau depuis 2.6.12 (2005), filtres BPF depuis 3.5 (2012) ; exemple sur docker.io 26.1.5 : docker container run --rm debian unshare --map-root-user --user whoami échoue (« Operation not permitted »), et réussit avec --security-opt seccomp\=unconfined. AppArmor : exemple du montage. docker container run --rm debian:13 mount -t tmpfs none /mnt est refusé (capabilities) ; avec --cap-add SYS\_ADMIN, seccomp laisse passer mais AppArmor bloque encore (règle « deny mount » du profil docker-default) ; avec en plus apparmor\=unconfined, le montage réussit : c’est la configuration de l’évasion « release\_agent » (F. Wilhelm, 2019). La bonne réponse : docker container run --rm --tmpfs /mnt debian:13, sans rien accorder. Sortie à rejouer sur un Debian 13 avec AppArmor actif (docker/rejouer.sh) : la ligne apparmor et le refus par AppArmor n’ont pas pu être obtenus dans le bac à sable de préparation, sans AppArmor ; sur un hôte sans AppArmor, seule la ligne seccomp apparaît. Sources : docs.docker.com/engine/security/seccomp et /apparmor.]
+#let _note = [Diapositive unique, volontairement : on utilise Docker sans jamais régler ces deux mécanismes, il suffit de savoir qu’ils existent et de ne pas les retirer. Pour aller plus loin à l’oral. seccomp : mécanisme du noyau depuis 2.6.12 (2005), filtres BPF depuis 3.5 (2012) ; exemple sur docker.io 26.1.5 : docker container run --rm debian unshare --map-root-user --user whoami échoue (« Operation not permitted »), et réussit avec --security-opt seccomp\=unconfined. AppArmor : exemple du montage. docker container run --rm debian:13 mount -t tmpfs none /mnt est refusé (capabilities) ; avec --cap-add SYS\_ADMIN, seccomp laisse passer mais AppArmor bloque encore (règle « deny mount » du profil docker-default) ; avec en plus apparmor\=unconfined, le montage réussit : c’est la configuration de l’évasion « release\_agent » (F. Wilhelm, 2019). La bonne réponse : docker container run --rm --tmpfs /mnt debian:13, sans rien accorder. Sortie à rejouer sur un Debian 13 avec AppArmor actif (conteneurisation/rejouer.sh) : la ligne apparmor et le refus par AppArmor n’ont pas pu être obtenus dans le bac à sable de préparation, sans AppArmor ; sur un hôte sans AppArmor, seule la ligne seccomp apparaît. Sources : docs.docker.com/engine/security/seccomp et /apparmor.]
 #anime(
   rang(
     bloc[Deux filets du noyau][
@@ -1547,7 +1547,7 @@ hello world !
 )
 
 == Créer une image à la main : corrigé
-#let _note = [docker.io 26.1.5 de Debian 13. Sorties de apt-get et de ping abrégées par « \# … » ; à rejouer avec docker/rejouer.sh pour les recopier en entier.]
+#let _note = [docker.io 26.1.5 de Debian 13. Sorties de apt-get et de ping abrégées par « \# … » ; à rejouer avec conteneurisation/rejouer.sh pour les recopier en entier.]
 #corriges(note: _note,
   (1, [Une image « mon_image », depuis `debian:13`, avec `inetutils-ping`],
     reponse(terminal(titre: none, taille: px(18))[```
@@ -1624,7 +1624,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Variables : le builder les remplace
-#let _note = [Sur docker.io 26.1.5 : ENV APP\_DIR\=/app puis WORKDIR \${APP\_DIR} donne un conteneur dont pwd vaut /app ; p reçoit le PATH déclaré par l’image debian:13 (ENV de sa configuration) ; h est vide : HOME n’existe qu’à l’exécution. Sortie de inspect à rejouer avec docker/rejouer.sh. Liste officielle des instructions concernées : Dockerfile reference, section Environment replacement.]
+#let _note = [Sur docker.io 26.1.5 : ENV APP\_DIR\=/app puis WORKDIR \${APP\_DIR} donne un conteneur dont pwd vaut /app ; p reçoit le PATH déclaré par l’image debian:13 (ENV de sa configuration) ; h est vide : HOME n’existe qu’à l’exécution. Sortie de inspect à rejouer avec conteneurisation/rejouer.sh. Liste officielle des instructions concernées : Dockerfile reference, section Environment replacement.]
 #corriges(note: _note,
   (1, [Dans quel répertoire l'image travaille-t-elle ?],
     reponse(terminal(titre: none, taille: px(20))[```
@@ -1686,7 +1686,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Avant 2023 : une image par instruction
-#let _note = [Le même Dockerfile de hello, construit avec l’ancien builder : DOCKER\_BUILDKIT\=0 docker image build -t hello-legacy . sur docker.io 26.1.5 de Debian 13 ; identifiants réels. docker image ls -a montre ensuite f93a19979748 et 54654138511a en \<none\>. Lignes « Removed intermediate container » et avertissement de dépréciation à recopier avec docker/rejouer.sh. L’ancien builder sert encore pour les conteneurs Windows.]
+#let _note = [Le même Dockerfile de hello, construit avec l’ancien builder : DOCKER\_BUILDKIT\=0 docker image build -t hello-legacy . sur docker.io 26.1.5 de Debian 13 ; identifiants réels. docker image ls -a montre ensuite f93a19979748 et 54654138511a en \<none\>. Lignes « Removed intermediate container » et avertissement de dépréciation à recopier avec conteneurisation/rejouer.sh. L’ancien builder sert encore pour les conteneurs Windows.]
 #anime(
   rang(
     bloc[Le builder classique (avant 2023)][
@@ -1788,7 +1788,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == history : une ligne par instruction
-#let _note = [Sortie réelle (docker.io 26.1.5 de Debian 13) : docker image history affiche 23 lignes en tout, dont 20 pour nginx:1.29-alpine ; la ligne RUN … 49.4MB est la dernière couche de nginx. Forme exacte des lignes HEALTHCHECK et EXPOSE à recopier avec docker/rejouer.sh.]
+#let _note = [Sortie réelle (docker.io 26.1.5 de Debian 13) : docker image history affiche 23 lignes en tout, dont 20 pour nginx:1.29-alpine ; la ligne RUN … 49.4MB est la dernière couche de nginx. Forme exacte des lignes HEALTHCHECK et EXPOSE à recopier avec conteneurisation/rejouer.sh.]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.4)[Terminal][
@@ -1964,7 +1964,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Après deux builds : réponses
-#let _note = [La question reste affichée ; un clic par réponse. Lecture de image prune : la couche COPY de l’ancienne image (127B) figure encore dans le cache de build ; c’est builder prune qui la libère. Le cache de build se vide aussi tout seul selon une politique de rétention (garbage collection de BuildKit). Bilans « Total reclaimed space » des deux prune à recopier avec docker/rejouer.sh.]
+#let _note = [La question reste affichée ; un clic par réponse. Lecture de image prune : la couche COPY de l’ancienne image (127B) figure encore dans le cache de build ; c’est builder prune qui la libère. Le cache de build se vide aussi tout seul selon une politique de rétention (garbage collection de BuildKit). Bilans « Total reclaimed space » des deux prune à recopier avec conteneurisation/rejouer.sh.]
 #corriges(note: _note,
   (1, [Où sont passées les étapes ?],
      reponse[Dans le *cache de build*, sous leur clé : BuildKit n'écrit que l'image finale.]),
@@ -2017,7 +2017,7 @@ LABEL p="${PATH}" h="[${HOME}]"
 )
 
 == Dockerfile : corrigé
-#let _note = [docker.io 26.1.5 de Debian 13. Sorties de ping abrégées ; à rejouer avec docker/rejouer.sh pour les recopier en entier.]
+#let _note = [docker.io 26.1.5 de Debian 13. Sorties de ping abrégées ; à rejouer avec conteneurisation/rejouer.sh pour les recopier en entier.]
 #corriges(note: _note,
   (1, [Un Dockerfile depuis `debian:13`, avec `inetutils-ping`, commande par défaut `ping -c 2 localhost`],
     reponse(terminal(titre: none, taille: px(18))[```
@@ -2113,7 +2113,7 @@ PING qwant.com (…): 56 data bytes
 })
 
 == Forme exec ou shell (1/2) : variables, arguments
-#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13, deux images construites depuis debian:13 (forme-exec, forme-shell). À noter : avec ENTRYPOINT echo bonjour (forme shell) et CMD \["au", "revoir"\], le conteneur affiche seulement bonjour : CMD est ignoré. Les arguments passés à sh -c après la commande deviennent \$0, \$1… du shell, que la commande n’utilise pas. Sortie de docker image inspect à rejouer avec docker/rejouer.sh.]
+#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13, deux images construites depuis debian:13 (forme-exec, forme-shell). À noter : avec ENTRYPOINT echo bonjour (forme shell) et CMD \["au", "revoir"\], le conteneur affiche seulement bonjour : CMD est ignoré. Les arguments passés à sh -c après la commande deviennent \$0, \$1… du shell, que la commande n’utilise pas. Sortie de docker image inspect à rejouer avec conteneurisation/rejouer.sh.]
 #anime(
   rang(
     bloc[Forme exec `["…", "…"]`][
@@ -2149,7 +2149,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Forme exec ou shell (2/2) : qui est PID 1 ?
-#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 (images sig-exec et sig-shell). Le programme est le même : un bash qui pose un trap sur SIGTERM puis attend ; seule la forme change. En forme shell, Docker lance /bin/sh -c "bash -c …" : sh (dash sous Debian) reste PID 1 et attend son fils, il ne le remplace pas (pas d’exec). Dockerfiles et lancements à rejouer avec docker/rejouer.sh.]
+#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 (images sig-exec et sig-shell). Le programme est le même : un bash qui pose un trap sur SIGTERM puis attend ; seule la forme change. En forme shell, Docker lance /bin/sh -c "bash -c …" : sh (dash sous Debian) reste PID 1 et attend son fils, il ne le remplace pas (pas d’exec). Dockerfiles et lancements à rejouer avec conteneurisation/rejouer.sh.]
 #anime(
   rang(
     bloc[Forme exec → PID 1 = bash][
@@ -2336,7 +2336,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == BuildKit : plusieurs architectures (buildx)
-#let _note = [docker.io 26.1.5 de Debian 13 (pilote overlay2) : avec le builder par défaut, « ERROR: Multi-platform build is not supported for the docker driver. Switch to a different driver, or turn on the containerd image store ». D’où docker buildx create (builder dans un conteneur moby/buildkit). La construction multi-plateforme elle-même n’a pas pu être rejouée pendant la préparation (pas d’accès direct au registre depuis le builder) : à rejouer avec docker/rejouer.sh, sur une machine connectée à un registre.]
+#let _note = [docker.io 26.1.5 de Debian 13 (pilote overlay2) : avec le builder par défaut, « ERROR: Multi-platform build is not supported for the docker driver. Switch to a different driver, or turn on the containerd image store ». D’où docker buildx create (builder dans un conteneur moby/buildkit). La construction multi-plateforme elle-même n’a pas pu être rejouée pendant la préparation (pas d’accès direct au registre depuis le builder) : à rejouer avec conteneurisation/rejouer.sh, sur une machine connectée à un registre.]
 #anime(
   rang(
     bloc[Multi-architecture][
@@ -2492,7 +2492,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Étude de cas : construire, lancer, se connecter
-#let _note = [docker.io 26.1.5 de Debian 13, OpenSSH 10.0. cle.pub doit être dans le contexte de build avant docker image build. Sorties à recopier avec docker/rejouer.sh.]
+#let _note = [docker.io 26.1.5 de Debian 13, OpenSSH 10.0. cle.pub doit être dans le contexte de build avant docker image build. Sorties à recopier avec conteneurisation/rejouer.sh.]
 #anime(
   terminal-etapes(taille: px(20),
     [```
@@ -2631,7 +2631,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Pourquoi le setuid est dangereux : la parade
-#let _note = [Sur docker.io 26.1.5 de Debian 13 : avec --security-opt no-new-privileges, le même binaire reste uid 1000 (/proc/self/status : tous les Uid à 1000) et le sshd lancé par lambda ne démarre pas en root. Sortie exacte à recopier avec docker/rejouer.sh. debian:13 contient 11 fichiers setuid ou setgid (su, passwd, mount, umount, chsh, chfn, gpasswd, newgrp, chage, expiry, unix\_chkpwd) ; RUN find / -xdev -perm /6000 -type f -exec chmod a-s {} + les ramène à 0, comme le demande la règle 4.8 du CIS Docker Benchmark.]
+#let _note = [Sur docker.io 26.1.5 de Debian 13 : avec --security-opt no-new-privileges, le même binaire reste uid 1000 (/proc/self/status : tous les Uid à 1000) et le sshd lancé par lambda ne démarre pas en root. Sortie exacte à recopier avec conteneurisation/rejouer.sh. debian:13 contient 11 fichiers setuid ou setgid (su, passwd, mount, umount, chsh, chfn, gpasswd, newgrp, chage, expiry, unix\_chkpwd) ; RUN find / -xdev -perm /6000 -type f -exec chmod a-s {} + les ramène à 0, comme le demande la règle 4.8 du CIS Docker Benchmark.]
 #anime(
   rang(
     bloc[Pourquoi ça marche][
@@ -2692,7 +2692,7 @@ PING qwant.com (…): 56 data bytes
 )
 
 == Root au démarrage seulement : PID 1 sous lambda
-#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 (paquet gosu 1.17 de Debian). Le conteneur démarre en root (pas de USER) ; l’entrypoint prépare /data puis exec gosu lambda "\$0" "\$\@" relance le même script sous lambda, qui fait exec "\$\@" : PID 1 est sleep, sous lambda. C’est le code de redis et de postgres (dépôts docker-library consultés le 20/11/2026). Ligne de /data à recopier avec docker/rejouer.sh.]
+#let _note = [Sorties réelles, docker.io 26.1.5 de Debian 13 (paquet gosu 1.17 de Debian). Le conteneur démarre en root (pas de USER) ; l’entrypoint prépare /data puis exec gosu lambda "\$0" "\$\@" relance le même script sous lambda, qui fait exec "\$\@" : PID 1 est sleep, sous lambda. C’est le code de redis et de postgres (dépôts docker-library consultés le 20/11/2026). Ligne de /data à recopier avec conteneurisation/rejouer.sh.]
 #anime(
   rang(
     bloc(role: "pratique", poids: 1.4)[Terminal][
@@ -3148,7 +3148,7 @@ PING qwant.com (…): 56 data bytes
     bloc(role: "pratique")[Prérequis][
       - Paquets `docker.io` et `docker-compose` (Debian 13)
       - Être membre du groupe `docker`
-      - Le support du TP : `docker/travaux_pratiques.md`
+      - Le support du TP : `conteneurisation/travaux_pratiques.md`
     ],
   ),
   source-de: [#link("https://github.com/jmchantrein/formation_docker")[github.com/jmchantrein/formation_docker] · licence CC BY-NC-SA 3.0],
