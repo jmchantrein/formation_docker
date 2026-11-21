@@ -47,6 +47,9 @@ Les apparitions suivent la skill `structurer-diapos-cours` : bloc par bloc, puis
   Un bloc apparaît avec sa première puce, chaque puce suivante au clic suivant ; un contenu quelconque compte pour un clic.
 - Mise en page libre : `#slide(repeat: n, self => { let (uncover,) = utils.methods(self); … })`, avec
   `bloc-anime(b, debut, uncover)` pour un bloc, `lignes(uncover: uncover, …)` pour une ligne par clic.
+- Dans `anime`, éléments à plusieurs clics : `lignes-anime(…)` (une ligne par clic), `plan-anime(…)`,
+  `terminal-etapes([```…```], [```…```])` (un morceau de terminal par clic), et `pas(n, (uncover, debut) => …)`
+  pour une mise en page libre.
 - Notes de l’orateur d’une diapo animée : paramètre `note:` de `anime`, ou `utils.speaker-note(self: self)[…]`.
 - Notes de l’orateur : `#speaker-note[...]`.
 - Apparitions au clic : voir, dans `virtualisation/virtualisation.typ`, les diapos « Architecture simplifiée et bilan »,

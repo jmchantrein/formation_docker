@@ -3,7 +3,7 @@
 ## À faire
 
 ### Cours Docker
-- [ ] Tailles de texte de 10 à 15 px (environ 70 terminaux et blocs) : scinder les diapos concernées pour remonter à une taille lisible
+- [ ] Rejouer les sorties marquées « à rejouer » avec `docker/rejouer.sh` sur un Debian 13 (docker.io 26.1.5, AppArmor), puis les recopier dans les diapos
 
 ### Cours Virtualisation
 - [ ] Rejouer les sorties types (KVM, TP) avec `virtualisation/rejouer-tp.sh` sur une machine avec KVM, puis remplacer les sorties des diapos et les mentions « à rejouer » des notes
@@ -27,3 +27,4 @@
 - [x] 2026-11-20 — Skill structurer-diapos-cours intégrée au dépôt (.claude/skills/), référencée dans AGENTS.md
 - [x] 2026-11-20 — Relecture du cours Virtualisation selon structurer-diapos-cours : corrections, animation systématique, récapitulatif, sources, script rejouer-tp.sh
 - [x] 2026-11-20 — Cours Docker adapté aux conventions : corriges() et illustration de couverture dans la charte, notes sans label de vérification, « diapositive », docker/README.md
+- [x] 2026-11-21 — Cours Docker relu selon structurer-diapos-cours : ~480 écarts traités (textes ≥ 18 px, sigles, titres, sources, corrigés, cadres imbriqués, syntaxe, redites, annexes, récapitulatif en fin) ; docker/rejouer.sh

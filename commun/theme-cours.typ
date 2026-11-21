@@ -190,6 +190,8 @@
 #let entete-role(role, titre, taille) = {
   let r = roles.at(role)
   let p = picto(role, r.texte, r.entete, t: taille * 1.05)
+  // le code d'un titre prend la couleur du titre (sinon : code bleu sur en-tête bleu)
+  show raw: set text(fill: r.texte)
   text(fill: r.texte, size: taille, weight: 600, { if p != none { p; h(taille * 0.4) }; titre })
 }
 
@@ -292,14 +294,15 @@
 }
 
 // Plan du cours : numéro, titre de partie, description.
-#let plan-cours(..parties) = {
+#let plan-cours(uncover: none, ..parties) = {
   let ps = parties.pos()
+  let montre(i, x) = if uncover == none { x } else { uncover(str(i + 1) + "-", x) }
   grid(columns: (px(96), 1fr), align: horizon, column-gutter: px(40),
     inset: (y: px(16)),
     stroke: (x, y) => if y < ps.len() - 1 { (bottom: px(1) + c.filet) },
     ..ps.enumerate().map(((i, (t, d))) => (
-      text(size: px(64), weight: 600, fill: c.bleu, str(i + 1)),
-      { text(size: px(40), weight: 600, t); linebreak(); text(size: px(32), fill: c.ardoise, d) },
+      montre(i, text(size: px(64), weight: 600, fill: c.bleu, str(i + 1))),
+      montre(i, { text(size: px(40), weight: 600, t); linebreak(); text(size: px(32), fill: c.ardoise, d) }),
     )).flatten())
 }
 
@@ -478,6 +481,8 @@
       let debuts = ()
       for b in e.rang { debuts.push(s); s += etapes-bloc(b) }
       plan.push((e, debuts))
+    } else if type(e) == dictionary and "etapes" in e {
+      plan.push((e, s)); s += e.etapes
     } else { plan.push((e, s)); s += 1 }
   }
   slide(repeat: s - 1, self => {
@@ -487,9 +492,20 @@
       if type(e) == dictionary and "rang" in e {
         rangee(gouttiere: e.gouttiere, poids: e.rang.map(b => b.poids),
           ..e.rang.zip(d).map(((b, db)) => h => bloc-anime(b, db, uncover, hauteur: h)))
-      } else { uncover(str(d) + "-", e) }
+      } else if type(e) == dictionary and "etapes" in e { (e.rendu)(uncover, d) }
+      else { uncover(str(d) + "-", e) }
     }
     if source-de != none { source(source-de) }
     if note != none { utils.speaker-note(self: self, note) }
   })
 }
+
+// Éléments à plusieurs clics, pour anime() : `pas(n, (uncover, debut) => …)` occupe n clics à partir de debut.
+#let pas(n, rendu) = (etapes: n, rendu: rendu)
+// Une ligne de `lignes` par clic.
+#let lignes-anime(..args) = pas(args.pos().len(), (u, d) => lignes(uncover: u, debut: d, ..args))
+// Terminal dont les morceaux apparaissent un par clic : terminal-etapes([```…```], [```…```], titre: …).
+#let terminal-etapes(titre: "Terminal", taille: px(20), ..morceaux) = pas(morceaux.pos().len(), (u, d) =>
+  terminal(titre: titre, taille: taille, morceaux.pos().enumerate().map(((i, m)) => u(str(d + i) + "-", m)).join()))
+// Plan du cours, une partie par clic.
+#let plan-anime(..parties) = pas(parties.pos().len(), (u, d) => plan-cours(uncover: (v, x) => u(str(d - 1 + int(v.split("-").at(0))) + "-", x), ..parties))
